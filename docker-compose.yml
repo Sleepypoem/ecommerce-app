@@ -1,0 +1,63 @@
+version: '3.3'
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:12.0.2
+    container_name: keycloak
+    depends_on:
+      - db
+    networks:
+      - springmysql-net
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+    restart: unless-stopped
+    volumes:
+      - C:\Users\oskri\OneDrive\Documentos\keycloak\tmp\:/tmp/
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+      - KEYCLOAK_DB=mysql
+      - KEYCLOAK_DB_URL_HOST=db
+      - KEYCLOAK_DB_URL_DATABASE=keycloak
+      - KEYCLOAK_DB_USERNAME=root
+      - KEYCLOAK_DB_PASSWORD=password
+    healthcheck:
+      test: "curl -f http://localhost:8080/admin || exit 1"
+  db:
+    image: mysql/mysql-server:8.0
+    container_name: my-sql
+    restart: always
+    networks:
+      - springmysql-net
+    environment:
+      MYSQL_ROOT_PASSWORD: 'password'
+      MYSQL_DATABASE: 'ecommerce'
+      MYSQL_USER: 'root'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+    ports:
+      # <Port exposed> : < MySQL Port running inside container>
+      - '3306:3306'
+    expose:
+      # Opens port 3306 on the container
+      - '3306'
+      # Where our data will be persisted
+    volumes:
+      - C:\Users\oskri\OneDrive\Documentos\sql:/var/lib/mysql
+  app:
+    image: final-project:0.1
+    container_name: spring-app
+    depends_on:
+      - db
+    ports:
+      - "8081:8081"
+    networks:
+      - springmysql-net
+    environment:
+        - MYSQL_HOST=db
+        - MYSQL_USERNAME=root
+        - MYSQL_PASSWORD=password
+        - MYSQL_DATABASE=ecommerce
+        - MYSQL_PORT=3306
+networks:
+  springmysql-net:

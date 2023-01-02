@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("products")
+@RequestMapping("api/products")
 public class ProductController extends AbstractController<ProductDto, ProductEntity> {
 
     @Autowired
