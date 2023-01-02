@@ -2,13 +2,15 @@ package com.sleepypoem.commerceapp.domain.dto;
 
 
 import com.sleepypoem.commerceapp.domain.interfaces.IDto;
+import com.sleepypoem.commerceapp.domain.interfaces.INameableDto;
 import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class ProductDto implements IDto {
+@Builder
+public class ProductDto implements IDto, INameableDto {
     private long id;
     private String name;
     private int stock;

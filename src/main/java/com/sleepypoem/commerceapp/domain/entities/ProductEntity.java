@@ -1,6 +1,7 @@
 package com.sleepypoem.commerceapp.domain.entities;
 
 import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
+import com.sleepypoem.commerceapp.domain.interfaces.INameableEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +9,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class ProductEntity implements IEntity {
+public class ProductEntity implements IEntity, INameableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

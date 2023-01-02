@@ -1,5 +1,5 @@
 package com.sleepypoem.commerceapp.domain.interfaces;
 
-public interface IEntity extends INameableEntity{
+public interface IEntity {
     Long getId();
 }
