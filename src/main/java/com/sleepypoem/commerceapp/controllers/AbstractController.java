@@ -2,7 +2,6 @@ package com.sleepypoem.commerceapp.controllers;
 
 import com.sleepypoem.commerceapp.domain.interfaces.IDto;
 import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
-import com.sleepypoem.commerceapp.services.AbstractService;
 
 public abstract class AbstractController <D extends IDto, E extends IEntity> extends AbstractReadOnlyController<D, E>{
 

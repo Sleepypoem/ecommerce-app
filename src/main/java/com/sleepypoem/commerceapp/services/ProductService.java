@@ -5,6 +5,7 @@ import com.sleepypoem.commerceapp.domain.entities.ProductEntity;
 import com.sleepypoem.commerceapp.domain.mappers.BaseMapper;
 import com.sleepypoem.commerceapp.domain.mappers.ProductMapper;
 import com.sleepypoem.commerceapp.repositories.ProductRepository;
+import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;

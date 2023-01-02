@@ -2,7 +2,7 @@ package com.sleepypoem.commerceapp.controllers;
 
 import com.sleepypoem.commerceapp.domain.dto.ProductDto;
 import com.sleepypoem.commerceapp.domain.entities.ProductEntity;
-import com.sleepypoem.commerceapp.services.AbstractService;
+import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
 import com.sleepypoem.commerceapp.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

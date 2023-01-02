@@ -2,7 +2,7 @@ package com.sleepypoem.commerceapp.controllers;
 
 import com.sleepypoem.commerceapp.domain.interfaces.IDto;
 import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
-import com.sleepypoem.commerceapp.services.AbstractService;
+import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
 
 import java.util.List;
 import java.util.Optional;

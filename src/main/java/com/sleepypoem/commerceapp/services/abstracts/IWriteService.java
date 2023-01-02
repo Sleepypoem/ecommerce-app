@@ -1,4 +1,4 @@
-package com.sleepypoem.commerceapp.services;
+package com.sleepypoem.commerceapp.services.abstracts;
 
 import com.sleepypoem.commerceapp.domain.interfaces.IDto;
 import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
