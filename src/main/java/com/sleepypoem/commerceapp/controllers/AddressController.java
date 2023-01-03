@@ -6,8 +6,12 @@ import com.sleepypoem.commerceapp.domain.entities.AddressEntity;
 import com.sleepypoem.commerceapp.services.AddressService;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+import java.util.List;
 
 @Controller
 @RequestMapping("address")
@@ -18,5 +22,20 @@ public class AddressController extends AbstractController<AddressDto, AddressEnt
     @Override
     protected AbstractService<AddressDto, AddressEntity> getService() {
         return service;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<AddressDto>> getAll() {
+        return ResponseEntity.ok().body(getAllInternal());
+    }
+
+    @PostMapping
+    public ResponseEntity<AddressDto> create(@RequestBody AddressEntity address) {
+        return ResponseEntity.created(URI.create("/address")).body(createInternal(address));
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<AddressDto> update(@PathVariable Long id, @RequestBody AddressEntity address) {
+        return ResponseEntity.ok(updateInternal(id, address));
     }
 }
