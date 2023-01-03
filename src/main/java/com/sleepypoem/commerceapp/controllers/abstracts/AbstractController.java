@@ -1,4 +1,4 @@
-package com.sleepypoem.commerceapp.controllers;
+package com.sleepypoem.commerceapp.controllers.abstracts;
 
 import com.sleepypoem.commerceapp.domain.interfaces.IDto;
 import com.sleepypoem.commerceapp.domain.interfaces.IEntity;

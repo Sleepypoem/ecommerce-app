@@ -1,5 +1,6 @@
 package com.sleepypoem.commerceapp.controllers;
 
+import com.sleepypoem.commerceapp.controllers.abstracts.AbstractController;
 import com.sleepypoem.commerceapp.domain.dto.ProductDto;
 import com.sleepypoem.commerceapp.domain.entities.ProductEntity;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
