@@ -10,6 +10,7 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
+
 public class ProductDto implements IDto, INameableDto {
     private long id;
     private String name;

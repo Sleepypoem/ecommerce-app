@@ -3,7 +3,9 @@ package com.sleepypoem.commerceapp.domain.mappers;
 import com.sleepypoem.commerceapp.domain.dto.CheckoutDto;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutEntity;
 import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CheckoutMapper extends BaseMapper<CheckoutEntity, CheckoutDto> {
     @Override
     public CheckoutEntity convertToEntity(CheckoutDto dto) {

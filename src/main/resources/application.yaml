@@ -12,8 +12,12 @@ spring:
         jwt:
           issuer-uri: http://localhost:8080/auth/realms/Final-project
           jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
+
 server:
   port: 8081
+  servlet:
+    contextPath: /api
+
 management:
   endpoints:
     web:
@@ -21,6 +25,7 @@ management:
   endpoint:
     health:
       show-details: always
+
 logging:
   level:
     org:

@@ -9,6 +9,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+@Table(name = "products")
 public class ProductEntity implements IEntity, INameableEntity {
 
     @Id
