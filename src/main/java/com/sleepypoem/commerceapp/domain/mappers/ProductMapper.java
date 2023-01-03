@@ -6,22 +6,15 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProductMapper extends BaseMapper<ProductEntity, ProductDto> {
+public class ProductMapper extends SimpleMapper<ProductDto, ProductEntity> {
+
     @Override
-    public ProductEntity convertToEntity(ProductDto dto) {
-        ProductEntity entity = new ProductEntity();
-        if(dto != null){
-            BeanUtils.copyProperties(dto, entity);
-        }
-        return entity;
+    public ProductDto getDtoInstance() {
+        return new ProductDto();
     }
 
     @Override
-    public ProductDto convertToDto(ProductEntity entity) {
-        ProductDto dto = new ProductDto();
-        if (entity != null) {
-            BeanUtils.copyProperties(entity, dto);
-        }
-        return dto;
+    public ProductEntity getEntityInstance() {
+        return new ProductEntity();
     }
 }

@@ -6,22 +6,15 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CheckoutMapper extends BaseMapper<CheckoutEntity, CheckoutDto> {
+public class CheckoutMapper extends SimpleMapper<CheckoutDto, CheckoutEntity> {
+
     @Override
-    public CheckoutEntity convertToEntity(CheckoutDto dto) {
-        CheckoutEntity entity = new CheckoutEntity();
-        if(dto != null){
-            BeanUtils.copyProperties(dto, entity);
-        }
-        return entity;
+    public CheckoutDto getDtoInstance() {
+        return new CheckoutDto();
     }
 
     @Override
-    public CheckoutDto convertToDto(CheckoutEntity entity) {
-        CheckoutDto dto = new CheckoutDto();
-        if (entity != null) {
-            BeanUtils.copyProperties(entity, dto);
-        }
-        return dto;
+    public CheckoutEntity getEntityInstance() {
+        return new CheckoutEntity();
     }
 }
