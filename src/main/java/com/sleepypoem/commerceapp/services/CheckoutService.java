@@ -6,12 +6,17 @@ import com.sleepypoem.commerceapp.domain.mappers.BaseMapper;
 import com.sleepypoem.commerceapp.domain.mappers.CheckoutMapper;
 import com.sleepypoem.commerceapp.repositories.CheckoutRepository;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
+import com.sleepypoem.commerceapp.services.validators.IValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CheckoutService extends AbstractService<CheckoutDto, CheckoutEntity> {
+
+    final static IValidator<CheckoutEntity> VALIDATE_CHECKOUT = checkout -> {
+        return true;
+    };
 
     @Autowired
     CheckoutRepository dao;
@@ -26,5 +31,10 @@ public class CheckoutService extends AbstractService<CheckoutDto, CheckoutEntity
     @Override
     protected BaseMapper<CheckoutEntity, CheckoutDto> getMapper() {
         return mapper;
+    }
+
+    @Override
+    protected IValidator<CheckoutEntity> getValidator() {
+        return null;
     }
 }

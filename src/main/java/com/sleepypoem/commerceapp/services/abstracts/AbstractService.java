@@ -4,7 +4,10 @@ import com.sleepypoem.commerceapp.domain.interfaces.IDto;
 import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
 import com.sleepypoem.commerceapp.domain.mappers.BaseMapper;
 import com.sleepypoem.commerceapp.exceptions.MyEntityNotFoundException;
+import com.sleepypoem.commerceapp.exceptions.MyValidationException;
 import com.sleepypoem.commerceapp.services.ServicePreconditions;
+import com.sleepypoem.commerceapp.services.validators.IValidator;
+import com.sleepypoem.commerceapp.services.validators.Validator;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -17,6 +20,7 @@ public abstract class AbstractService<D extends IDto, E extends IEntity> impleme
         Optional<D> dto;
         E entity;
         Optional<E> isEntityPresent = getDao().findById(id);
+
         if (isEntityPresent.isPresent()) {
             entity = isEntityPresent.get();
             dto = Optional.of(getMapper().convertToDto(entity));
@@ -33,16 +37,18 @@ public abstract class AbstractService<D extends IDto, E extends IEntity> impleme
     }
 
     @Override
-    public D create(E entity) {
+    public D create(E entity) throws MyValidationException {
         ServicePreconditions.checkEntityNotNull(entity);
+        Validator.validate(getValidator(), entity);
         E persisted = getDao().save(entity);
         return getMapper().convertToDto(persisted);
     }
 
     @Override
-    public D update(Long id, E entity) {
+    public D update(Long id, E entity) throws MyValidationException {
         ServicePreconditions.checkEntityNotNull(entity);
         ServicePreconditions.checkExpression(id == entity.getId(), "Id in URI doesn't match with entity id.");
+        Validator.validate(getValidator(), entity);
         E updated = getDao().save(entity);
         return getMapper().convertToDto(updated);
     }
@@ -60,4 +66,6 @@ public abstract class AbstractService<D extends IDto, E extends IEntity> impleme
     protected abstract JpaRepository<E, Long> getDao();
 
     protected abstract BaseMapper<E, D> getMapper();
+
+    protected abstract IValidator<E> getValidator();
 }
