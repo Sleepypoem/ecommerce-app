@@ -1,4 +1,4 @@
-package com.baeldung.common.web.exception;
+package com.sleepypoem.commerceapp.exceptions;
 
 public final class MyResourceNotFoundException extends RuntimeException {
 
