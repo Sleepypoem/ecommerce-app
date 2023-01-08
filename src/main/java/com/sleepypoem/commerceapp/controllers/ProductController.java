@@ -3,6 +3,7 @@ package com.sleepypoem.commerceapp.controllers;
 import com.sleepypoem.commerceapp.controllers.abstracts.AbstractController;
 import com.sleepypoem.commerceapp.domain.dto.ProductDto;
 import com.sleepypoem.commerceapp.domain.entities.ProductEntity;
+import com.sleepypoem.commerceapp.exceptions.MyValidationException;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
 import com.sleepypoem.commerceapp.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,12 +43,12 @@ public class ProductController extends AbstractController<ProductDto, ProductEnt
     }
 
     @PostMapping
-    public ResponseEntity<ProductDto> create(@RequestBody ProductEntity product) throws URISyntaxException {
+    public ResponseEntity<ProductDto> create(@RequestBody ProductEntity product) throws URISyntaxException, MyValidationException {
         return ResponseEntity.created(new URI("/products")).body(createInternal(product));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductDto> update(@PathVariable Long id, @RequestBody ProductEntity product) {
+    public ResponseEntity<ProductDto> update(@PathVariable Long id, @RequestBody ProductEntity product) throws MyValidationException {
         return ResponseEntity.ok().body(updateInternal(id, product));
     }
 }

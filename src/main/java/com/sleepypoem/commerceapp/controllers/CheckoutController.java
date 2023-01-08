@@ -3,6 +3,7 @@ package com.sleepypoem.commerceapp.controllers;
 import com.sleepypoem.commerceapp.controllers.abstracts.AbstractController;
 import com.sleepypoem.commerceapp.domain.dto.CheckoutDto;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutEntity;
+import com.sleepypoem.commerceapp.exceptions.MyValidationException;
 import com.sleepypoem.commerceapp.services.CheckoutService;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,12 +31,12 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
     }
 
     @PostMapping
-    public ResponseEntity<CheckoutDto> create(@RequestBody CheckoutEntity checkout) {
+    public ResponseEntity<CheckoutDto> create(@RequestBody CheckoutEntity checkout) throws MyValidationException {
         return ResponseEntity.created(URI.create("/checkout")).body(createInternal(checkout));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CheckoutDto> update(@PathVariable Long id, @RequestBody CheckoutEntity checkout) {
+    public ResponseEntity<CheckoutDto> update(@PathVariable Long id, @RequestBody CheckoutEntity checkout) throws MyValidationException {
         return ResponseEntity.ok().body(updateInternal(id, checkout));
     }
 
