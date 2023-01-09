@@ -15,6 +15,7 @@ public class CheckoutDto implements IDto {
     private Long id;
     private String userId;
     private List<ProductEntity> products;
+
     @Override
     public Long getId() {
         return id;

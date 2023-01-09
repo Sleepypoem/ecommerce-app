@@ -7,7 +7,6 @@ import com.sleepypoem.commerceapp.domain.mappers.ProductMapper;
 import com.sleepypoem.commerceapp.repositories.ProductRepository;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
 import com.sleepypoem.commerceapp.services.validators.IValidator;
-import com.sleepypoem.commerceapp.services.validators.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,7 @@ public class ProductService extends AbstractService<ProductDto, ProductEntity> {
             return false;
         }
 
-        if(product.getPrice() <= 0){
+        if (product.getPrice() <= 0) {
             return false;
         }
 
@@ -32,6 +31,7 @@ public class ProductService extends AbstractService<ProductDto, ProductEntity> {
 
     @Autowired
     ProductMapper mapper;
+
     @Override
     protected JpaRepository<ProductEntity, Long> getDao() {
         return dao;

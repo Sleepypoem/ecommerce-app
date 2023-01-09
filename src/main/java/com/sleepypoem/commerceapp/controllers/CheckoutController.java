@@ -20,6 +20,7 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
 
     @Autowired
     CheckoutService service;
+
     @Override
     protected AbstractService<CheckoutDto, CheckoutEntity> getService() {
         return service;
@@ -42,6 +43,6 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) {
-        return ResponseEntity.ok().body("Checkout with id "+ " id has been deleted.");
+        return ResponseEntity.ok().body("Checkout with id " + " id has been deleted.");
     }
 }

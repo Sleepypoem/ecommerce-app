@@ -23,7 +23,7 @@ public class CheckoutEntity implements IEntity {
     private List<ProductEntity> products;
 
     @Override
-    public Long getId(){
+    public Long getId() {
         return id;
     }
 

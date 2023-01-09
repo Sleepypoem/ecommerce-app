@@ -1,6 +1,6 @@
 package com.sleepypoem.commerceapp.exceptions;
 
-public class MyUserNameAlreadyUsedException extends Exception{
+public class MyUserNameAlreadyUsedException extends Exception {
     public MyUserNameAlreadyUsedException(String message) {
         super(message);
     }

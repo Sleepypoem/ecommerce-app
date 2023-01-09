@@ -20,6 +20,7 @@ public class AddressController extends AbstractController<AddressDto, AddressEnt
 
     @Autowired
     AddressService service;
+
     @Override
     protected AbstractService<AddressDto, AddressEntity> getService() {
         return service;

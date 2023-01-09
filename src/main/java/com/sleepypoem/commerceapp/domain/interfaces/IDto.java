@@ -1,5 +1,5 @@
 package com.sleepypoem.commerceapp.domain.interfaces;
 
-public interface IDto{
+public interface IDto {
     Long getId();
 }

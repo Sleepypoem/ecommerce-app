@@ -11,13 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class AddressService extends AbstractService<AddressDto, AddressEntity> {
 
 
-
     final static IValidator<AddressEntity> VALIDATE_ADDRESS = address -> {
-            return true;
+        return true;
     };
     @Autowired
     AddressRepository dao;
@@ -38,5 +39,9 @@ public class AddressService extends AbstractService<AddressDto, AddressEntity> {
     @Override
     protected IValidator<AddressEntity> getValidator() {
         return VALIDATE_ADDRESS;
+    }
+
+    public List<AddressEntity> findByUserId(String userId) {
+        return dao.findByUserId(userId);
     }
 }

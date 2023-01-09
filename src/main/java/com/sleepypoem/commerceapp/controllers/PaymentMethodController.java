@@ -20,6 +20,7 @@ public class PaymentMethodController extends AbstractController<PaymentMethodDto
 
     @Autowired
     PaymentMethodService service;
+
     @Override
     protected AbstractService<PaymentMethodDto, PaymentMethodEntity> getService() {
         return service;

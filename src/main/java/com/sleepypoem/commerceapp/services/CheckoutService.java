@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class CheckoutService extends AbstractService<CheckoutDto, CheckoutEntity> {
 
@@ -23,6 +25,7 @@ public class CheckoutService extends AbstractService<CheckoutDto, CheckoutEntity
 
     @Autowired
     CheckoutMapper mapper;
+
     @Override
     protected JpaRepository<CheckoutEntity, Long> getDao() {
         return dao;
@@ -36,5 +39,13 @@ public class CheckoutService extends AbstractService<CheckoutDto, CheckoutEntity
     @Override
     protected IValidator<CheckoutEntity> getValidator() {
         return null;
+    }
+
+    public CheckoutEntity getByUserId(String userId) {
+        Optional<CheckoutDto> searchedCheckout = dao.findByUserId(userId);
+        if (searchedCheckout.isEmpty()) {
+            return null;
+        }
+        return mapper.convertToEntity(searchedCheckout.get());
     }
 }

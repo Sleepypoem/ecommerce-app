@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class PaymentMethodService extends AbstractService<PaymentMethodDto, PaymentMethodEntity> {
 
@@ -23,6 +25,7 @@ public class PaymentMethodService extends AbstractService<PaymentMethodDto, Paym
 
     @Autowired
     PaymentMethodMapper mapper;
+
     @Override
     protected JpaRepository<PaymentMethodEntity, Long> getDao() {
         return dao;
@@ -36,6 +39,10 @@ public class PaymentMethodService extends AbstractService<PaymentMethodDto, Paym
     @Override
     protected IValidator<PaymentMethodEntity> getValidator() {
         return null;
+    }
+
+    public List<PaymentMethodEntity> findByUserId(String userId) {
+        return dao.findByUserId(userId);
     }
 
 

@@ -1,8 +1,6 @@
 package com.sleepypoem.commerceapp.exceptions;
 
-import java.util.Map;
-
-public class MyValidationException extends Exception{
+public class MyValidationException extends Exception {
 
     public MyValidationException(String message) {
         super(message);

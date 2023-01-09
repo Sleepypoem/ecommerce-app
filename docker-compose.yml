@@ -1,49 +1,50 @@
 version: '3.3'
+
 services:
+  mysql:
+    container_name: keycloak-mysql
+    image: mysql/mysql-server:8.0
+    volumes:
+      - C:\Users\oskri\OneDrive\Documentos\sql\keycloak:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ecommerce
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: password
+      MySQL_ALLOW_EMPTY_PASSWORD: yes
+    ports:
+      - '3306:3306'
   keycloak:
-    image: quay.io/keycloak/keycloak:12.0.2
     container_name: keycloak
-    depends_on:
-      - db
-    networks:
-      - springmysql-net
+    image: quay.io/keycloak/keycloak:legacy
+    environment:
+      DB_VENDOR: MYSQL
+      DB_ADDR: mysql
+      DB_DATABASE: ecommerce
+      DB_USER: admin
+      DB_PASSWORD: password
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the MySQL JDBC driver documentation in order to use it.
+      #JDBC_PARAMS: "connectTimeout=30000"
     ports:
       - "8080:8080"
-      - "8443:8443"
-    restart: unless-stopped
-    volumes:
-      - C:\Users\oskri\OneDrive\Documentos\keycloak\tmp\:/tmp/
-    environment:
-      - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=admin
-      - KEYCLOAK_DB=mysql
-      - KEYCLOAK_DB_URL_HOST=db
-      - KEYCLOAK_DB_URL_DATABASE=keycloak
-      - KEYCLOAK_DB_USERNAME=root
-      - KEYCLOAK_DB_PASSWORD=password
-    healthcheck:
-      test: "curl -f http://localhost:8080/admin || exit 1"
+    depends_on:
+      - mysql
   db:
     image: mysql/mysql-server:8.0
-    container_name: my-sql
+    container_name: spring-mysql
     restart: always
     networks:
       - springmysql-net
     environment:
       MYSQL_ROOT_PASSWORD: 'password'
       MYSQL_DATABASE: 'ecommerce'
-      MYSQL_USER: 'root'
+      MYSQL_USER: 'admin'
       MYSQL_PASSWORD: 'password'
       MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
-    ports:
-      # <Port exposed> : < MySQL Port running inside container>
-      - '3306:3306'
-    expose:
-      # Opens port 3306 on the container
-      - '3306'
-      # Where our data will be persisted
     volumes:
-      - C:\Users\oskri\OneDrive\Documentos\sql:/var/lib/mysql
+      - C:\Users\oskri\OneDrive\Documentos\sql\spring:/var/lib/mysql
   app:
     image: final-project:0.1
     container_name: spring-app
@@ -54,10 +55,10 @@ services:
     networks:
       - springmysql-net
     environment:
-        - MYSQL_HOST=db
-        - MYSQL_USERNAME=root
-        - MYSQL_PASSWORD=password
-        - MYSQL_DATABASE=ecommerce
-        - MYSQL_PORT=3306
+      - MYSQL_HOST=db
+      - MYSQL_USERNAME=admin
+      - MYSQL_PASSWORD=password
+      - MYSQL_DATABASE=ecommerce
+      - MYSQL_PORT=3306
 networks:
   springmysql-net:
