@@ -128,10 +128,6 @@ public class UserService {
         return headers;
     }
 
-    public String testMaps(UserRepresentationDto user) throws JsonProcessingException {
-        return mapper.writeValueAsString(user);
-    }
-
     private ResponseEntity<String> makeRequest(String url, HttpMethod method, HttpEntity<?> entity) throws Exception {
         ResponseEntity<String> response = restTemplate.exchange(url, method, entity, String.class);
 
