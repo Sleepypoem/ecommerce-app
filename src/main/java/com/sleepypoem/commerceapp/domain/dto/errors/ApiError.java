@@ -1,6 +1,9 @@
-package com.sleepypoem.signinapp.payload.responses;
+package com.sleepypoem.commerceapp.domain.dto.errors;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter

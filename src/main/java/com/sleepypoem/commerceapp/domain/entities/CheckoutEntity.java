@@ -23,7 +23,7 @@ public class CheckoutEntity implements IEntity {
     @NotNull
     private String userId;
 
-    @OneToMany(cascade = CascadeType.MERGE)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<CheckoutItemEntity> items;
 
     @Override

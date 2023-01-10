@@ -1,4 +1,4 @@
-package com.sleepypoem.signinapp.payload.responses;
+package com.sleepypoem.commerceapp.domain.dto.errors;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

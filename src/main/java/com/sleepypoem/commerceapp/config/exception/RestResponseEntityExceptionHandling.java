@@ -50,9 +50,7 @@ public class RestResponseEntityExceptionHandling extends ResponseEntityException
             else {
                 msg = "Invalid request message";
             }
-        }
-
-        else if (cause instanceof JsonMappingException) {
+        } else if (cause instanceof JsonMappingException) {
             JsonMappingException jme = (JsonMappingException) cause;
             msg = jme.getOriginalMessage();
             if (jme.getPath() != null && jme.getPath().size() > 0) {
@@ -60,46 +58,46 @@ public class RestResponseEntityExceptionHandling extends ResponseEntityException
                         ": " + msg;
             }
         }
-        return handleExceptionInternal(ex, message(HttpStatus.BAD_REQUEST, msg, ex),headers, HttpStatus.BAD_REQUEST, request);
+        return handleExceptionInternal(ex, message(HttpStatus.BAD_REQUEST, msg, ex), headers, HttpStatus.BAD_REQUEST, request);
     }
 
-    @ExceptionHandler(value = { MyBadRequestException.class,
-                                MyEntityNotFoundException.class,
-                                MyResourceNotFoundException.class,
-                                MyValidationException.class,
-                                MyUserNameAlreadyUsedException.class,
-                                MyUserNotFoundException.class
-                              })
-    public ResponseEntity<Object> handleBadRequest(Exception ex, WebRequest request){
-        return handleExceptionInternal(ex, message(HttpStatus.BAD_REQUEST, ex),new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+    @ExceptionHandler(value = {MyBadRequestException.class,
+            MyEntityNotFoundException.class,
+            MyResourceNotFoundException.class,
+            MyValidationException.class,
+            MyUserNameAlreadyUsedException.class,
+            MyUserNotFoundException.class
+    })
+    public ResponseEntity<Object> handleBadRequest(Exception ex, WebRequest request) {
+        return handleExceptionInternal(ex, message(HttpStatus.BAD_REQUEST, ex), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
-    @ExceptionHandler(value = { ConstraintViolationException.class})
-    public ResponseEntity<Object> handleConstraintException(ConstraintViolationException ex, WebRequest request){
+    @ExceptionHandler(value = {ConstraintViolationException.class})
+    public ResponseEntity<Object> handleConstraintException(ConstraintViolationException ex, WebRequest request) {
         Set<ConstraintViolation<?>> constraintViolationsSet = ex.getConstraintViolations();
 
-       Map<String, String> errors = new HashMap<>();
+        Map<String, String> errors = new HashMap<>();
 
         for (ConstraintViolation<?> violation : constraintViolationsSet) {
             errors.put(String.valueOf(violation.getPropertyPath()), violation.getMessage());
         }
-        return handleExceptionInternal(ex, fields(HttpStatus.BAD_REQUEST, errors),new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+        return handleExceptionInternal(ex, fields(HttpStatus.BAD_REQUEST, errors), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
-    private ApiError message(HttpStatus status, Exception ex){
+    private ApiError message(HttpStatus status, Exception ex) {
         final String message = ex.getMessage() == null ? ex.getClass().getSimpleName() : ex.getMessage();
         final String devMessage = ExceptionUtils.getMessage(ex);
 
         return new ApiError(status.value(), message, devMessage);
     }
 
-    private ApiError message(HttpStatus status, String message, Exception ex){
+    private ApiError message(HttpStatus status, String message, Exception ex) {
         final String devMessage = ExceptionUtils.getMessage(ex);
 
         return new ApiError(status.value(), message, devMessage);
     }
 
-    private RequestFieldError fields(HttpStatus status, Map<String, String> errors){
+    private RequestFieldError fields(HttpStatus status, Map<String, String> errors) {
         final String message = "There are some errors in the following fields";
         return new RequestFieldError(status, message, errors);
     }

@@ -17,12 +17,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @Slf4j
 public class CheckoutService extends AbstractService<CheckoutDto, CheckoutEntity> {
 
@@ -73,6 +75,7 @@ public class CheckoutService extends AbstractService<CheckoutDto, CheckoutEntity
                 throw new MyResourceNotFoundException("Product with id " + item.getProduct().getId() + " not found.");
             }
             ProductDto product = searchedProduct.get();
+            log.info(String.valueOf(item.getQuantity()));
             productService.modifyStock(product.getId(), product.getStock() - item.getQuantity());
         }
     }
@@ -84,7 +87,7 @@ public class CheckoutService extends AbstractService<CheckoutDto, CheckoutEntity
     public CheckoutEntity getByUserId(String userId) {
         Optional<CheckoutEntity> searchedCheckout = dao.findOneByUserId(userId);
         if (searchedCheckout.isEmpty()) {
-            throw new MyEntityNotFoundException("Checkout from user " + userId + " not found");
+            return null;
         }
         return searchedCheckout.get();
     }
@@ -96,9 +99,11 @@ public class CheckoutService extends AbstractService<CheckoutDto, CheckoutEntity
             throw new MyEntityNotFoundException("Checkout with id " + id + " not found");
         }
         CheckoutEntity checkout = searchedCheckout.get();
+
         List<CheckoutItemEntity> items = checkout.getItems();
         items.addAll(checkoutItems);
         checkout.setItems(items);
+        reserveProducts(checkout);
         log.info(checkout.toString());
         return update(id, checkout);
     }
@@ -120,7 +125,13 @@ public class CheckoutService extends AbstractService<CheckoutDto, CheckoutEntity
         checkout.setItems(items);
         returnProducts(checkoutItem);
         log.info(checkout.toString());
-        return getMapper().convertToDto(dao.save(checkout));
+        CheckoutDto result = getMapper().convertToDto(dao.save(checkout));
+
+        if (result.getItems().isEmpty()) {
+            getDao().deleteById(id);
+            return null;
+        }
+        return result;
     }
 
     public CheckoutDto modifyItemQuantity(Long id, Long itemId, int quantity) {

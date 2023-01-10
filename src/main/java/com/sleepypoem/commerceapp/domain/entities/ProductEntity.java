@@ -3,7 +3,6 @@ package com.sleepypoem.commerceapp.domain.entities;
 import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
 import com.sleepypoem.commerceapp.domain.interfaces.INameableEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -25,7 +24,6 @@ public class ProductEntity implements IEntity, INameableEntity {
 
     @Column
     @NotNull
-    @Max(100)
     private String name;
 
     @Column

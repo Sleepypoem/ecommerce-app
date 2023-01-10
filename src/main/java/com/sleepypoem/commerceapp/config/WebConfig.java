@@ -1,7 +1,6 @@
 package com.sleepypoem.commerceapp.config;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -46,7 +45,7 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public com.fasterxml.jackson.databind.ObjectMapper objectMapper(){
+    public com.fasterxml.jackson.databind.ObjectMapper objectMapper() {
         return jacksonBuilder().build();
     }
 

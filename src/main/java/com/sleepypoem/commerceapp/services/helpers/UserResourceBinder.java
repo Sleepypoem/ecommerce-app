@@ -28,7 +28,6 @@ public class UserResourceBinder {
 
     public UserDto attachCheckout(UserDto user) {
         CheckoutEntity checkout = checkoutService.getByUserId(user.getId());
-        log.info(checkout.toString());
         user.setCheckouts(checkout);
         return user;
     }
