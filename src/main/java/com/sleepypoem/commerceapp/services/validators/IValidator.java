@@ -8,5 +8,5 @@ public interface IValidator<T> {
      * @param element The element that is going to be validated.
      * @return True if the object is valid, false otherwise.
      */
-    boolean isValid(T element);
+    boolean isValid(T element) throws Exception;
 }

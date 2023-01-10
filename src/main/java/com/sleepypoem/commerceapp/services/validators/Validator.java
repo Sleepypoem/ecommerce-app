@@ -12,7 +12,7 @@ public class Validator {
      * @param <T>       The element that is going to be validated.
      * @return True if is valid, false otherwise.
      */
-    public static <T> void validate(IValidator<T> validator, T element) throws MyValidationException {
+    public static <T> void validate(IValidator<T> validator, T element) throws Exception {
         boolean isValid = validator.isValid(element);
         if (!isValid) {
             throw new MyValidationException("Element is not valid");
