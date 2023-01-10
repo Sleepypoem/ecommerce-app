@@ -16,9 +16,8 @@ import java.util.List;
 @Service
 public class PaymentMethodService extends AbstractService<PaymentMethodDto, PaymentMethodEntity> {
 
-    final static IValidator<PaymentMethodEntity> VALIDATE_PAYMENT_METHOD = paymentMethod -> {
-        return true;
-    };
+    @Autowired
+    private IValidator<PaymentMethodEntity> validatePaymentMethod;
 
     @Autowired
     PaymentMethodRepository dao;
@@ -38,7 +37,7 @@ public class PaymentMethodService extends AbstractService<PaymentMethodDto, Paym
 
     @Override
     protected IValidator<PaymentMethodEntity> getValidator() {
-        return null;
+        return validatePaymentMethod;
     }
 
     public List<PaymentMethodEntity> findByUserId(String userId) {

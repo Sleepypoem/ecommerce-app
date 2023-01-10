@@ -1,15 +1,13 @@
 package com.sleepypoem.commerceapp.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sleepypoem.commerceapp.domain.dto.AuthServerResponseDto;
 import com.sleepypoem.commerceapp.domain.dto.UserDto;
 import com.sleepypoem.commerceapp.domain.dto.UserRepresentationDto;
-import com.sleepypoem.commerceapp.domain.entities.AddressEntity;
-import com.sleepypoem.commerceapp.domain.entities.CheckoutEntity;
-import com.sleepypoem.commerceapp.domain.entities.PaymentMethodEntity;
 import com.sleepypoem.commerceapp.exceptions.MyBadRequestException;
 import com.sleepypoem.commerceapp.exceptions.MyUserNameAlreadyUsedException;
+import com.sleepypoem.commerceapp.exceptions.MyUserNotFoundException;
+import com.sleepypoem.commerceapp.services.helpers.UserResourceBinder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +18,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
-import java.util.List;
 
 @Service
 @Slf4j
@@ -39,13 +36,7 @@ public class UserService {
     private final String realmName;
 
     @Autowired
-    private CheckoutService checkoutService;
-
-    @Autowired
-    private AddressService addressService;
-
-    @Autowired
-    private PaymentMethodService paymentMethodService;
+    private UserResourceBinder binder;
 
     public UserService(ObjectMapper mapper, @Value("${auth-server.admin-rest-prefix}") String uriPrefix,
                        @Value("${auth-server.realm-name}") String realmName,
@@ -67,9 +58,9 @@ public class UserService {
 
         String responseBody = trimFirstAndLastChar(response.getBody());
         UserDto user = mapper.readValue(responseBody, UserDto.class);
-        attachAddresses(user);
-        attachCheckout(user);
-        attachPaymentMethods(user);
+        binder.attachAddresses(user);
+        binder.attachCheckout(user);
+        binder.attachPaymentMethods(user);
         return user;
     }
 
@@ -82,9 +73,9 @@ public class UserService {
         ResponseEntity<String> response = makeRequest(uriPrefix + realmName + "/users/" + id, HttpMethod.GET, entity);
 
         UserDto user = mapper.readValue(response.getBody(), UserDto.class);
-        attachAddresses(user);
-        attachCheckout(user);
-        attachPaymentMethods(user);
+        binder.attachAddresses(user);
+        binder.attachCheckout(user);
+        binder.attachPaymentMethods(user);
 
         return user;
     }
@@ -138,26 +129,11 @@ public class UserService {
         if (response.getStatusCode() == HttpStatus.CONFLICT) {
             throw new MyUserNameAlreadyUsedException(response.getBody());
         }
+        if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+            throw new MyUserNotFoundException(response.getBody());
+        }
 
         return response;
-    }
-
-    private UserDto attachCheckout(UserDto user) {
-        CheckoutEntity checkout = checkoutService.getByUserId(user.getId());
-        user.setCheckouts(checkout);
-        return user;
-    }
-
-    private UserDto attachAddresses(UserDto user) {
-        List<AddressEntity> addresses = addressService.findByUserId(user.getId());
-        user.setAddresses(addresses);
-        return user;
-    }
-
-    private UserDto attachPaymentMethods(UserDto user) {
-        List<PaymentMethodEntity> paymentMethods = paymentMethodService.findByUserId(user.getId());
-        user.setPaymentMethods(paymentMethods);
-        return user;
     }
 
 }

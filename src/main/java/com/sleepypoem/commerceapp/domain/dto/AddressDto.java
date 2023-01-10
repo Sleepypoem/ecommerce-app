@@ -1,15 +1,14 @@
 package com.sleepypoem.commerceapp.domain.dto;
 
 import com.sleepypoem.commerceapp.domain.interfaces.IDto;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
+@Builder
+@ToString
 public class AddressDto implements IDto {
     private Long id;
 

@@ -3,7 +3,6 @@ package com.sleepypoem.commerceapp.services.validators.impl;
 import com.sleepypoem.commerceapp.domain.dto.ProductDto;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutEntity;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutItemEntity;
-import com.sleepypoem.commerceapp.domain.entities.ProductEntity;
 import com.sleepypoem.commerceapp.services.ProductService;
 import com.sleepypoem.commerceapp.services.UserService;
 import com.sleepypoem.commerceapp.services.validators.IValidator;
@@ -16,26 +15,29 @@ import java.util.Optional;
 @Component
 public class ValidateCheckout implements IValidator<CheckoutEntity> {
 
-    @Autowired @Lazy
+    @Autowired
+    @Lazy
     UserService userService;
 
-    @Autowired @Lazy
+    @Autowired
+    @Lazy
     ProductService productService;
+
     @Override
     public boolean isValid(CheckoutEntity checkout) throws Exception {
-        if(userService.getUserById(checkout.getUserId()) == null){
+        if (userService.getUserById(checkout.getUserId()) == null) {
             return false;
         }
 
         for (CheckoutItemEntity item : checkout.getItems()) {
             Optional<ProductDto> optProduct = productService.getOneById(item.getProduct().getId());
-            if(optProduct.isEmpty()){
+            if (optProduct.isEmpty()) {
                 return false;
             }
 
             ProductDto product = optProduct.get();
 
-            if((product.getStock()- item.getQuantity()) < 0){
+            if ((product.getStock() - item.getQuantity()) < 0) {
                 return false;
             }
         }

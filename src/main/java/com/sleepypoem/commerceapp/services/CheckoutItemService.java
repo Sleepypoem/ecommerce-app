@@ -1,6 +1,5 @@
 package com.sleepypoem.commerceapp.services;
 
-import com.sleepypoem.commerceapp.domain.dto.CheckoutDto;
 import com.sleepypoem.commerceapp.domain.dto.CheckoutItemDto;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutItemEntity;
 import com.sleepypoem.commerceapp.domain.mappers.BaseMapper;
@@ -9,7 +8,6 @@ import com.sleepypoem.commerceapp.exceptions.MyEntityNotFoundException;
 import com.sleepypoem.commerceapp.repositories.CheckoutItemRepository;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
 import com.sleepypoem.commerceapp.services.validators.IValidator;
-import com.sleepypoem.commerceapp.services.validators.impl.ValidateCheckoutItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
@@ -47,7 +45,7 @@ public class CheckoutItemService extends AbstractService<CheckoutItemDto, Checko
 
     public CheckoutItemDto modifyQuantity(Long id, int quantity) {
         Optional<CheckoutItemEntity> searchedItem = dao.findById(id);
-        if(searchedItem.isEmpty()){
+        if (searchedItem.isEmpty()) {
             throw new MyEntityNotFoundException("Item with id " + id + " not found");
         }
         CheckoutItemEntity item = searchedItem.get();

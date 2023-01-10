@@ -3,14 +3,17 @@ package com.sleepypoem.commerceapp.domain.dto;
 import com.sleepypoem.commerceapp.domain.entities.AddressEntity;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutEntity;
 import com.sleepypoem.commerceapp.domain.entities.PaymentMethodEntity;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
+@Builder
+@ToString
 public class UserDto {
 
     private String id;
@@ -20,6 +23,6 @@ public class UserDto {
     private String email;
 
     private List<AddressEntity> addresses = new ArrayList<>();
-    private CheckoutEntity checkouts;
+    private CheckoutEntity checkouts = null;
     private List<PaymentMethodEntity> paymentMethods = new ArrayList<>();
 }

@@ -1,6 +1,5 @@
 package com.sleepypoem.commerceapp.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sleepypoem.commerceapp.domain.dto.UserDto;
 import com.sleepypoem.commerceapp.domain.dto.UserRepresentationDto;
 import com.sleepypoem.commerceapp.services.UserService;

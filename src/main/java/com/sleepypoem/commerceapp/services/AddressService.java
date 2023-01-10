@@ -16,10 +16,8 @@ import java.util.List;
 @Service
 public class AddressService extends AbstractService<AddressDto, AddressEntity> {
 
-
-    final static IValidator<AddressEntity> VALIDATE_ADDRESS = address -> {
-        return true;
-    };
+    @Autowired
+    IValidator<AddressEntity> validateAddress;
     @Autowired
     AddressRepository dao;
 
@@ -38,7 +36,7 @@ public class AddressService extends AbstractService<AddressDto, AddressEntity> {
 
     @Override
     protected IValidator<AddressEntity> getValidator() {
-        return VALIDATE_ADDRESS;
+        return validateAddress;
     }
 
     public List<AddressEntity> findByUserId(String userId) {

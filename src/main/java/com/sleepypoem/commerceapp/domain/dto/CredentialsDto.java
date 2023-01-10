@@ -1,8 +1,12 @@
 package com.sleepypoem.commerceapp.domain.dto;
 
-import lombok.Data;
+import lombok.*;
 
-@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@Builder
 public class CredentialsDto {
 
     private String type;

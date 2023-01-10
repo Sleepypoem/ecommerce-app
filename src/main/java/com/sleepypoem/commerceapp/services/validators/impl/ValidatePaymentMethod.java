@@ -11,11 +11,13 @@ import org.springframework.stereotype.Component;
 public class ValidatePaymentMethod implements IValidator<PaymentMethodEntity> {
 
 
-    @Autowired @Lazy
+    @Autowired
+    @Lazy
     UserService userService;
+
     @Override
     public boolean isValid(PaymentMethodEntity paymentMethod) throws Exception {
-        if (userService.getUserById(paymentMethod.getUserId()) == null){
+        if (userService.getUserById(paymentMethod.getUserId()) == null) {
             return false;
         }
         return true;

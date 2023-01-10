@@ -4,15 +4,17 @@ import com.sleepypoem.commerceapp.domain.interfaces.IDto;
 import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
 import com.sleepypoem.commerceapp.domain.mappers.BaseMapper;
 import com.sleepypoem.commerceapp.exceptions.MyEntityNotFoundException;
-import com.sleepypoem.commerceapp.exceptions.MyValidationException;
 import com.sleepypoem.commerceapp.services.ServicePreconditions;
 import com.sleepypoem.commerceapp.services.validators.IValidator;
 import com.sleepypoem.commerceapp.services.validators.Validator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
+@Slf4j
 public abstract class AbstractService<D extends IDto, E extends IEntity> implements IService<D, E> {
 
     @Override
@@ -37,7 +39,7 @@ public abstract class AbstractService<D extends IDto, E extends IEntity> impleme
     }
 
     @Override
-    public D create(E entity) throws MyValidationException {
+    public D create(E entity) throws Exception {
         ServicePreconditions.checkEntityNotNull(entity);
         Validator.validate(getValidator(), entity);
         E persisted = getDao().save(entity);
@@ -45,9 +47,9 @@ public abstract class AbstractService<D extends IDto, E extends IEntity> impleme
     }
 
     @Override
-    public D update(Long id, E entity) throws MyValidationException {
+    public D update(Long id, E entity) throws Exception {
         ServicePreconditions.checkEntityNotNull(entity);
-        ServicePreconditions.checkExpression(id == entity.getId(), "Id in URI doesn't match with entity id.");
+        ServicePreconditions.checkExpression(Objects.equals(id, entity.getId()), "Id in URI doesn't match with entity id.");
         Validator.validate(getValidator(), entity);
         E updated = getDao().save(entity);
         return getMapper().convertToDto(updated);

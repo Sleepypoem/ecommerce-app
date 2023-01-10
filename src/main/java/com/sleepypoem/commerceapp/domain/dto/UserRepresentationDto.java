@@ -1,13 +1,16 @@
 package com.sleepypoem.commerceapp.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
+@Builder
+@ToString
 public class UserRepresentationDto {
     private String username;
     private String firstName;

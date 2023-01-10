@@ -5,7 +5,7 @@ spring:
     password: ${MYSQL_PASSWORD:password}
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
   security:
     oauth2:
       resourceserver:
@@ -36,5 +36,3 @@ logging:
     org:
       springframework:
         security: DEBUG
-
-some: "1sde"

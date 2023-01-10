@@ -8,6 +8,7 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
+@ToString
 public class PaymentMethodDto implements IDto {
     private Long id;
     private String paymentId;
