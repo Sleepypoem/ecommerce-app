@@ -1,10 +1,10 @@
 package com.sleepypoem.commerceapp.exceptions;
 
-public final class MyBadRequestException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-    public MyBadRequestException() {
-        super();
-    }
+@ResponseStatus(HttpStatus.BAD_REQUEST)
+public final class MyBadRequestException extends RuntimeException {
 
     public MyBadRequestException(final String message, final Throwable cause) {
         super(message, cause);
