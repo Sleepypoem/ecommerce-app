@@ -1,5 +1,6 @@
 package com.sleepypoem.commerceapp.controllers;
 
+import com.sleepypoem.commerceapp.domain.dto.ResourceAddedResponseDto;
 import com.sleepypoem.commerceapp.domain.dto.UserDto;
 import com.sleepypoem.commerceapp.domain.dto.UserRepresentationDto;
 import com.sleepypoem.commerceapp.services.UserService;
@@ -20,9 +21,13 @@ public class UserController {
     UserService service;
 
     @PostMapping(produces = {"application/json"})
-    public ResponseEntity<String> createUser(@RequestBody UserRepresentationDto user) throws Exception {
+    public ResponseEntity<ResourceAddedResponseDto> createUser(@RequestBody UserRepresentationDto user) throws Exception {
         String userId = service.addUser(user);
-        return ResponseEntity.created(URI.create("/users")).body("{\"user-id\" : \"" + userId + "\"}");
+        String message = "User created with id " + userId;
+        String url = "GET : /api/users/" + userId;
+        return ResponseEntity
+                .created(URI.create("/api/users/" + userId))
+                .body(new ResourceAddedResponseDto(userId, message, url));
     }
 
     @GetMapping("/{id}")

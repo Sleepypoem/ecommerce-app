@@ -1,8 +1,11 @@
 package com.sleepypoem.commerceapp.controllers;
 
 import com.sleepypoem.commerceapp.controllers.abstracts.AbstractController;
+import com.sleepypoem.commerceapp.domain.dto.PaymentMethodDto;
 import com.sleepypoem.commerceapp.domain.dto.ProductDto;
+import com.sleepypoem.commerceapp.domain.dto.ResourceAddedResponseDto;
 import com.sleepypoem.commerceapp.domain.entities.ProductEntity;
+import com.sleepypoem.commerceapp.exceptions.MyResourceNotFoundException;
 import com.sleepypoem.commerceapp.services.ProductService;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,18 +34,23 @@ public class ProductController extends AbstractController<ProductDto, ProductEnt
         return ResponseEntity.ok().body(getAllInternal());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ProductDto> getOneById(@PathVariable Long id) {
-        Optional<ProductDto> searchedProduct = getOneByIdInternal(id);
-        if (searchedProduct.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok().body(searchedProduct.get());
+    @PostMapping
+    public ResponseEntity<ResourceAddedResponseDto> create(@RequestBody ProductEntity product) throws Exception {
+        ProductDto created = createInternal(product);
+        String message = "Product created with id " + created.getId();
+        String url = "GET : /api/products/" + created.getId();
+        return ResponseEntity
+                .created(URI.create("/api/products/" + created.getId()))
+                .body(new ResourceAddedResponseDto(String.valueOf(created.getId()), message, url));
     }
 
-    @PostMapping
-    public ResponseEntity<ProductDto> create(@RequestBody ProductEntity product) throws Exception {
-        return ResponseEntity.created(new URI("/products")).body(createInternal(product));
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductDto> findOneById(@PathVariable Long id) {
+        Optional<ProductDto> searched = getOneByIdInternal(id);
+        if(searched.isEmpty()){
+            throw new MyResourceNotFoundException("Product with id " + " not found.");
+        }
+        return ResponseEntity.ok().body(searched.get());
     }
 
     @PutMapping("/{id}")
