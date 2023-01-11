@@ -59,7 +59,7 @@ public class ReceiptBuilder {
     }
 
     private double calculateTotal(List<CheckoutItemEntity> items) {
-        return items.stream().reduce(0d, (subtotal, item) -> subtotal + item.getProduct().getPrice(), Double::sum);
+        return items.stream().reduce(0d, (subtotal, item) -> subtotal + (item.getProduct().getPrice() * item.getQuantity()), Double::sum);
     }
 
     public ReceiptEntity build() {
