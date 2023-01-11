@@ -4,15 +4,17 @@ import com.sleepypoem.commerceapp.domain.enums.PaymentStatus;
 import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "payments")
-@ToString
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PaymentEntity implements IEntity {
 
     @Id
@@ -23,10 +25,8 @@ public class PaymentEntity implements IEntity {
     @NotNull
     private String userId;
 
-    @OneToOne
-    private CheckoutEntity checkout;
-
-    private  double total;
+    @OneToOne(cascade = CascadeType.ALL)
+    private ReceiptEntity receipt;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
@@ -34,5 +34,15 @@ public class PaymentEntity implements IEntity {
     @Override
     public Long getId() {
         return id;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "id=" + id +
+                ", userId='" + userId + '\'' +
+                ", receipt='" + receipt + '\'' +
+                ", status=" + status +
+                '}';
     }
 }

@@ -23,6 +23,6 @@ public class UserDto {
     private String email;
 
     private List<AddressEntity> addresses = new ArrayList<>();
-    private CheckoutEntity checkouts = null;
+    private List<CheckoutEntity> checkouts = new ArrayList<>();
     private List<PaymentMethodEntity> paymentMethods = new ArrayList<>();
 }
