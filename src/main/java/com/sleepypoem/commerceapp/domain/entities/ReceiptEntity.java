@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Getter
@@ -37,6 +36,7 @@ public class ReceiptEntity implements IEntity {
     private AddressEntity shippingAddress;
 
     private Double total;
+
     @Override
     public Long getId() {
         return id;

@@ -8,7 +8,6 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-@ToString
 public class AddressDto implements IDto {
     private Long id;
 
@@ -23,4 +22,17 @@ public class AddressDto implements IDto {
     private String firstLine;
 
     private String secondLine;
+
+    @Override
+    public String toString() {
+        return "{" +
+                "id=" + id +
+                ", userId='" + userId + '\'' +
+                ", country='" + country + '\'' +
+                ", state='" + state + '\'' +
+                ", zipCode='" + zipCode + '\'' +
+                ", firstLine='" + firstLine + '\'' +
+                ", secondLine='" + secondLine + '\'' +
+                '}';
+    }
 }

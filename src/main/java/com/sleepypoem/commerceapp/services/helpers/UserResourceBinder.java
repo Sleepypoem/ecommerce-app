@@ -27,7 +27,7 @@ public class UserResourceBinder {
     private PaymentMethodService paymentMethodService;
 
     public UserDto attachCheckout(UserDto user) {
-        CheckoutEntity checkout = checkoutService.getByUserId(user.getId());
+        List<CheckoutEntity> checkout = checkoutService.getByUserId(user.getId());
         user.setCheckouts(checkout);
         return user;
     }

@@ -1,6 +1,6 @@
 package com.sleepypoem.commerceapp.exceptions;
 
-public class MyUnsupportedPaymentMethodException extends Exception{
+public class MyUnsupportedPaymentMethodException extends Exception {
 
     public MyUnsupportedPaymentMethodException(String message) {
         super(message);

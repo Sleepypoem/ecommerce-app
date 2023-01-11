@@ -17,12 +17,18 @@ import java.util.List;
 public class AddressService extends AbstractService<AddressDto, AddressEntity> {
 
     @Autowired
-    IValidator<AddressEntity> validateAddress;
+    IValidator<AddressEntity> validator;
     @Autowired
     AddressRepository dao;
 
     @Autowired
     AddressMapper mapper;
+
+    public AddressService(IValidator<AddressEntity> validator, AddressRepository dao, AddressMapper mapper) {
+        this.validator = validator;
+        this.dao = dao;
+        this.mapper = mapper;
+    }
 
     @Override
     protected JpaRepository<AddressEntity, Long> getDao() {
@@ -36,7 +42,7 @@ public class AddressService extends AbstractService<AddressDto, AddressEntity> {
 
     @Override
     protected IValidator<AddressEntity> getValidator() {
-        return validateAddress;
+        return validator;
     }
 
     public List<AddressEntity> findByUserId(String userId) {

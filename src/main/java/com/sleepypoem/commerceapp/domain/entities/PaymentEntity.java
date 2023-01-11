@@ -6,8 +6,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.util.List;
-
 @Entity
 @Getter
 @Setter
@@ -21,7 +19,7 @@ public class PaymentEntity implements IEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name ="user_id")
+    @Column(name = "user_id")
     @NotNull
     private String userId;
 

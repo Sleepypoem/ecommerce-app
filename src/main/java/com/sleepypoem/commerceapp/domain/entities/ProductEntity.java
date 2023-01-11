@@ -5,9 +5,7 @@ import com.sleepypoem.commerceapp.domain.interfaces.INameableEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.Objects;
 
@@ -15,7 +13,9 @@ import java.util.Objects;
 @Getter
 @Setter
 @Table(name = "products")
-@ToString
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProductEntity implements IEntity, INameableEntity {
 
     @Id
@@ -63,5 +63,16 @@ public class ProductEntity implements IEntity, INameableEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", stock=" + stock +
+                ", description='" + description + '\'' +
+                ", price=" + price +
+                '}';
     }
 }

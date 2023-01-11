@@ -1,6 +1,6 @@
 package com.sleepypoem.commerceapp.domain.dto;
 
-import com.sleepypoem.commerceapp.domain.entities.CheckoutEntity;
+import com.sleepypoem.commerceapp.domain.entities.ReceiptEntity;
 import com.sleepypoem.commerceapp.domain.enums.PaymentStatus;
 import com.sleepypoem.commerceapp.domain.interfaces.IDto;
 import lombok.*;
@@ -14,12 +14,20 @@ public class PaymentDto implements IDto {
 
     private Long id;
     private String userId;
-    private CheckoutEntity checkout;
-
-    private double total;
+    private ReceiptEntity receipt;
     private PaymentStatus status;
 
     public Long getId() {
         return id;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "id=" + id +
+                ", userId='" + userId + '\'' +
+                ", receipt='" + receipt + '\'' +
+                ", status=" + status +
+                '}';
     }
 }

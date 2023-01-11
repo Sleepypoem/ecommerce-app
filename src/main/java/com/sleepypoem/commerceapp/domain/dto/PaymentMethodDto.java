@@ -14,4 +14,14 @@ public class PaymentMethodDto implements IDto {
     private String paymentId;
     private String userId;
     private String paymentType;
+
+    @Override
+    public String toString() {
+        return "{" +
+                "id=" + id +
+                ", paymentId='" + paymentId + '\'' +
+                ", userId='" + userId + '\'' +
+                ", paymentType='" + paymentType + '\'' +
+                '}';
+    }
 }

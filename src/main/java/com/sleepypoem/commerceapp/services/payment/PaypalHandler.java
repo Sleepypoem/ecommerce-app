@@ -1,6 +1,9 @@
 package com.sleepypoem.commerceapp.services.payment;
 
-import com.sleepypoem.commerceapp.domain.dto.*;
+import com.sleepypoem.commerceapp.domain.dto.CheckoutDto;
+import com.sleepypoem.commerceapp.domain.dto.PaymentDto;
+import com.sleepypoem.commerceapp.domain.dto.PaymentRequestDto;
+import com.sleepypoem.commerceapp.domain.dto.UserDto;
 import com.sleepypoem.commerceapp.domain.entities.AddressEntity;
 import com.sleepypoem.commerceapp.domain.entities.PaymentMethodEntity;
 import com.sleepypoem.commerceapp.domain.entities.ReceiptEntity;
@@ -12,7 +15,7 @@ import java.util.Objects;
 import java.util.Random;
 
 
-public class PaypalHandler implements IHandler{
+public class PaypalHandler implements IHandler {
 
     PaymentRequestDto paymentRequest;
 

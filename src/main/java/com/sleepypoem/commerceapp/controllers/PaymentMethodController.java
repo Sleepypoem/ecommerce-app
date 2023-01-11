@@ -1,7 +1,6 @@
 package com.sleepypoem.commerceapp.controllers;
 
 import com.sleepypoem.commerceapp.controllers.abstracts.AbstractController;
-import com.sleepypoem.commerceapp.domain.dto.CheckoutDto;
 import com.sleepypoem.commerceapp.domain.dto.PaymentMethodDto;
 import com.sleepypoem.commerceapp.domain.dto.ResourceAddedResponseDto;
 import com.sleepypoem.commerceapp.domain.entities.PaymentMethodEntity;
@@ -46,7 +45,7 @@ public class PaymentMethodController extends AbstractController<PaymentMethodDto
     @GetMapping("/{id}")
     public ResponseEntity<PaymentMethodDto> findOneById(@PathVariable Long id) {
         Optional<PaymentMethodDto> searched = getOneByIdInternal(id);
-        if(searched.isEmpty()){
+        if (searched.isEmpty()) {
             throw new MyResourceNotFoundException("Payment method with id " + " not found");
         }
         return ResponseEntity.ok().body(searched.get());

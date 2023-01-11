@@ -2,7 +2,6 @@ package com.sleepypoem.commerceapp.services.payment;
 
 import com.sleepypoem.commerceapp.domain.dto.PaymentDto;
 import com.sleepypoem.commerceapp.domain.dto.PaymentRequestDto;
-import com.sleepypoem.commerceapp.domain.entities.PaymentEntity;
 import com.sleepypoem.commerceapp.exceptions.MyUnsupportedPaymentMethodException;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +22,7 @@ public class PaymentChain {
     public PaymentDto startChain(PaymentRequestDto paymentRequest) throws MyUnsupportedPaymentMethodException {
         for (IHandler handler : handlers) {
             handler.setPaymentMethod(paymentRequest);
-            if (handler.canHandle()){
+            if (handler.canHandle()) {
                 return handler.handle();
             }
         }

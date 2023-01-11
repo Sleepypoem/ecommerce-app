@@ -5,6 +5,13 @@ import com.sleepypoem.commerceapp.exceptions.MyEntityNotFoundException;
 
 public class ServicePreconditions {
 
+    public static <T> T checkEntityNotNull(T entity, String message) throws MyEntityNotFoundException {
+        if (entity == null) {
+            throw new MyEntityNotFoundException(message);
+        }
+        return entity;
+    }
+
     public static <T> T checkEntityNotNull(T entity) throws MyEntityNotFoundException {
         if (entity == null) {
             throw new MyEntityNotFoundException("Entity not found");

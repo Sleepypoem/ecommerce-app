@@ -120,6 +120,7 @@ public class UserService {
     }
 
     private ResponseEntity<String> makeRequest(String url, HttpMethod method, HttpEntity<?> entity) throws Exception {
+
         ResponseEntity<String> response = restTemplate.exchange(url, method, entity, String.class);
 
         if (response.getStatusCode() == HttpStatus.BAD_REQUEST) {

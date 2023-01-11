@@ -3,15 +3,15 @@ package com.sleepypoem.commerceapp.domain.entities;
 import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "addresses")
-@ToString
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AddressEntity implements IEntity {
 
     @Id
@@ -40,5 +40,18 @@ public class AddressEntity implements IEntity {
     @Override
     public Long getId() {
         return id;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "id=" + id +
+                ", userId='" + userId + '\'' +
+                ", country='" + country + '\'' +
+                ", state='" + state + '\'' +
+                ", zipCode='" + zipCode + '\'' +
+                ", firstLine='" + firstLine + '\'' +
+                ", secondLine='" + secondLine + '\'' +
+                '}';
     }
 }

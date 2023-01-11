@@ -11,7 +11,6 @@ import java.util.Objects;
 @Getter
 @Setter
 @Builder
-@ToString
 public class CheckoutItemDto implements IDto {
     private Long id;
     private ProductEntity product;
@@ -28,5 +27,14 @@ public class CheckoutItemDto implements IDto {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "id=" + id +
+                ", product=" + product +
+                ", quantity=" + quantity +
+                '}';
     }
 }

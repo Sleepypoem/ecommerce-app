@@ -3,8 +3,11 @@ package com.sleepypoem.commerceapp.services;
 import com.sleepypoem.commerceapp.domain.dto.CheckoutDto;
 import com.sleepypoem.commerceapp.domain.dto.CheckoutItemDto;
 import com.sleepypoem.commerceapp.domain.dto.ProductDto;
+import com.sleepypoem.commerceapp.domain.entities.AddressEntity;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutEntity;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutItemEntity;
+import com.sleepypoem.commerceapp.domain.entities.PaymentMethodEntity;
+import com.sleepypoem.commerceapp.domain.enums.CheckoutStatus;
 import com.sleepypoem.commerceapp.domain.mappers.BaseMapper;
 import com.sleepypoem.commerceapp.domain.mappers.CheckoutItemMapper;
 import com.sleepypoem.commerceapp.domain.mappers.CheckoutMapper;
@@ -65,6 +68,7 @@ public class CheckoutService extends AbstractService<CheckoutDto, CheckoutEntity
     @Override
     public CheckoutDto create(CheckoutEntity checkout) throws Exception {
         reserveProducts(checkout);
+        checkout.setStatus(CheckoutStatus.PENDING);
         return super.create(checkout);
     }
 
@@ -84,12 +88,8 @@ public class CheckoutService extends AbstractService<CheckoutDto, CheckoutEntity
         productService.modifyStock(item.getProduct().getId(), item.getProduct().getStock() + item.getQuantity());
     }
 
-    public CheckoutEntity getByUserId(String userId) {
-        Optional<CheckoutEntity> searchedCheckout = dao.findOneByUserId(userId);
-        if (searchedCheckout.isEmpty()) {
-            return null;
-        }
-        return searchedCheckout.get();
+    public List<CheckoutEntity> getByUserId(String userId) {
+        return dao.findByUserId(userId);
     }
 
     public CheckoutDto addItems(Long id, List<CheckoutItemEntity> checkoutItems) throws Exception {
@@ -150,6 +150,38 @@ public class CheckoutService extends AbstractService<CheckoutDto, CheckoutEntity
         items = items.stream().filter(i -> !i.equals(item)).collect(Collectors.toList());
         items.add(checkoutItemMapper.convertToEntity(modifiedItem));
 
+        return getMapper().convertToDto(dao.save(checkout));
+    }
+
+    public CheckoutDto addPreferredAddress(Long id, AddressEntity address) {
+        Optional<CheckoutEntity> searchedCheckout = dao.findById(id);
+        if (searchedCheckout.isEmpty()) {
+            throw new MyEntityNotFoundException("Checkout with id " + id + " not found");
+        }
+
+        CheckoutEntity checkout = searchedCheckout.get();
+        checkout.setAddress(address);
+        return getMapper().convertToDto(dao.save(checkout));
+    }
+
+    public void setStatusToCompleted(Long id) {
+        Optional<CheckoutEntity> searchedCheckout = dao.findById(id);
+        if (searchedCheckout.isEmpty()) {
+            throw new MyEntityNotFoundException("Checkout with id " + id + " not found");
+        }
+        CheckoutEntity checkout = searchedCheckout.get();
+        checkout.setStatus(CheckoutStatus.COMPLETED);
+        dao.save(checkout);
+    }
+
+    public CheckoutDto addPreferredPaymentMethod(Long id, PaymentMethodEntity paymentMethod) {
+        Optional<CheckoutEntity> searchedCheckout = dao.findById(id);
+        if (searchedCheckout.isEmpty()) {
+            throw new MyEntityNotFoundException("Checkout with id " + id + " not found");
+        }
+
+        CheckoutEntity checkout = searchedCheckout.get();
+        checkout.setPaymentMethod(paymentMethod);
         return getMapper().convertToDto(dao.save(checkout));
     }
 }

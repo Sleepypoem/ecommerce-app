@@ -4,9 +4,7 @@ import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.Objects;
 
@@ -14,7 +12,9 @@ import java.util.Objects;
 @Getter
 @Setter
 @Table(name = "checkout_items")
-@ToString
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CheckoutItemEntity implements IEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,5 +43,14 @@ public class CheckoutItemEntity implements IEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "id=" + id +
+                ", product=" + product +
+                ", quantity=" + quantity +
+                '}';
     }
 }

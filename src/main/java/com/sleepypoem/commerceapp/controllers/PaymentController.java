@@ -2,7 +2,6 @@ package com.sleepypoem.commerceapp.controllers;
 
 import com.sleepypoem.commerceapp.domain.dto.PaymentDto;
 import com.sleepypoem.commerceapp.domain.dto.PaymentRequestDto;
-import com.sleepypoem.commerceapp.domain.dto.ReceiptDto;
 import com.sleepypoem.commerceapp.domain.dto.ResourceAddedResponseDto;
 import com.sleepypoem.commerceapp.domain.entities.PaymentEntity;
 import com.sleepypoem.commerceapp.exceptions.MyResourceNotFoundException;
@@ -32,7 +31,7 @@ public class PaymentController {
     @GetMapping("/{id}")
     public ResponseEntity<PaymentDto> findOneByUserId(@PathVariable Long id) {
         Optional<PaymentDto> searched = service.getOneById(id);
-        if(searched.isEmpty()) {
+        if (searched.isEmpty()) {
             throw new MyResourceNotFoundException("Payment with id " + id + " not found.");
         }
         return ResponseEntity.ok().body(searched.get());

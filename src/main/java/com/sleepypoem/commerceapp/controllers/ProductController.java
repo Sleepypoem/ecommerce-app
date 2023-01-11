@@ -1,7 +1,6 @@
 package com.sleepypoem.commerceapp.controllers;
 
 import com.sleepypoem.commerceapp.controllers.abstracts.AbstractController;
-import com.sleepypoem.commerceapp.domain.dto.PaymentMethodDto;
 import com.sleepypoem.commerceapp.domain.dto.ProductDto;
 import com.sleepypoem.commerceapp.domain.dto.ResourceAddedResponseDto;
 import com.sleepypoem.commerceapp.domain.entities.ProductEntity;
@@ -47,7 +46,7 @@ public class ProductController extends AbstractController<ProductDto, ProductEnt
     @GetMapping("/{id}")
     public ResponseEntity<ProductDto> findOneById(@PathVariable Long id) {
         Optional<ProductDto> searched = getOneByIdInternal(id);
-        if(searched.isEmpty()){
+        if (searched.isEmpty()) {
             throw new MyResourceNotFoundException("Product with id " + " not found.");
         }
         return ResponseEntity.ok().body(searched.get());

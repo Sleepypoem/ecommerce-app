@@ -13,6 +13,7 @@ public class ValidatePayment implements IValidator<PaymentEntity> {
     @Autowired
     @Lazy
     UserService userService;
+
     @Override
     public boolean isValid(PaymentEntity payment) throws Exception {
         if (userService.getUserById(payment.getUserId()) == null) {

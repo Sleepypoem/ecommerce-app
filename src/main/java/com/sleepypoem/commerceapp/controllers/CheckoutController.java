@@ -60,7 +60,7 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
     @GetMapping("/{id}")
     public ResponseEntity<CheckoutDto> findOneById(@PathVariable Long id) {
         Optional<CheckoutDto> searched = getOneByIdInternal(id);
-        if(searched.isEmpty()){
+        if (searched.isEmpty()) {
             throw new MyResourceNotFoundException("Checkout with id " + " not found");
         }
         return ResponseEntity.ok().body(searched.get());

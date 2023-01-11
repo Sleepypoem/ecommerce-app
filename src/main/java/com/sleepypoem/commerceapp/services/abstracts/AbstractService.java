@@ -26,6 +26,7 @@ public abstract class AbstractService<D extends IDto, E extends IEntity> impleme
         if (isEntityPresent.isPresent()) {
             entity = isEntityPresent.get();
             dto = Optional.of(getMapper().convertToDto(entity));
+
         } else {
             throw new MyEntityNotFoundException("Entity with id " + id + " not found.");
         }

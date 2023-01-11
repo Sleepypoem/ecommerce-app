@@ -12,7 +12,6 @@ import java.util.Objects;
 @Getter
 @Setter
 @Builder
-@ToString
 public class ProductDto implements IDto, INameableDto {
     private long id;
     private String name;
@@ -47,5 +46,16 @@ public class ProductDto implements IDto, INameableDto {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", stock=" + stock +
+                ", description='" + description + '\'' +
+                ", price=" + price +
+                '}';
     }
 }

@@ -13,14 +13,9 @@ public abstract class BaseMapper<E, D> {
     public abstract D convertToDto(E entity);
 
     public Collection<E> convertToEntity(Collection<D> dto) {
-        Collection<E> res = (Collection) dto.stream().map((d) -> {
+        return (Collection) dto.stream().map((d) -> {
             return this.convertToEntity(d);
         }).collect(Collectors.toList());
-
-        for (D d : dto) {
-            System.out.println(d.toString());
-        }
-        return res;
     }
 
     public Collection<D> convertToDto(Collection<E> entity) {

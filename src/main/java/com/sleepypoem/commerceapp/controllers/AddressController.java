@@ -52,10 +52,10 @@ public class AddressController extends AbstractController<AddressDto, AddressEnt
     @GetMapping("/{id}")
     public ResponseEntity<AddressDto> getOneById(@PathVariable Long id) {
         Optional<AddressDto> searchedAddress = getOneByIdInternal(id);
-        if(searchedAddress.isEmpty()){
+        if (searchedAddress.isEmpty()) {
             throw new MyResourceNotFoundException("Address with id " + id + " not found.");
         }
-        return  ResponseEntity.ok().body(searchedAddress.get());
+        return ResponseEntity.ok().body(searchedAddress.get());
     }
 
     @GetMapping

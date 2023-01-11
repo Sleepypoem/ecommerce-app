@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -84,9 +85,14 @@ public class RestResponseEntityExceptionHandling extends ResponseEntityException
         return handleExceptionInternal(ex, fields(HttpStatus.BAD_REQUEST, errors), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
+    @ExceptionHandler(value = HttpClientErrorException.class)
+    public ResponseEntity<Object> handleRestTemplateNotFoundException(HttpClientErrorException ex, WebRequest request) {
+        return handleExceptionInternal(ex, message(HttpStatus.NOT_FOUND, ex), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+    }
+
     private ApiError message(HttpStatus status, Exception ex) {
         final String message = ex.getMessage() == null ? ex.getClass().getSimpleName() : ex.getMessage();
-        final String devMessage = ExceptionUtils.getMessage(ex);
+        final String devMessage = ExceptionUtils.getRootCauseMessage(ex);
 
         return new ApiError(status.value(), message, devMessage);
     }

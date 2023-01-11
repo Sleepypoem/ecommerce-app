@@ -4,12 +4,14 @@ package com.sleepypoem.commerceapp.domain.entities;
 import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PaymentMethodEntity implements IEntity {
 
     @Id
@@ -31,5 +33,15 @@ public class PaymentMethodEntity implements IEntity {
     @Override
     public Long getId() {
         return id;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "id=" + id +
+                ", paymentId='" + paymentId + '\'' +
+                ", userId='" + userId + '\'' +
+                ", paymentType='" + paymentType + '\'' +
+                '}';
     }
 }
