@@ -17,6 +17,5 @@ public class UserRepresentationDto {
     private String lastName;
     private String email;
     private String enabled = "true";
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<CredentialsDto> credentials;
 }

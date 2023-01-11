@@ -24,7 +24,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/actuator/health").permitAll()
                 .requestMatchers("/actuator/metrics").authenticated()
                 .requestMatchers("/actuator/loggers").authenticated()
-                .requestMatchers("/api/**").permitAll()
+                .requestMatchers("/api/**").authenticated()
                 .anyRequest().permitAll());
         http.oauth2ResourceServer()
                 .jwt()

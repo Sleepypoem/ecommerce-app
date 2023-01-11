@@ -45,3 +45,5 @@ logging:
             descriptor:
               sql:
                 BasicBinder: TRACE
+keycloak:
+  use-resource-role-mappings: false

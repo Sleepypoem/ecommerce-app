@@ -84,6 +84,7 @@ public class UserService {
         HttpHeaders headers = createHeaders(MediaType.APPLICATION_JSON, serverResponse.getAccessToken());
 
         HttpEntity<String> request = new HttpEntity<>(mapper.writeValueAsString(user), headers);
+        log.info(mapper.writeValueAsString(user));
         makeRequest(uriPrefix + realmName + "/users/", HttpMethod.POST, request);
         return getUserByUserName(user.getUsername()).getId();
     }
