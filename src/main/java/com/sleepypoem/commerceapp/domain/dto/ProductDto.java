@@ -17,7 +17,7 @@ public class ProductDto implements IDto, INameableDto {
     private String name;
     private int stock;
     private String description;
-    private double price;
+    private Double price;
 
 
     @Override

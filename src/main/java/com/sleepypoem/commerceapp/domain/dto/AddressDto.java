@@ -25,14 +25,14 @@ public class AddressDto implements IDto {
 
     @Override
     public String toString() {
-        return "{" +
-                "id=" + id +
-                ", userId='" + userId + '\'' +
-                ", country='" + country + '\'' +
-                ", state='" + state + '\'' +
-                ", zipCode='" + zipCode + '\'' +
-                ", firstLine='" + firstLine + '\'' +
-                ", secondLine='" + secondLine + '\'' +
-                '}';
+        return "{" + "\n" +
+                "id=" + id + "\n" +
+                ", userId='" + userId + '\'' + "\n" +
+                ", country='" + country + '\'' + "\n" +
+                ", state='" + state + '\'' + "\n" +
+                ", zipCode='" + zipCode + '\'' + "\n" +
+                ", firstLine='" + firstLine + '\'' + "\n" +
+                ", secondLine='" + secondLine + '\'' + "\n" +
+                '}' +"\n";
     }
 }

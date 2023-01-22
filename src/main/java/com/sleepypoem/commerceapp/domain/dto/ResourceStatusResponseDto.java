@@ -7,7 +7,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class ResourceAddedResponseDto {
+public class ResourceStatusResponseDto {
 
     private String id;
     private String message;
