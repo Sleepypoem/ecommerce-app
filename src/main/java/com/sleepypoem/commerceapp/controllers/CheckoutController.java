@@ -2,15 +2,15 @@ package com.sleepypoem.commerceapp.controllers;
 
 import com.sleepypoem.commerceapp.controllers.abstracts.AbstractController;
 import com.sleepypoem.commerceapp.domain.dto.CheckoutDto;
-import com.sleepypoem.commerceapp.domain.dto.ResourceAddedResponseDto;
+import com.sleepypoem.commerceapp.domain.dto.ResourceStatusResponseDto;
 import com.sleepypoem.commerceapp.domain.entities.AddressEntity;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutEntity;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutItemEntity;
 import com.sleepypoem.commerceapp.domain.entities.PaymentMethodEntity;
 import com.sleepypoem.commerceapp.domain.mappers.CheckoutMapper;
-import com.sleepypoem.commerceapp.exceptions.MyResourceNotFoundException;
 import com.sleepypoem.commerceapp.services.CheckoutService;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("checkouts")
@@ -38,13 +37,13 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
     }
 
     @PostMapping
-    public ResponseEntity<ResourceAddedResponseDto> create(@RequestBody CheckoutEntity checkout) throws Exception {
+    public ResponseEntity<ResourceStatusResponseDto> create(@Valid @RequestBody CheckoutEntity checkout) throws Exception {
         CheckoutDto created = createInternal(checkout);
         String message = "Checkout created with id " + created.getId();
         String url = "GET : /api/checkouts/" + created.getId();
         return ResponseEntity
                 .created(URI.create("/api/checkout/" + created.getId()))
-                .body(new ResourceAddedResponseDto(String.valueOf(created.getId()), message, url));
+                .body(new ResourceStatusResponseDto(String.valueOf(created.getId()), message, url));
     }
 
     @PutMapping("/{id}")
@@ -59,11 +58,8 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
 
     @GetMapping("/{id}")
     public ResponseEntity<CheckoutDto> findOneById(@PathVariable Long id) {
-        Optional<CheckoutDto> searched = getOneByIdInternal(id);
-        if (searched.isEmpty()) {
-            throw new MyResourceNotFoundException("Checkout with id " + " not found");
-        }
-        return ResponseEntity.ok().body(searched.get());
+        CheckoutDto searched = getOneByIdInternal(id);
+        return ResponseEntity.ok().body(searched);
     }
 
     @GetMapping
@@ -90,12 +86,12 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
         return ResponseEntity.ok().body(service.modifyItemQuantity(id, itemId, quantity));
     }
 
-    @PostMapping("/{id}/address")
+    @PutMapping("/{id}/address")
     public ResponseEntity<CheckoutDto> addPreferredAddress(@PathVariable Long id, @RequestBody AddressEntity address) {
         return ResponseEntity.ok().body(service.addPreferredAddress(id, address));
     }
 
-    @PostMapping("/{id}/payment-method")
+    @PutMapping("/{id}/payment-method")
     public ResponseEntity<CheckoutDto> addPreferredPaymentMethod(@PathVariable Long id, @RequestBody PaymentMethodEntity paymentMethod) {
         return ResponseEntity.ok().body(service.addPreferredPaymentMethod(id, paymentMethod));
     }

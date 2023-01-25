@@ -21,7 +21,7 @@ public class PaymentChain {
 
     public PaymentDto startChain(PaymentRequestDto paymentRequest) throws MyUnsupportedPaymentMethodException {
         for (IHandler handler : handlers) {
-            handler.setPaymentMethod(paymentRequest);
+            handler.setPaymentRequest(paymentRequest);
             if (handler.canHandle()) {
                 return handler.handle();
             }

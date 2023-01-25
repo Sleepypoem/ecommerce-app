@@ -35,7 +35,7 @@ public class ProductEntity implements IEntity, INameableEntity {
 
     @Column
     @Min(0)
-    private double price;
+    private Double price;
 
     @Override
     public Long getId() {

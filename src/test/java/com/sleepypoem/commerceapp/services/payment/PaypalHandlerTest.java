@@ -73,7 +73,7 @@ public class PaypalHandlerTest {
         PaymentRequestDto paymentRequest = new PaymentRequestDto(checkout, user);
         paypalHandler = new PaypalHandler();
 
-        paypalHandler.setPaymentMethod(paymentRequest);
+        paypalHandler.setPaymentRequest(paymentRequest);
     }
 
     @Test

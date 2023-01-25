@@ -73,7 +73,7 @@ class CreditCardHandlerTest {
 
         creditCardHandler = new CreditCardHandler();
         PaymentRequestDto paymentRequest = new PaymentRequestDto(checkout, user);
-        creditCardHandler.setPaymentMethod(paymentRequest);
+        creditCardHandler.setPaymentRequest(paymentRequest);
     }
 
     @Test

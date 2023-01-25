@@ -19,7 +19,13 @@ public class ServicePreconditions {
         return entity;
     }
 
-    public static void checkExpression(boolean expression, String message) {
+    public static void checkNotNull(Object object, String message) {
+        if (object == null) {
+            throw new MyBadRequestException(message);
+        }
+    }
+
+    public static void checkExpression(boolean expression, String message) throws MyBadRequestException{
         if (!expression) {
             throw new MyBadRequestException(message);
         }

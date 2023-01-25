@@ -5,7 +5,7 @@ import com.sleepypoem.commerceapp.domain.dto.PaymentRequestDto;
 
 public interface IHandler {
 
-    void setPaymentMethod(PaymentRequestDto paymentRequestDto);
+    void setPaymentRequest(PaymentRequestDto paymentRequestDto);
 
     PaymentDto handle();
 

@@ -1,10 +1,12 @@
 package com.sleepypoem.commerceapp.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sleepypoem.commerceapp.domain.dto.AuthServerResponseDto;
 import com.sleepypoem.commerceapp.domain.dto.UserDto;
 import com.sleepypoem.commerceapp.domain.dto.UserRepresentationDto;
 import com.sleepypoem.commerceapp.exceptions.MyBadRequestException;
+import com.sleepypoem.commerceapp.exceptions.MyEntityNotFoundException;
 import com.sleepypoem.commerceapp.exceptions.MyUserNameAlreadyUsedException;
 import com.sleepypoem.commerceapp.exceptions.MyUserNotFoundException;
 import com.sleepypoem.commerceapp.services.helpers.UserResourceBinder;
@@ -89,7 +91,9 @@ public class UserService {
         return getUserByUserName(user.getUsername()).getId();
     }
 
-    public AuthServerResponseDto obtainAccessToken() throws Exception {
+    public AuthServerResponseDto obtainAccessToken() throws MyBadRequestException,
+            MyUserNameAlreadyUsedException,
+            MyUserNotFoundException, JsonProcessingException {
         HttpHeaders headers = createHeaders(MediaType.APPLICATION_FORM_URLENCODED, null);
 
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
@@ -120,7 +124,10 @@ public class UserService {
         return headers;
     }
 
-    private ResponseEntity<String> makeRequest(String url, HttpMethod method, HttpEntity<?> entity) throws Exception {
+    private ResponseEntity<String> makeRequest(String url, HttpMethod method, HttpEntity<?> entity)
+            throws MyBadRequestException,
+            MyUserNameAlreadyUsedException,
+            MyUserNotFoundException {
 
         ResponseEntity<String> response = restTemplate.exchange(url, method, entity, String.class);
 

@@ -20,13 +20,19 @@ import java.util.Optional;
 public class CheckoutItemService extends AbstractService<CheckoutItemDto, CheckoutItemEntity> {
 
     @Autowired
-    IValidator<CheckoutItemEntity> validateCheckoutItem;
+    IValidator<CheckoutItemEntity> validator;
 
     @Autowired
     CheckoutItemRepository dao;
 
     @Autowired
     CheckoutItemMapper mapper;
+
+    public CheckoutItemService(IValidator<CheckoutItemEntity> validator, CheckoutItemRepository dao, CheckoutItemMapper mapper) {
+        this.validator = validator;
+        this.dao = dao;
+        this.mapper = mapper;
+    }
 
     @Override
     protected JpaRepository<CheckoutItemEntity, Long> getDao() {
@@ -40,15 +46,13 @@ public class CheckoutItemService extends AbstractService<CheckoutItemDto, Checko
 
     @Override
     protected IValidator<CheckoutItemEntity> getValidator() {
-        return validateCheckoutItem;
+        return validator;
     }
 
     public CheckoutItemDto modifyQuantity(Long id, int quantity) {
-        Optional<CheckoutItemEntity> searchedItem = dao.findById(id);
-        if (searchedItem.isEmpty()) {
-            throw new MyEntityNotFoundException("Item with id " + id + " not found");
-        }
-        CheckoutItemEntity item = searchedItem.get();
+
+
+        CheckoutItemEntity item = mapper.convertToEntity(this.getOneById(id));
         item.setQuantity(quantity);
 
         return mapper.convertToDto(dao.save(item));

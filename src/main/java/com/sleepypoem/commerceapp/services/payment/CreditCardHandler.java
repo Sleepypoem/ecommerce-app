@@ -30,7 +30,7 @@ public class CreditCardHandler implements IHandler {
 
 
     @Override
-    public void setPaymentMethod(PaymentRequestDto paymentRequest) {
+    public void setPaymentRequest(PaymentRequestDto paymentRequest) {
         this.paymentRequest = paymentRequest;
         this.checkout = paymentRequest.getCheckout();
         this.address = paymentRequest.getCheckout().getAddress();
@@ -69,6 +69,7 @@ public class CreditCardHandler implements IHandler {
                 .build();
     }
 
+    @SuppressWarnings("all")
     private void validatePayment(String paymentId) {
         PaymentStatus[] statuses = PaymentStatus.values();
         Random r = new Random();

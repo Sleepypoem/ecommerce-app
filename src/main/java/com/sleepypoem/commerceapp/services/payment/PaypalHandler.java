@@ -30,7 +30,7 @@ public class PaypalHandler implements IHandler {
     private PaymentStatus status;
 
     @Override
-    public void setPaymentMethod(PaymentRequestDto paymentRequest) {
+    public void setPaymentRequest(PaymentRequestDto paymentRequest) {
         this.paymentRequest = paymentRequest;
         this.checkout = paymentRequest.getCheckout();
         this.address = paymentRequest.getCheckout().getAddress();

@@ -3,7 +3,9 @@ package com.sleepypoem.commerceapp.services.abstracts;
 import com.sleepypoem.commerceapp.domain.interfaces.IDto;
 import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
 import com.sleepypoem.commerceapp.domain.mappers.BaseMapper;
+import com.sleepypoem.commerceapp.exceptions.MyBadRequestException;
 import com.sleepypoem.commerceapp.exceptions.MyEntityNotFoundException;
+import com.sleepypoem.commerceapp.exceptions.MyValidationException;
 import com.sleepypoem.commerceapp.services.ServicePreconditions;
 import com.sleepypoem.commerceapp.services.validators.IValidator;
 import com.sleepypoem.commerceapp.services.validators.Validator;
@@ -18,19 +20,18 @@ import java.util.Optional;
 public abstract class AbstractService<D extends IDto, E extends IEntity> implements IService<D, E> {
 
     @Override
-    public Optional<D> getOneById(Long id) {
-        Optional<D> dto;
+    public D getOneById(Long id) {
         E entity;
         Optional<E> isEntityPresent = getDao().findById(id);
 
         if (isEntityPresent.isPresent()) {
             entity = isEntityPresent.get();
-            dto = Optional.of(getMapper().convertToDto(entity));
 
         } else {
-            throw new MyEntityNotFoundException("Entity with id " + id + " not found.");
+            throw new MyEntityNotFoundException(getClass().getSimpleName() + " Entity with id " + id + " not found.");
+
         }
-        return dto;
+        return getMapper().convertToDto(entity);
     }
 
     @Override
@@ -40,7 +41,7 @@ public abstract class AbstractService<D extends IDto, E extends IEntity> impleme
     }
 
     @Override
-    public D create(E entity) throws Exception {
+    public D create(E entity) throws MyEntityNotFoundException, MyValidationException {
         ServicePreconditions.checkEntityNotNull(entity);
         Validator.validate(getValidator(), entity);
         E persisted = getDao().save(entity);
@@ -48,7 +49,7 @@ public abstract class AbstractService<D extends IDto, E extends IEntity> impleme
     }
 
     @Override
-    public D update(Long id, E entity) throws Exception {
+    public D update(Long id, E entity) throws MyBadRequestException, MyValidationException {
         ServicePreconditions.checkEntityNotNull(entity);
         ServicePreconditions.checkExpression(Objects.equals(id, entity.getId()), "Id in URI doesn't match with entity id.");
         Validator.validate(getValidator(), entity);

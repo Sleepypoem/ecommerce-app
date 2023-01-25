@@ -15,7 +15,7 @@ public abstract class AbstractReadOnlyController<D extends IDto, E extends IEnti
         return getService().getAll();
     }
 
-    public Optional<D> getOneByIdInternal(Long id) {
+    public D getOneByIdInternal(Long id) {
         return getService().getOneById(id);
     }
 }

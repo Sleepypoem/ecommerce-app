@@ -3,6 +3,8 @@ package com.sleepypoem.commerceapp.services.validators.impl;
 import com.sleepypoem.commerceapp.domain.dto.ProductDto;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutEntity;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutItemEntity;
+import com.sleepypoem.commerceapp.domain.enums.CheckoutStatus;
+import com.sleepypoem.commerceapp.exceptions.MyValidationException;
 import com.sleepypoem.commerceapp.services.ProductService;
 import com.sleepypoem.commerceapp.services.UserService;
 import com.sleepypoem.commerceapp.services.validators.IValidator;
@@ -24,18 +26,23 @@ public class ValidateCheckout implements IValidator<CheckoutEntity> {
     ProductService productService;
 
     @Override
-    public boolean isValid(CheckoutEntity checkout) throws Exception {
-        if (userService.getUserById(checkout.getUserId()) == null) {
+    public boolean isValid(CheckoutEntity checkout) throws MyValidationException {
+        try{
+            userService.getUserById(checkout.getUserId());
+        }catch(Exception e) {
+            throw new MyValidationException("User not found");
+        }
+
+        if(checkout.getItems() == null) {
             return false;
         }
 
         for (CheckoutItemEntity item : checkout.getItems()) {
-            Optional<ProductDto> optProduct = productService.getOneById(item.getProduct().getId());
-            if (optProduct.isEmpty()) {
+            ProductDto product = productService.getOneById(item.getProduct().getId());
+            if (product == null) {
                 return false;
             }
 
-            ProductDto product = optProduct.get();
 
             if ((product.getStock() - item.getQuantity()) < 0) {
                 return false;
@@ -46,6 +53,10 @@ public class ValidateCheckout implements IValidator<CheckoutEntity> {
             if (item.getQuantity() <= 0) {
                 return false;
             }
+        }
+
+        if (checkout.getStatus() == CheckoutStatus.COMPLETED) {
+            return false;
         }
         return true;
     }

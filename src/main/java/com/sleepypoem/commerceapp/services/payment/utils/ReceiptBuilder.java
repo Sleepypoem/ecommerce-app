@@ -5,10 +5,12 @@ import com.sleepypoem.commerceapp.domain.entities.AddressEntity;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutItemEntity;
 import com.sleepypoem.commerceapp.domain.entities.ReceiptEntity;
 import com.sleepypoem.commerceapp.domain.enums.PaymentStatus;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 public class ReceiptBuilder {
 
     private ReceiptEntity.ReceiptEntityBuilder receipt;
@@ -50,6 +52,7 @@ public class ReceiptBuilder {
     }
 
     public ReceiptBuilder fillItemList(List<CheckoutItemEntity> items) {
+        receipt.items(items);
         receipt.total(calculateTotal(items));
         return this;
     }

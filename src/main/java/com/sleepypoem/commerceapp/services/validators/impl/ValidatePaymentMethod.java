@@ -1,6 +1,7 @@
 package com.sleepypoem.commerceapp.services.validators.impl;
 
 import com.sleepypoem.commerceapp.domain.entities.PaymentMethodEntity;
+import com.sleepypoem.commerceapp.exceptions.MyValidationException;
 import com.sleepypoem.commerceapp.services.UserService;
 import com.sleepypoem.commerceapp.services.validators.IValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +17,11 @@ public class ValidatePaymentMethod implements IValidator<PaymentMethodEntity> {
     UserService userService;
 
     @Override
-    public boolean isValid(PaymentMethodEntity paymentMethod) throws Exception {
-        if (userService.getUserById(paymentMethod.getUserId()) == null) {
-            return false;
+    public boolean isValid(PaymentMethodEntity paymentMethod) throws MyValidationException {
+        try{
+            userService.getUserById(paymentMethod.getUserId());
+        }catch(Exception e) {
+            throw new MyValidationException("User not found");
         }
         return true;
     }

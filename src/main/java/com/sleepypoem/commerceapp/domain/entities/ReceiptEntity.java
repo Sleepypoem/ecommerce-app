@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -31,6 +32,9 @@ public class ReceiptEntity implements IEntity {
     private PaymentStatus status;
 
     private String paymentMethod;
+
+    @OneToMany
+    private List<CheckoutItemEntity> items;
 
     @OneToOne
     private AddressEntity shippingAddress;

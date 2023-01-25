@@ -12,10 +12,13 @@ public class Validator {
      * @param <T>       The element that is going to be validated.
      * @return True if is valid, false otherwise.
      */
-    public static <T> void validate(IValidator<T> validator, T element) throws Exception {
+    public static <T> void validate(IValidator<T> validator, T element) throws MyValidationException {
         boolean isValid = validator.isValid(element);
+        String rawName = element.getClass().getSimpleName();
+        String name = rawName.replace("Dto", "");
+        name = name.replace("Entity", "");
         if (!isValid) {
-            throw new MyValidationException("Element is not valid");
+            throw new MyValidationException( name + " is not valid");
         }
     }
 }

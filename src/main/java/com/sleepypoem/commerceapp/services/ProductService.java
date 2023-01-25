@@ -51,12 +51,8 @@ public class ProductService extends AbstractService<ProductDto, ProductEntity> {
     }
 
     public ProductDto modifyStock(Long id, int stock) {
-        Optional<ProductEntity> searchedProduct = dao.findById(id);
-        if (searchedProduct.isEmpty()) {
-            throw new MyEntityNotFoundException("Product with id " + id + " not found");
-        }
 
-        ProductEntity product = searchedProduct.get();
+        ProductEntity product = mapper.convertToEntity(this.getOneById(id));
         product.setStock(stock);
         return mapper.convertToDto(dao.save(product));
     }

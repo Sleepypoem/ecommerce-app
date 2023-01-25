@@ -5,6 +5,9 @@ import com.sleepypoem.commerceapp.exceptions.MyResourceNotFoundException;
 
 public class RequestPreconditions {
 
+    private RequestPreconditions() {
+        throw new IllegalStateException("Utility class, not mean to be instantiated.");
+    }
     public static <T> T checkNotNull(final T reference) {
         return checkNotNull(reference, null);
     }

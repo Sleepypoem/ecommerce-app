@@ -2,6 +2,7 @@ package com.sleepypoem.commerceapp.services.validators.impl;
 
 import com.sleepypoem.commerceapp.domain.dto.ProductDto;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutItemEntity;
+import com.sleepypoem.commerceapp.exceptions.MyValidationException;
 import com.sleepypoem.commerceapp.services.ProductService;
 import com.sleepypoem.commerceapp.services.validators.IValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +17,10 @@ public class ValidateCheckoutItem implements IValidator<CheckoutItemEntity> {
     ProductService productService;
 
     @Override
-    public boolean isValid(CheckoutItemEntity element) throws Exception {
-        Optional<ProductDto> optionalProductDto = productService.getOneById(element.getProduct().getId());
-        ProductDto product;
-        if (optionalProductDto.isEmpty()) {
+    public boolean isValid(CheckoutItemEntity element) throws MyValidationException {
+        ProductDto product = productService.getOneById(element.getProduct().getId());
+        if (product == null) {
             return false;
-        } else {
-            product = optionalProductDto.get();
         }
 
         if (product.getStock() <= 0) {
