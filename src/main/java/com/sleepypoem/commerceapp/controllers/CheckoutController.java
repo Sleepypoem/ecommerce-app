@@ -2,7 +2,7 @@ package com.sleepypoem.commerceapp.controllers;
 
 import com.sleepypoem.commerceapp.controllers.abstracts.AbstractController;
 import com.sleepypoem.commerceapp.domain.dto.CheckoutDto;
-import com.sleepypoem.commerceapp.domain.dto.ResourceAddedResponseDto;
+import com.sleepypoem.commerceapp.domain.dto.ResourceStatusResponseDto;
 import com.sleepypoem.commerceapp.domain.entities.AddressEntity;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutEntity;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutItemEntity;
@@ -38,13 +38,13 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
     }
 
     @PostMapping
-    public ResponseEntity<ResourceAddedResponseDto> create(@RequestBody CheckoutEntity checkout) throws Exception {
+    public ResponseEntity<ResourceStatusResponseDto> create(@RequestBody CheckoutEntity checkout) throws Exception {
         CheckoutDto created = createInternal(checkout);
         String message = "Checkout created with id " + created.getId();
         String url = "GET : /api/checkouts/" + created.getId();
         return ResponseEntity
                 .created(URI.create("/api/checkout/" + created.getId()))
-                .body(new ResourceAddedResponseDto(String.valueOf(created.getId()), message, url));
+                .body(new ResourceStatusResponseDto(String.valueOf(created.getId()), message, url));
     }
 
     @PutMapping("/{id}")

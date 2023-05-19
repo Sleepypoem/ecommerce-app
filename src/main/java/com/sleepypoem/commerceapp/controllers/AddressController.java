@@ -2,7 +2,7 @@ package com.sleepypoem.commerceapp.controllers;
 
 import com.sleepypoem.commerceapp.controllers.abstracts.AbstractController;
 import com.sleepypoem.commerceapp.domain.dto.AddressDto;
-import com.sleepypoem.commerceapp.domain.dto.ResourceAddedResponseDto;
+import com.sleepypoem.commerceapp.domain.dto.ResourceStatusResponseDto;
 import com.sleepypoem.commerceapp.domain.entities.AddressEntity;
 import com.sleepypoem.commerceapp.domain.mappers.AddressMapper;
 import com.sleepypoem.commerceapp.exceptions.MyResourceNotFoundException;
@@ -35,13 +35,13 @@ public class AddressController extends AbstractController<AddressDto, AddressEnt
     }
 
     @PostMapping
-    public ResponseEntity<ResourceAddedResponseDto> create(@RequestBody AddressEntity address) throws Exception {
+    public ResponseEntity<ResourceStatusResponseDto> create(@RequestBody AddressEntity address) throws Exception {
         AddressDto created = createInternal(address);
         String message = "Address created with id " + created.getId();
         String url = "GET : /api/addresses/" + created.getId();
         return ResponseEntity
                 .created(URI.create("/api/address/" + address.getId()))
-                .body(new ResourceAddedResponseDto(String.valueOf(created.getId()), message, url));
+                .body(new ResourceStatusResponseDto(String.valueOf(created.getId()), message, url));
     }
 
     @PutMapping("{id}")

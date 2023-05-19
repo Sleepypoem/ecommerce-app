@@ -2,7 +2,7 @@ package com.sleepypoem.commerceapp.controllers;
 
 import com.sleepypoem.commerceapp.controllers.abstracts.AbstractController;
 import com.sleepypoem.commerceapp.domain.dto.ProductDto;
-import com.sleepypoem.commerceapp.domain.dto.ResourceAddedResponseDto;
+import com.sleepypoem.commerceapp.domain.dto.ResourceStatusResponseDto;
 import com.sleepypoem.commerceapp.domain.entities.ProductEntity;
 import com.sleepypoem.commerceapp.exceptions.MyResourceNotFoundException;
 import com.sleepypoem.commerceapp.services.ProductService;
@@ -34,13 +34,13 @@ public class ProductController extends AbstractController<ProductDto, ProductEnt
     }
 
     @PostMapping
-    public ResponseEntity<ResourceAddedResponseDto> create(@RequestBody ProductEntity product) throws Exception {
+    public ResponseEntity<ResourceStatusResponseDto> create(@RequestBody ProductEntity product) throws Exception {
         ProductDto created = createInternal(product);
         String message = "Product created with id " + created.getId();
         String url = "GET : /api/products/" + created.getId();
         return ResponseEntity
                 .created(URI.create("/api/products/" + created.getId()))
-                .body(new ResourceAddedResponseDto(String.valueOf(created.getId()), message, url));
+                .body(new ResourceStatusResponseDto(String.valueOf(created.getId()), message, url));
     }
 
     @GetMapping("/{id}")

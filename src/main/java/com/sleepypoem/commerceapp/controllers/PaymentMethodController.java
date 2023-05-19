@@ -2,7 +2,7 @@ package com.sleepypoem.commerceapp.controllers;
 
 import com.sleepypoem.commerceapp.controllers.abstracts.AbstractController;
 import com.sleepypoem.commerceapp.domain.dto.PaymentMethodDto;
-import com.sleepypoem.commerceapp.domain.dto.ResourceAddedResponseDto;
+import com.sleepypoem.commerceapp.domain.dto.ResourceStatusResponseDto;
 import com.sleepypoem.commerceapp.domain.entities.PaymentMethodEntity;
 import com.sleepypoem.commerceapp.domain.mappers.PaymentMethodMapper;
 import com.sleepypoem.commerceapp.exceptions.MyResourceNotFoundException;
@@ -33,13 +33,13 @@ public class PaymentMethodController extends AbstractController<PaymentMethodDto
     }
 
     @PostMapping
-    public ResponseEntity<ResourceAddedResponseDto> create(@RequestBody PaymentMethodEntity paymentMethod) throws Exception {
+    public ResponseEntity<ResourceStatusResponseDto> create(@RequestBody PaymentMethodEntity paymentMethod) throws Exception {
         PaymentMethodDto created = createInternal(paymentMethod);
         String message = "Payment method created with id " + created.getId();
         String url = "GET : /api/payment-methods/" + created.getId();
         return ResponseEntity
                 .created(URI.create("/api/payment-methods/" + created.getId()))
-                .body(new ResourceAddedResponseDto(String.valueOf(created.getId()), message, url));
+                .body(new ResourceStatusResponseDto(String.valueOf(created.getId()), message, url));
     }
 
     @GetMapping("/{id}")

@@ -2,7 +2,7 @@ package com.sleepypoem.commerceapp.controllers;
 
 import com.sleepypoem.commerceapp.domain.dto.PaymentDto;
 import com.sleepypoem.commerceapp.domain.dto.PaymentRequestDto;
-import com.sleepypoem.commerceapp.domain.dto.ResourceAddedResponseDto;
+import com.sleepypoem.commerceapp.domain.dto.ResourceStatusResponseDto;
 import com.sleepypoem.commerceapp.domain.entities.PaymentEntity;
 import com.sleepypoem.commerceapp.exceptions.MyResourceNotFoundException;
 import com.sleepypoem.commerceapp.services.PaymentService;
@@ -21,11 +21,11 @@ public class PaymentController {
     PaymentService service;
 
     @PostMapping
-    public ResponseEntity<ResourceAddedResponseDto> processPayment(@RequestBody PaymentRequestDto paymentRequest) throws Exception {
+    public ResponseEntity<ResourceStatusResponseDto> processPayment(@RequestBody PaymentRequestDto paymentRequest) throws Exception {
         PaymentDto payment = service.processPayment(paymentRequest);
         String message = "Created payment with id " + payment.getId();
         String url = "GET : /api/payments/" + payment.getId();
-        return ResponseEntity.ok().body(new ResourceAddedResponseDto(String.valueOf(payment.getId()), message, url));
+        return ResponseEntity.ok().body(new ResourceStatusResponseDto(String.valueOf(payment.getId()), message, url));
     }
 
     @GetMapping("/{id}")
