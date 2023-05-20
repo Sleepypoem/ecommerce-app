@@ -1,6 +1,6 @@
 package com.sleepypoem.commerceapp.domain.dto;
 
-import com.sleepypoem.commerceapp.domain.interfaces.IDto;
+import com.sleepypoem.commerceapp.domain.abstracts.AbstractDto;
 import lombok.*;
 
 @AllArgsConstructor
@@ -8,8 +8,7 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-public class AddressDto implements IDto {
-    private Long id;
+public class AddressDto extends AbstractDto<Long> {
 
     private String userId;
 
@@ -25,14 +24,16 @@ public class AddressDto implements IDto {
 
     @Override
     public String toString() {
-        return "{" + "\n" +
-                "id=" + id + "\n" +
-                ", userId='" + userId + '\'' + "\n" +
-                ", country='" + country + '\'' + "\n" +
-                ", state='" + state + '\'' + "\n" +
-                ", zipCode='" + zipCode + '\'' + "\n" +
-                ", firstLine='" + firstLine + '\'' + "\n" +
-                ", secondLine='" + secondLine + '\'' + "\n" +
-                '}' +"\n";
+        return "AddressDto{" +
+                ", id=" + id +
+                "userId='" + userId + '\'' +
+                ", country='" + country + '\'' +
+                ", state='" + state + '\'' +
+                ", zipCode='" + zipCode + '\'' +
+                ", firstLine='" + firstLine + '\'' +
+                ", secondLine='" + secondLine + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 }

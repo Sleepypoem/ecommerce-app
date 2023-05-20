@@ -1,12 +1,13 @@
 package com.sleepypoem.commerceapp.domain.entities;
 
-import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
-import jakarta.persistence.*;
+import com.sleepypoem.commerceapp.domain.abstracts.AbstractEntity;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
-
-import java.util.Objects;
 
 @Entity
 @Getter
@@ -15,10 +16,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CheckoutItemEntity implements IEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class CheckoutItemEntity extends AbstractEntity<Long> {
     @OneToOne
     @JoinColumn(name = "product_id", referencedColumnName = "id")
     @NotNull
@@ -33,24 +31,13 @@ public class CheckoutItemEntity implements IEntity {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CheckoutItemEntity that = (CheckoutItemEntity) o;
-        return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
-    @Override
     public String toString() {
         return "{" +
                 "id=" + id +
                 ", product=" + product +
                 ", quantity=" + quantity +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
                 '}';
     }
 }

@@ -1,7 +1,7 @@
 package com.sleepypoem.commerceapp.domain.entities;
 
+import com.sleepypoem.commerceapp.domain.abstracts.AbstractEntity;
 import com.sleepypoem.commerceapp.domain.enums.PaymentStatus;
-import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -13,11 +13,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaymentEntity implements IEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class PaymentEntity extends AbstractEntity<Long> {
 
     @Column(name = "user_id")
     @NotNull
@@ -30,17 +26,14 @@ public class PaymentEntity implements IEntity {
     private PaymentStatus status;
 
     @Override
-    public Long getId() {
-        return id;
-    }
-
-    @Override
     public String toString() {
         return "{" +
                 "id=" + id +
                 ", userId='" + userId + '\'' +
                 ", receipt='" + receipt + '\'' +
                 ", status=" + status +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
                 '}';
     }
 }

@@ -1,5 +1,6 @@
 package com.sleepypoem.commerceapp.domain.entities;
 
+import com.sleepypoem.commerceapp.domain.abstracts.AbstractEntity;
 import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -12,11 +13,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddressEntity implements IEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class AddressEntity extends AbstractEntity<Long> {
 
     @Column(name = "user_id")
     @NotNull
@@ -38,20 +35,17 @@ public class AddressEntity implements IEntity {
     private String secondLine;
 
     @Override
-    public Long getId() {
-        return id;
-    }
-
-    @Override
     public String toString() {
-        return "{" +
-                "id=" + id +
-                ", userId='" + userId + '\'' +
+        return "AddressEntity{" +
+                ", id=" + id +
+                "userId='" + userId + '\'' +
                 ", country='" + country + '\'' +
                 ", state='" + state + '\'' +
                 ", zipCode='" + zipCode + '\'' +
                 ", firstLine='" + firstLine + '\'' +
                 ", secondLine='" + secondLine + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
                 '}';
     }
 }
