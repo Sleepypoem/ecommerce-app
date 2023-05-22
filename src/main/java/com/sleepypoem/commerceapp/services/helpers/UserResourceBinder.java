@@ -26,21 +26,18 @@ public class UserResourceBinder {
     @Autowired
     private PaymentMethodService paymentMethodService;
 
-    public UserDto attachCheckout(UserDto user) {
+    public void attachCheckout(UserDto user) {
         List<CheckoutEntity> checkout = checkoutService.getByUserId(user.getId());
         user.setCheckouts(checkout);
-        return user;
     }
 
-    public UserDto attachAddresses(UserDto user) {
+    public void attachAddresses(UserDto user) {
         List<AddressEntity> addresses = addressService.findByUserId(user.getId());
         user.setAddresses(addresses);
-        return user;
     }
 
-    public UserDto attachPaymentMethods(UserDto user) {
+    public void attachPaymentMethods(UserDto user) {
         List<PaymentMethodEntity> paymentMethods = paymentMethodService.findByUserId(user.getId());
         user.setPaymentMethods(paymentMethods);
-        return user;
     }
 }

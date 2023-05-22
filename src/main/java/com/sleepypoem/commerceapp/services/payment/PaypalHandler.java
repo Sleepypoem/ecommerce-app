@@ -1,10 +1,10 @@
 package com.sleepypoem.commerceapp.services.payment;
 
 import com.sleepypoem.commerceapp.domain.dto.CheckoutDto;
-import com.sleepypoem.commerceapp.domain.dto.PaymentDto;
 import com.sleepypoem.commerceapp.domain.dto.PaymentRequestDto;
 import com.sleepypoem.commerceapp.domain.dto.UserDto;
 import com.sleepypoem.commerceapp.domain.entities.AddressEntity;
+import com.sleepypoem.commerceapp.domain.entities.PaymentEntity;
 import com.sleepypoem.commerceapp.domain.entities.PaymentMethodEntity;
 import com.sleepypoem.commerceapp.domain.entities.ReceiptEntity;
 import com.sleepypoem.commerceapp.domain.enums.PaymentStatus;
@@ -40,8 +40,8 @@ public class PaypalHandler implements IHandler {
     }
 
     @Override
-    public PaymentDto handle() {
-        return PaymentDto
+    public PaymentEntity handle() {
+        return PaymentEntity
                 .builder()
                 .userId(paymentRequest.getUser().getId())
                 .receipt(pay())
