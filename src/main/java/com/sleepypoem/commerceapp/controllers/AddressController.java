@@ -4,34 +4,27 @@ import com.sleepypoem.commerceapp.controllers.abstracts.AbstractController;
 import com.sleepypoem.commerceapp.domain.dto.AddressDto;
 import com.sleepypoem.commerceapp.domain.dto.ResourceStatusResponseDto;
 import com.sleepypoem.commerceapp.domain.entities.AddressEntity;
-import com.sleepypoem.commerceapp.domain.mappers.AddressMapper;
-import com.sleepypoem.commerceapp.exceptions.MyResourceNotFoundException;
+import com.sleepypoem.commerceapp.domain.mappers.BaseMapper;
 import com.sleepypoem.commerceapp.services.AddressService;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("addresses")
 @Slf4j
 public class AddressController extends AbstractController<AddressDto, AddressEntity> {
 
-    @Autowired
     AddressService service;
 
-    @Autowired
-    AddressMapper mapper;
-
-    @Override
-    protected AbstractService<AddressDto, AddressEntity> getService() {
-        return service;
+    protected AddressController(BaseMapper<AddressEntity, AddressDto> mapper, AddressService service) {
+        super(mapper);
+        this.service = service;
     }
 
     @PostMapping
@@ -51,16 +44,17 @@ public class AddressController extends AbstractController<AddressDto, AddressEnt
 
     @GetMapping("/{id}")
     public ResponseEntity<AddressDto> getOneById(@PathVariable Long id) {
-        Optional<AddressDto> searchedAddress = getOneByIdInternal(id);
-        if (searchedAddress.isEmpty()) {
-            throw new MyResourceNotFoundException("Address with id " + id + " not found.");
-        }
-        return ResponseEntity.ok().body(searchedAddress.get());
+        return ResponseEntity.ok().body(getOneByIdInternal(id));
     }
 
     @GetMapping
     public ResponseEntity<List<AddressDto>> getByUserId(@RequestParam(value = "user-id") String userId) {
         List<AddressEntity> addresses = service.findByUserId(userId);
         return ResponseEntity.ok().body(mapper.convertToDtoList(addresses));
+    }
+
+    @Override
+    public AbstractService<AddressEntity> getService() {
+        return service;
     }
 }
