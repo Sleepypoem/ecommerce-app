@@ -12,8 +12,6 @@ services:
       MYSQL_USER: admin
       MYSQL_PASSWORD: password
       MySQL_ALLOW_EMPTY_PASSWORD: yes
-    ports:
-      - '3306:3306'
     networks:
       - keycloak-mysql
   keycloak:
@@ -35,10 +33,19 @@ services:
       - mysql
     networks:
       - keycloak-mysql
+      - spring-keycloak
+    restart: on-failure
+    healthcheck:
+      test: curl --fail http://localhost:8080 || exit 1
+      interval: 60s
+      retries: 5
+      timeout: 10s
   db:
     image: mysql/mysql-server:8.0
     container_name: spring-mysql
     restart: always
+    ports:
+      - '3306:3306'
     networks:
       - springmysql-net
     environment:
@@ -58,13 +65,20 @@ services:
       - "8081:8081"
     networks:
       - springmysql-net
+      - spring-keycloak
     environment:
       - MYSQL_HOST=db
       - MYSQL_USERNAME=admin
       - MYSQL_PASSWORD=password
       - MYSQL_DATABASE=ecommerce
       - MYSQL_PORT=3306
+      - LOCAL_HOST=host.docker.internal
+    links:
+      - keycloak
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 networks:
   springmysql-net:
+  spring-keycloak:
   keycloak-mysql:
     driver: bridge
