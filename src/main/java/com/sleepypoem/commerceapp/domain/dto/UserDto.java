@@ -4,8 +4,10 @@ import com.sleepypoem.commerceapp.domain.entities.AddressEntity;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutEntity;
 import com.sleepypoem.commerceapp.domain.entities.PaymentMethodEntity;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @AllArgsConstructor
@@ -21,6 +23,7 @@ public class UserDto {
     private String firstName;
     private String lastName;
     private String email;
+    private Collection<GrantedAuthority> authorities;
 
     private List<AddressEntity> addresses = new ArrayList<>();
     private List<CheckoutEntity> checkouts = new ArrayList<>();

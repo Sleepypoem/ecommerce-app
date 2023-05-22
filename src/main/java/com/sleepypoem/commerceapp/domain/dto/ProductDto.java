@@ -2,7 +2,10 @@ package com.sleepypoem.commerceapp.domain.dto;
 
 
 import com.sleepypoem.commerceapp.domain.abstracts.AbstractDto;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @AllArgsConstructor

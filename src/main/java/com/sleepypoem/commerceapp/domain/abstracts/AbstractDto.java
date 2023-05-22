@@ -16,11 +16,12 @@ public class AbstractDto<ID> implements IDto<ID> {
 
     protected ID id;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     protected LocalDateTime createdAt;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     protected LocalDateTime updatedAt;
+
     @Override
     public ID getId() {
         return id;

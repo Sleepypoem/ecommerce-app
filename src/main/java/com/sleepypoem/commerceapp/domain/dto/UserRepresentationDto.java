@@ -16,5 +16,6 @@ public class UserRepresentationDto {
     private String lastName;
     private String email;
     private String enabled = "true";
+    private String emailVerified = "true";
     private List<CredentialsDto> credentials;
 }

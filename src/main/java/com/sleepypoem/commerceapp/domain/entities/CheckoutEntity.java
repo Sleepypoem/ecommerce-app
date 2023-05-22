@@ -5,7 +5,10 @@ import com.sleepypoem.commerceapp.domain.abstracts.AbstractEntity;
 import com.sleepypoem.commerceapp.domain.enums.CheckoutStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;

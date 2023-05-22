@@ -2,10 +2,11 @@ package com.sleepypoem.commerceapp.domain.dto;
 
 import com.sleepypoem.commerceapp.domain.abstracts.AbstractDto;
 import com.sleepypoem.commerceapp.domain.entities.ProductEntity;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-
-import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor

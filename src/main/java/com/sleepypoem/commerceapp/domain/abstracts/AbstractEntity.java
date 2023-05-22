@@ -1,7 +1,6 @@
 package com.sleepypoem.commerceapp.domain.abstracts;
 
 import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
-import com.sleepypoem.commerceapp.domain.interfaces.INameableEntity;
 import jakarta.persistence.*;
 import lombok.experimental.SuperBuilder;
 

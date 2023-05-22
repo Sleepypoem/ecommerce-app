@@ -4,7 +4,10 @@ import com.sleepypoem.commerceapp.domain.abstracts.AbstractDto;
 import com.sleepypoem.commerceapp.domain.entities.AddressEntity;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutItemEntity;
 import com.sleepypoem.commerceapp.domain.enums.PaymentStatus;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
