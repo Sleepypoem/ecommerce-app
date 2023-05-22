@@ -1,46 +1,43 @@
 package com.sleepypoem.commerceapp.controllers;
 
+import com.sleepypoem.commerceapp.controllers.abstracts.AbstractReadOnlyController;
 import com.sleepypoem.commerceapp.domain.dto.PaymentDto;
 import com.sleepypoem.commerceapp.domain.dto.PaymentRequestDto;
 import com.sleepypoem.commerceapp.domain.dto.ResourceStatusResponseDto;
 import com.sleepypoem.commerceapp.domain.entities.PaymentEntity;
-import com.sleepypoem.commerceapp.exceptions.MyResourceNotFoundException;
+import com.sleepypoem.commerceapp.domain.mappers.PaymentMapper;
 import com.sleepypoem.commerceapp.services.PaymentService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @Controller
 @RequestMapping("/payments")
-public class PaymentController {
+public class PaymentController extends AbstractReadOnlyController<PaymentDto, PaymentEntity> {
 
-    @Autowired
-    PaymentService service;
+    private final PaymentService service;
+
+    public PaymentController(PaymentService service, PaymentMapper mapper) {
+        super(mapper);
+        this.service = service;
+    }
 
     @PostMapping
     public ResponseEntity<ResourceStatusResponseDto> processPayment(@RequestBody PaymentRequestDto paymentRequest) throws Exception {
-        PaymentDto payment = service.processPayment(paymentRequest);
+        PaymentEntity payment = service.processPayment(paymentRequest);
         String message = "Created payment with id " + payment.getId();
         String url = "GET : /api/payments/" + payment.getId();
         return ResponseEntity.ok().body(new ResourceStatusResponseDto(String.valueOf(payment.getId()), message, url));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PaymentDto> findOneByUserId(@PathVariable Long id) {
-        Optional<PaymentDto> searched = service.getOneById(id);
-        if (searched.isEmpty()) {
-            throw new MyResourceNotFoundException("Payment with id " + id + " not found.");
-        }
-        return ResponseEntity.ok().body(searched.get());
+    public ResponseEntity<PaymentDto> findOneById(@PathVariable Long id) {
+        return ResponseEntity.ok().body(getOneByIdInternal(id));
     }
 
-    @PostMapping("/test")
-    public ResponseEntity<PaymentDto> test(@RequestBody PaymentEntity paymentEntity) throws Exception {
-
-        return ResponseEntity.ok().body(service.create(paymentEntity));
+    @Override
+    protected AbstractService<PaymentEntity> getService() {
+        return service;
     }
-
 }

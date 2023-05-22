@@ -7,34 +7,27 @@ import com.sleepypoem.commerceapp.domain.entities.AddressEntity;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutEntity;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutItemEntity;
 import com.sleepypoem.commerceapp.domain.entities.PaymentMethodEntity;
-import com.sleepypoem.commerceapp.domain.mappers.CheckoutMapper;
-import com.sleepypoem.commerceapp.exceptions.MyResourceNotFoundException;
+import com.sleepypoem.commerceapp.domain.mappers.BaseMapper;
 import com.sleepypoem.commerceapp.services.CheckoutService;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("checkouts")
 @Slf4j
 public class CheckoutController extends AbstractController<CheckoutDto, CheckoutEntity> {
 
-    @Autowired
-    CheckoutService service;
+    private CheckoutService service;
 
-    @Autowired
-    CheckoutMapper mapper;
-
-    @Override
-    protected AbstractService<CheckoutDto, CheckoutEntity> getService() {
-        return service;
+    protected CheckoutController(BaseMapper<CheckoutEntity, CheckoutDto> mapper, CheckoutService service) {
+        super(mapper);
+        this.service = service;
     }
 
     @PostMapping
@@ -59,11 +52,7 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
 
     @GetMapping("/{id}")
     public ResponseEntity<CheckoutDto> findOneById(@PathVariable Long id) {
-        Optional<CheckoutDto> searched = getOneByIdInternal(id);
-        if (searched.isEmpty()) {
-            throw new MyResourceNotFoundException("Checkout with id " + " not found");
-        }
-        return ResponseEntity.ok().body(searched.get());
+        return ResponseEntity.ok().body(getOneByIdInternal(id));
     }
 
     @GetMapping
@@ -74,29 +63,34 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
 
     @PostMapping("/{id}/items")
     public ResponseEntity<CheckoutDto> addItemToCart(@PathVariable Long id, @RequestBody List<CheckoutItemEntity> items) throws Exception {
-        return ResponseEntity.ok().body(service.addItems(id, items));
+        return ResponseEntity.ok().body(mapper.convertToDto(service.addItems(id, items)));
     }
 
     @DeleteMapping("/{id}/items/{item-id}")
     public ResponseEntity<CheckoutDto> removeItemFromCart(@PathVariable("id") Long id,
                                                           @PathVariable("item-id") Long itemId) {
-        return ResponseEntity.ok().body(service.removeItem(id, itemId));
+        return ResponseEntity.ok().body(mapper.convertToDto(service.removeItem(id, itemId)));
     }
 
     @PatchMapping("/{id}/items/{item-id}")
     public ResponseEntity<CheckoutDto> modifyQuantity(@PathVariable("id") Long id,
                                                       @PathVariable("item-id") Long itemId,
                                                       @RequestBody int quantity) {
-        return ResponseEntity.ok().body(service.modifyItemQuantity(id, itemId, quantity));
+        return ResponseEntity.ok().body(mapper.convertToDto(service.modifyItemQuantity(id, itemId, quantity)));
     }
 
     @PostMapping("/{id}/address")
     public ResponseEntity<CheckoutDto> addPreferredAddress(@PathVariable Long id, @RequestBody AddressEntity address) {
-        return ResponseEntity.ok().body(service.addPreferredAddress(id, address));
+        return ResponseEntity.ok().body(mapper.convertToDto(service.addPreferredAddress(id, address)));
     }
 
     @PostMapping("/{id}/payment-method")
     public ResponseEntity<CheckoutDto> addPreferredPaymentMethod(@PathVariable Long id, @RequestBody PaymentMethodEntity paymentMethod) {
-        return ResponseEntity.ok().body(service.addPreferredPaymentMethod(id, paymentMethod));
+        return ResponseEntity.ok().body(mapper.convertToDto(service.addPreferredPaymentMethod(id, paymentMethod)));
+    }
+
+    @Override
+    public AbstractService<CheckoutEntity> getService() {
+        return service;
     }
 }
