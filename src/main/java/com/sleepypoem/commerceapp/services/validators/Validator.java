@@ -10,9 +10,9 @@ public class Validator {
      * @param validator A validator that contains the validation logic.
      * @param element   The element that is going to be validated.
      * @param <T>       The element that is going to be validated.
-     * @return True if is valid, false otherwise.
+     * @throws MyValidationException if the element is not valid.
      */
-    public static <T> void validate(IValidator<T> validator, T element) throws Exception {
+    public static <T> void validate(IValidator<T> validator, T element) {
         boolean isValid = validator.isValid(element);
         if (!isValid) {
             throw new MyValidationException("Element is not valid");

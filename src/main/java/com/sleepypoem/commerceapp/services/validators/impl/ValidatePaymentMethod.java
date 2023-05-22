@@ -16,8 +16,10 @@ public class ValidatePaymentMethod implements IValidator<PaymentMethodEntity> {
     UserService userService;
 
     @Override
-    public boolean isValid(PaymentMethodEntity paymentMethod) throws Exception {
-        if (userService.getUserById(paymentMethod.getUserId()) == null) {
+    public boolean isValid(PaymentMethodEntity paymentMethod) {
+        try {
+            userService.getUserById(paymentMethod.getUserId());
+        } catch (Exception e) {
             return false;
         }
         return true;

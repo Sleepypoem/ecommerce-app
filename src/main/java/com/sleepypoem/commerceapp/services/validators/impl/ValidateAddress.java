@@ -15,8 +15,10 @@ public class ValidateAddress implements IValidator<AddressEntity> {
     UserService userService;
 
     @Override
-    public boolean isValid(AddressEntity address) throws Exception {
-        if (userService.getUserById(address.getUserId()) == null) {
+    public boolean isValid(AddressEntity address) {
+        try {
+            userService.getUserById(address.getUserId());
+        } catch (Exception e) {
             return false;
         }
         return true;
