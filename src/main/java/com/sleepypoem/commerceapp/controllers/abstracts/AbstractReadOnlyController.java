@@ -1,21 +1,31 @@
 package com.sleepypoem.commerceapp.controllers.abstracts;
 
+import com.sleepypoem.commerceapp.controllers.interfaces.ReadOnlyService;
 import com.sleepypoem.commerceapp.domain.interfaces.IDto;
 import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
+import com.sleepypoem.commerceapp.domain.mappers.BaseMapper;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
 
 import java.util.List;
-import java.util.Optional;
 
-public abstract class AbstractReadOnlyController<D extends IDto, E extends IEntity> {
+public abstract class AbstractReadOnlyController<D extends IDto, E extends IEntity> implements ReadOnlyService<D> {
 
-    protected abstract AbstractService<D, E> getService();
+    protected abstract AbstractService<E> getService();
 
-    public List<D> getAllInternal() {
-        return getService().getAll();
+    protected BaseMapper<E, D> mapper;
+
+    protected AbstractReadOnlyController(BaseMapper<E, D> mapper) {
+        this.mapper = mapper;
     }
 
-    public Optional<D> getOneByIdInternal(Long id) {
-        return getService().getOneById(id);
+    @Override
+    public D getOneByIdInternal(Long id) {
+        return mapper.convertToDto(getService().getOneById(id));
+    }
+
+    @Override
+    public Iterable<D> getAllInternal() {
+        List<E> entities = getService().getAll();
+        return mapper.convertToDto(entities);
     }
 }
