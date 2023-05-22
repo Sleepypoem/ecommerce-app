@@ -2,12 +2,13 @@ package com.sleepypoem.commerceapp.domain.dto;
 
 import com.sleepypoem.commerceapp.domain.abstracts.AbstractDto;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 public class AddressDto extends AbstractDto<Long> {
 
     private String userId;

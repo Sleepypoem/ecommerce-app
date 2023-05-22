@@ -6,6 +6,7 @@ import com.sleepypoem.commerceapp.domain.enums.CheckoutStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "checkouts")
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CheckoutEntity extends AbstractEntity<Long> {

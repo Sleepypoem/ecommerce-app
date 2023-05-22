@@ -3,15 +3,17 @@ package com.sleepypoem.commerceapp.domain.abstracts;
 import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
 import com.sleepypoem.commerceapp.domain.interfaces.INameableEntity;
 import jakarta.persistence.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @MappedSuperclass
+@SuperBuilder
 public class AbstractEntity<ID> implements IEntity<ID> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     protected ID id;
 
     @Column(name = "created_at")
@@ -25,9 +27,13 @@ public class AbstractEntity<ID> implements IEntity<ID> {
         updatedAt = LocalDateTime.now();
     }
 
+    public void setId(ID id) {
+        this.id = id;
+    }
+
     @Override
     public ID getId() {
-        return null;
+        return id;
     }
 
     public LocalDateTime getCreatedAt() {

@@ -8,12 +8,13 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "checkout_items")
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CheckoutItemEntity extends AbstractEntity<Long> {
@@ -24,11 +25,6 @@ public class CheckoutItemEntity extends AbstractEntity<Long> {
 
     @PositiveOrZero
     private int quantity;
-
-    @Override
-    public Long getId() {
-        return id;
-    }
 
     @Override
     public String toString() {
