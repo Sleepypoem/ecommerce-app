@@ -1,9 +1,7 @@
 package com.sleepypoem.commerceapp.services;
 
-import com.sleepypoem.commerceapp.domain.dto.AddressDto;
 import com.sleepypoem.commerceapp.domain.entities.AddressEntity;
 import com.sleepypoem.commerceapp.domain.mappers.AddressMapper;
-import com.sleepypoem.commerceapp.domain.mappers.BaseMapper;
 import com.sleepypoem.commerceapp.repositories.AddressRepository;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
 import com.sleepypoem.commerceapp.services.validators.IValidator;
@@ -14,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class AddressService extends AbstractService<AddressDto, AddressEntity> {
+public class AddressService extends AbstractService<AddressEntity> {
 
     @Autowired
     IValidator<AddressEntity> validator;
@@ -33,11 +31,6 @@ public class AddressService extends AbstractService<AddressDto, AddressEntity> {
     @Override
     protected JpaRepository<AddressEntity, Long> getDao() {
         return dao;
-    }
-
-    @Override
-    protected BaseMapper<AddressEntity, AddressDto> getMapper() {
-        return mapper;
     }
 
     @Override

@@ -1,13 +1,12 @@
 package com.sleepypoem.commerceapp.services.abstracts;
 
-import com.sleepypoem.commerceapp.domain.interfaces.IDto;
 import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
 
-public interface IWriteService<D extends IDto, E extends IEntity> {
+public interface IWriteService<E extends IEntity> {
 
-    D create(E entity) throws Exception;
+    E create(E entity);
 
-    D update(Long id, E entity) throws Exception;
+    E update(Long id, E entity);
 
     boolean delete(Long id);
 }

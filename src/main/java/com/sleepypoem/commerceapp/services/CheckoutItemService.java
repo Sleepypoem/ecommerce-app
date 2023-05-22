@@ -1,9 +1,6 @@
 package com.sleepypoem.commerceapp.services;
 
-import com.sleepypoem.commerceapp.domain.dto.CheckoutItemDto;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutItemEntity;
-import com.sleepypoem.commerceapp.domain.mappers.BaseMapper;
-import com.sleepypoem.commerceapp.domain.mappers.CheckoutItemMapper;
 import com.sleepypoem.commerceapp.exceptions.MyEntityNotFoundException;
 import com.sleepypoem.commerceapp.repositories.CheckoutItemRepository;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
@@ -17,7 +14,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class CheckoutItemService extends AbstractService<CheckoutItemDto, CheckoutItemEntity> {
+public class CheckoutItemService extends AbstractService<CheckoutItemEntity> {
 
     @Autowired
     IValidator<CheckoutItemEntity> validateCheckoutItem;
@@ -25,17 +22,9 @@ public class CheckoutItemService extends AbstractService<CheckoutItemDto, Checko
     @Autowired
     CheckoutItemRepository dao;
 
-    @Autowired
-    CheckoutItemMapper mapper;
-
     @Override
     protected JpaRepository<CheckoutItemEntity, Long> getDao() {
         return dao;
-    }
-
-    @Override
-    protected BaseMapper<CheckoutItemEntity, CheckoutItemDto> getMapper() {
-        return mapper;
     }
 
     @Override
@@ -43,7 +32,7 @@ public class CheckoutItemService extends AbstractService<CheckoutItemDto, Checko
         return validateCheckoutItem;
     }
 
-    public CheckoutItemDto modifyQuantity(Long id, int quantity) {
+    public CheckoutItemEntity modifyQuantity(Long id, int quantity) {
         Optional<CheckoutItemEntity> searchedItem = dao.findById(id);
         if (searchedItem.isEmpty()) {
             throw new MyEntityNotFoundException("Item with id " + id + " not found");
@@ -51,6 +40,6 @@ public class CheckoutItemService extends AbstractService<CheckoutItemDto, Checko
         CheckoutItemEntity item = searchedItem.get();
         item.setQuantity(quantity);
 
-        return mapper.convertToDto(dao.save(item));
+        return dao.save(item);
     }
 }
