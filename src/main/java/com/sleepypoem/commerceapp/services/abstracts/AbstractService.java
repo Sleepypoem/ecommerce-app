@@ -1,8 +1,6 @@
 package com.sleepypoem.commerceapp.services.abstracts;
 
-import com.sleepypoem.commerceapp.domain.interfaces.IDto;
 import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
-import com.sleepypoem.commerceapp.domain.mappers.BaseMapper;
 import com.sleepypoem.commerceapp.exceptions.MyEntityNotFoundException;
 import com.sleepypoem.commerceapp.services.ServicePreconditions;
 import com.sleepypoem.commerceapp.services.validators.IValidator;
@@ -12,48 +10,33 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Slf4j
-public abstract class AbstractService<D extends IDto, E extends IEntity> implements IService<D, E> {
+public abstract class AbstractService<E extends IEntity> implements IService<E> {
 
     @Override
-    public Optional<D> getOneById(Long id) {
-        Optional<D> dto;
-        E entity;
-        Optional<E> isEntityPresent = getDao().findById(id);
-
-        if (isEntityPresent.isPresent()) {
-            entity = isEntityPresent.get();
-            dto = Optional.of(getMapper().convertToDto(entity));
-
-        } else {
-            throw new MyEntityNotFoundException("Entity with id " + id + " not found.");
-        }
-        return dto;
+    public E getOneById(Long id) {
+        return getDao().findById(id).orElseThrow(() -> new MyEntityNotFoundException("Entity with id " + id + " not found"));
     }
 
     @Override
-    public List<D> getAll() {
-        List<E> entities = getDao().findAll();
-        return getMapper().convertToDtoList(entities);
+    public List<E> getAll() {
+        return getDao().findAll();
     }
 
     @Override
-    public D create(E entity) throws Exception {
+    public E create(E entity) {
         ServicePreconditions.checkEntityNotNull(entity);
         Validator.validate(getValidator(), entity);
-        E persisted = getDao().save(entity);
-        return getMapper().convertToDto(persisted);
+        return getDao().save(entity);
     }
 
     @Override
-    public D update(Long id, E entity) throws Exception {
+    public E update(Long id, E entity) {
         ServicePreconditions.checkEntityNotNull(entity);
         ServicePreconditions.checkExpression(Objects.equals(id, entity.getId()), "Id in URI doesn't match with entity id.");
         Validator.validate(getValidator(), entity);
-        E updated = getDao().save(entity);
-        return getMapper().convertToDto(updated);
+        return getDao().save(entity);
     }
 
     @Override
@@ -67,8 +50,6 @@ public abstract class AbstractService<D extends IDto, E extends IEntity> impleme
     }
 
     protected abstract JpaRepository<E, Long> getDao();
-
-    protected abstract BaseMapper<E, D> getMapper();
 
     protected abstract IValidator<E> getValidator();
 }
