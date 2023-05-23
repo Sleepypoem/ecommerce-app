@@ -16,14 +16,13 @@ public abstract class AbstractController<D extends IDto<?>, E extends IEntity<?>
         super(mapper);
     }
 
-    public D createInternal(E entity) throws Exception {
-        log.info(entity.toString());
+    public D createInternal(E entity) {
         RequestPreconditions.checkNotNull(entity);
         E createdEntity = getService().create(entity);
         return mapper.convertToDto(createdEntity);
     }
 
-    public D updateInternal(Long id, E entity) throws Exception {
+    public D updateInternal(Long id, E entity) {
         RequestPreconditions.checkRequestElementNotNull(entity);
         RequestPreconditions.checkRequestState(entity.getId() == null);
         RequestPreconditions.checkRequestState(!Objects.equals(id, entity.getId()), "Id in URI doesn't match resource Id.");
