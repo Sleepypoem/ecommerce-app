@@ -21,12 +21,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 
-    private final JwtAuthConverterProperties properties;
-
-    public JwtAuthConverter(JwtAuthConverterProperties properties) {
-        this.properties = properties;
-    }
-
     @Override
     public AbstractAuthenticationToken convert(@NotNull Jwt jwt) {
         Collection<GrantedAuthority> authorities = extractResourceRoles(jwt);
@@ -42,9 +36,6 @@ public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationTo
 
     private String getPrincipalClaimName(Jwt jwt) {
         String claimName = JwtClaimNames.SUB;
-        if (properties.getPrincipalAttribute() != null) {
-            claimName = properties.getPrincipalAttribute();
-        }
         return jwt.getClaim(claimName);
     }
 
