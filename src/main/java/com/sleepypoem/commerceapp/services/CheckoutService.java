@@ -1,45 +1,38 @@
 package com.sleepypoem.commerceapp.services;
 
+import com.sleepypoem.commerceapp.annotations.Validable;
 import com.sleepypoem.commerceapp.domain.entities.*;
 import com.sleepypoem.commerceapp.domain.enums.CheckoutStatus;
 import com.sleepypoem.commerceapp.repositories.CheckoutRepository;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
-import com.sleepypoem.commerceapp.services.validators.IValidator;
+import com.sleepypoem.commerceapp.services.validators.impl.ValidateCheckout;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@Validable(ValidateCheckout.class)
 @Slf4j
 public class CheckoutService extends AbstractService<CheckoutEntity> {
 
+    private final CheckoutRepository dao;
 
-    @Autowired
-    IValidator<CheckoutEntity> validateCheckout;
+    private final CheckoutItemService checkoutItemService;
 
-    @Autowired
-    CheckoutRepository dao;
+    private final ProductService productService;
 
-    @Autowired
-    CheckoutItemService checkoutItemService;
-
-    @Autowired
-    ProductService productService;
+    public CheckoutService(CheckoutRepository dao, CheckoutItemService checkoutItemService, ProductService productService) {
+        this.dao = dao;
+        this.checkoutItemService = checkoutItemService;
+        this.productService = productService;
+    }
 
     @Override
     protected JpaRepository<CheckoutEntity, Long> getDao() {
         return dao;
-    }
-
-    @Override
-    protected IValidator<CheckoutEntity> getValidator() {
-        return validateCheckout;
     }
 
     @Override

@@ -1,12 +1,12 @@
 package com.sleepypoem.commerceapp.services.abstracts;
 
+import com.sleepypoem.commerceapp.annotations.ValidableMethod;
 import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
 import com.sleepypoem.commerceapp.exceptions.MyEntityNotFoundException;
 import com.sleepypoem.commerceapp.services.ServicePreconditions;
-import com.sleepypoem.commerceapp.services.validators.IValidator;
-import com.sleepypoem.commerceapp.services.validators.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -25,31 +25,33 @@ public abstract class AbstractService<E extends IEntity> implements IService<E> 
     }
 
     @Override
+    @ValidableMethod
+    @Transactional
     public E create(E entity) {
         ServicePreconditions.checkEntityNotNull(entity);
-        Validator.validate(getValidator(), entity);
         return getDao().save(entity);
     }
 
     @Override
+    @ValidableMethod
+    @Transactional
     public E update(Long id, E entity) {
         ServicePreconditions.checkEntityNotNull(entity);
         ServicePreconditions.checkExpression(Objects.equals(id, entity.getId()), "Id in URI doesn't match with entity id.");
-        Validator.validate(getValidator(), entity);
         return getDao().save(entity);
     }
 
     @Override
     public boolean delete(Long id) {
+        E entity = getOneById(id);
         try {
-            getDao().deleteById(id);
+            getDao().delete(entity);
+            return true;
         } catch (Exception e) {
+            log.error("Error while deleting entity with id {}.", id);
             return false;
         }
-        return true;
     }
 
     protected abstract JpaRepository<E, Long> getDao();
-
-    protected abstract IValidator<E> getValidator();
 }

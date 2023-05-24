@@ -26,14 +26,12 @@ public class ProductEntity extends AbstractEntity<Long> {
     private String name;
 
     @Column
-    @Min(0)
     private int stock;
 
     @Column
     private String description;
 
     @Column
-    @Min(0)
     private Double price;
 
     @Override

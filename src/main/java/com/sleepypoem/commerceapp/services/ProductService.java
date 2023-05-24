@@ -1,29 +1,19 @@
 package com.sleepypoem.commerceapp.services;
 
+import com.sleepypoem.commerceapp.annotations.Validable;
 import com.sleepypoem.commerceapp.domain.entities.ProductEntity;
 import com.sleepypoem.commerceapp.repositories.ProductRepository;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
 import com.sleepypoem.commerceapp.services.validators.IValidator;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.sleepypoem.commerceapp.services.validators.impl.ValidateProduct;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Validable(ValidateProduct.class)
 public class ProductService extends AbstractService<ProductEntity> {
 
-    static final IValidator<ProductEntity> VALIDATE_PRODUCT = product -> {
-        if (product.getStock() < 0) {
-            return false;
-        }
-
-        if (product.getPrice() <= 0) {
-            return false;
-        }
-
-        return true;
-    };
-
-    @Autowired
     ProductRepository dao;
 
     @Override
@@ -31,14 +21,14 @@ public class ProductService extends AbstractService<ProductEntity> {
         return dao;
     }
 
-    @Override
-    protected IValidator<ProductEntity> getValidator() {
-        return VALIDATE_PRODUCT;
+    public ProductService(ProductRepository dao, IValidator<ProductEntity> validator) {
+        this.dao = dao;
     }
 
+    @Transactional
     public ProductEntity modifyStock(Long id, int stock) {
         ProductEntity product = getOneById(id);
         product.setStock(stock);
-        return dao.save(product);
+        return update(id, product);
     }
 }

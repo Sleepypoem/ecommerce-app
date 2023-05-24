@@ -11,9 +11,9 @@ import java.util.List;
 
 public class ReceiptBuilder {
 
-    private ReceiptEntity.ReceiptEntityBuilder receipt;
+    private final ReceiptEntity.ReceiptEntityBuilder receipt;
 
-    private String paymentType;
+    private final String paymentType;
 
     public ReceiptBuilder(String paymentType) {
         this.paymentType = paymentType;

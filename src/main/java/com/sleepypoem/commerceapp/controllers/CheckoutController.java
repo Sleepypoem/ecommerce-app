@@ -62,7 +62,7 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
     }
 
     @PostMapping("/{id}/items")
-    public ResponseEntity<CheckoutDto> addItemToCart(@PathVariable Long id, @RequestBody List<CheckoutItemEntity> items) throws Exception {
+    public ResponseEntity<CheckoutDto> addItemToCart(@PathVariable Long id, @RequestBody List<CheckoutItemEntity> items) {
         return ResponseEntity.ok().body(mapper.convertToDto(service.addItems(id, items)));
     }
 

@@ -20,10 +20,6 @@ public class ValidateCheckoutItem implements IValidator<CheckoutItemEntity> {
             return false;
         }
 
-        if (product.getStock() - element.getQuantity() < 0) {
-            return false;
-        }
-
-        return true;
+        return product.getStock() - element.getQuantity() >= 0;
     }
 }
