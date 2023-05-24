@@ -2,18 +2,19 @@ package com.sleepypoem.commerceapp.services.validators;
 
 import com.sleepypoem.commerceapp.exceptions.MyValidationException;
 
-public class Validator {
+public class Validator<T> {
 
-    /**
-     * It validates an object based on the validator passed as parameter.
-     *
-     * @param validator A validator that contains the validation logic.
-     * @param element   The element that is going to be validated.
-     * @param <T>       The element that is going to be validated.
-     * @throws MyValidationException if the element is not valid.
-     */
-    public static <T> void validate(IValidator<T> validator, T element) {
-        boolean isValid = validator.isValid(element);
+    private final IValidator<T> iValidator;
+
+    private final T element;
+
+    public Validator(IValidator<T> validator, T element) {
+        this.iValidator = validator;
+        this.element = element;
+    }
+
+    public void validate() {
+        boolean isValid = iValidator.isValid(element);
         if (!isValid) {
             throw new MyValidationException("Element is not valid");
         }
