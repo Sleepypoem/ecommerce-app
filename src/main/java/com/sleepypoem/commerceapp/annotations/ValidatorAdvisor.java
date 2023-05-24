@@ -2,7 +2,6 @@ package com.sleepypoem.commerceapp.annotations;
 
 import com.sleepypoem.commerceapp.domain.abstracts.AbstractEntity;
 import com.sleepypoem.commerceapp.exceptions.MyValidableAnnotationException;
-import com.sleepypoem.commerceapp.exceptions.MyValidationException;
 import com.sleepypoem.commerceapp.services.validators.IValidator;
 import com.sleepypoem.commerceapp.services.validators.Validator;
 import lombok.extern.slf4j.Slf4j;
@@ -13,9 +12,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Type;
 
 @Aspect
 @Component
@@ -31,7 +28,7 @@ public class ValidatorAdvisor {
         try{
             validatorClass.validate();
         }catch (ClassCastException e){
-            throw new MyValidationException("Error in validator, expected validator for: " + entity.getClass().getSimpleName()
+            throw new MyValidableAnnotationException("Error in validator, expected validator for: " + entity.getClass().getSimpleName()
                     + " in Validable annotation in  class: " + joinPoint.getTarget().getClass().getSimpleName()
                     , e);
         }
