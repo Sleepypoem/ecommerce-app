@@ -2,33 +2,62 @@ package com.sleepypoem.commerceapp.domain.mappers;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public abstract class BaseMapper<E, D> {
-    public BaseMapper() {
+    protected BaseMapper() {
     }
 
+    /**
+     * Convert a DTO to an entity.
+     * @param dto the DTO to convert.
+     * @return the entity.
+     */
     public abstract E convertToEntity(D dto);
 
+    /**
+     * Convert an entity to a DTO.
+     * @param entity the entity to convert.
+     * @return the DTO.
+     */
     public abstract D convertToDto(E entity);
 
+    /**
+     * Converts a collection of DTOs to a collection of entities.
+     *
+     * @param dto the collection of DTOs to convert
+     * @return the collection of entities
+     */
     public Collection<E> convertToEntity(Collection<D> dto) {
-        return (Collection) dto.stream().map((d) -> {
-            return this.convertToEntity(d);
-        }).collect(Collectors.toList());
+        return dto.stream().map(this::convertToEntity).toList();
     }
 
+    /**
+     * Converts a collection of entities to a collection of DTOs.
+     *
+     * @param entity the collection of entities to convert
+     * @return the collection of DTOs
+     */
     public Collection<D> convertToDto(Collection<E> entity) {
-        return (Collection) entity.stream().map((e) -> {
-            return this.convertToDto(e);
-        }).collect(Collectors.toList());
+        return entity.stream().map(this::convertToDto).toList();
     }
 
+    /**
+     * Converts a collection of DTOs to a list of entities.
+     *
+     * @param dto the collection of DTOs to convert
+     * @return the list of entities
+     */
     public List<E> convertToEntityList(Collection<D> dto) {
-        return (List) this.convertToEntity(dto).stream().collect(Collectors.toList());
+        return this.convertToEntity(dto).stream().toList();
     }
 
-    public List<D> convertToDtoList(Collection<E> entity, Object... args) {
-        return (List) this.convertToDto(entity).stream().collect(Collectors.toList());
+    /**
+     * Converts a collection of entities to a list of DTOs.
+     *
+     * @param entity the collection of entities to convert
+     * @return the list of DTOs
+     */
+    public List<D> convertToDtoList(Collection<E> entity) {
+        return this.convertToDto(entity).stream().toList();
     }
 }
