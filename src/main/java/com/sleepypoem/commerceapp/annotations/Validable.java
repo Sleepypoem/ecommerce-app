@@ -1,6 +1,5 @@
 package com.sleepypoem.commerceapp.annotations;
 
-import com.sleepypoem.commerceapp.domain.abstracts.AbstractEntity;
 import com.sleepypoem.commerceapp.services.validators.IValidator;
 
 import java.lang.annotation.ElementType;
