@@ -7,6 +7,9 @@ import com.sleepypoem.commerceapp.services.validators.IValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Component
 public class ValidateCheckoutItem implements IValidator<CheckoutItemEntity> {
 
@@ -14,12 +17,17 @@ public class ValidateCheckoutItem implements IValidator<CheckoutItemEntity> {
     ProductService productService;
 
     @Override
-    public boolean isValid(CheckoutItemEntity element) {
+    public Map<String, String> isValid(CheckoutItemEntity element) {
+        Map<String, String> errors = new HashMap<>();
         ProductEntity product = productService.getOneById(element.getId());
         if (product.getStock() <= 0) {
-            return false;
+            errors.put("stock", "The stock cannot be 0 or less.");
         }
 
-        return product.getStock() - element.getQuantity() >= 0;
+        if (product.getStock() - element.getQuantity() < 0) {
+            errors.put("stock", "The stock is not enough.");
+        }
+
+        return errors;
     }
 }

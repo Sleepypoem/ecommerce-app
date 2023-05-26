@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Component
 public class ValidatePayment implements IValidator<PaymentEntity> {
 
@@ -15,12 +18,14 @@ public class ValidatePayment implements IValidator<PaymentEntity> {
     UserService userService;
 
     @Override
-    public boolean isValid(PaymentEntity payment) {
+    public Map<String, String> isValid(PaymentEntity payment) {
+
+        Map<String, String> errors = new HashMap<>();
         try {
             userService.getUserById(payment.getUserId());
         } catch (Exception e) {
-            return false;
+            errors.put("userId", "The user does not exist.");
         }
-        return true;
+        return errors;
     }
 }

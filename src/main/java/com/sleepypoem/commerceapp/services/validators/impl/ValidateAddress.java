@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Component
 public class ValidateAddress implements IValidator<AddressEntity> {
 
@@ -15,12 +18,13 @@ public class ValidateAddress implements IValidator<AddressEntity> {
     UserService userService;
 
     @Override
-    public boolean isValid(AddressEntity address) {
+    public Map<String, String> isValid(AddressEntity address) {
+        Map<String, String> errors = new HashMap<>();
         try {
             userService.getUserById(address.getUserId());
         } catch (Exception e) {
-            return false;
+            errors.put("userId", "The user does not exist.");
         }
-        return true;
+        return errors;
     }
 }

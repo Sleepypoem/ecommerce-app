@@ -2,21 +2,23 @@ package com.sleepypoem.commerceapp.services.validators;
 
 import com.sleepypoem.commerceapp.exceptions.MyValidationException;
 
-public class Validator<T> {
+import java.util.Map;
+
+public class DetailedValidator<T> {
 
     private final IValidator<T> iValidator;
 
     private final T element;
 
-    public Validator(IValidator<T> validator, T element) {
+    public DetailedValidator(IValidator<T> validator, T element) {
         this.iValidator = validator;
         this.element = element;
     }
 
     public void validate() {
-        boolean isValid = iValidator.isValid(element);
-        if (!isValid) {
-            throw new MyValidationException("Element is not valid");
+        Map<String, String> errors = iValidator.isValid(element);
+        if (!errors.isEmpty()) {
+            throw new MyValidationException(errors);
         }
     }
 }

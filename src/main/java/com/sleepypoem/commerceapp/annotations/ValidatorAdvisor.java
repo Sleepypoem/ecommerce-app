@@ -2,8 +2,8 @@ package com.sleepypoem.commerceapp.annotations;
 
 import com.sleepypoem.commerceapp.domain.abstracts.AbstractEntity;
 import com.sleepypoem.commerceapp.exceptions.MyValidableAnnotationException;
+import com.sleepypoem.commerceapp.services.validators.DetailedValidator;
 import com.sleepypoem.commerceapp.services.validators.IValidator;
-import com.sleepypoem.commerceapp.services.validators.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -23,11 +23,11 @@ public class ValidatorAdvisor {
     public void validateMethod(JoinPoint joinPoint) {
         IValidator<?> validator = extractValidatorClass(joinPoint.getTarget().getClass());
         AbstractEntity<?> entity = extractEntityFromArgs(joinPoint.getArgs());
-        @SuppressWarnings({"rawtypes","unchecked"})
-        Validator validatorClass = new Validator( validator, entity);
-        try{
-            validatorClass.validate();
-        }catch (ClassCastException e){
+        @SuppressWarnings({"rawtypes", "unchecked"})
+        DetailedValidator detailedValidatorClass = new DetailedValidator(validator, entity);
+        try {
+            detailedValidatorClass.validate();
+        } catch (ClassCastException e) {
             throw new MyValidableAnnotationException("Error in validator, expected validator for: " + entity.getClass().getSimpleName()
                     + " in Validable annotation in  class: " + joinPoint.getTarget().getClass().getSimpleName()
                     , e);
@@ -36,10 +36,12 @@ public class ValidatorAdvisor {
     }
 
     @Pointcut("execution( public * (@com.sleepypoem.commerceapp.annotations.Validable *)+.*(..))")
-    public void validableMethodPointcut() {}
+    public void validableMethodPointcut() {
+    }
 
     @Pointcut("@annotation(com.sleepypoem.commerceapp.annotations.ValidableMethod)")
-    public void validableMethodAnnotationPointcut() {}
+    public void validableMethodAnnotationPointcut() {
+    }
 
     private IValidator<?> extractValidatorClass(Class<?> clazz) {
         if (clazz == null) {
@@ -52,7 +54,8 @@ public class ValidatorAdvisor {
         try {
             Constructor<? extends IValidator<?>> constructor = validatorClass.getDeclaredConstructor();
             return constructor.newInstance();
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
+                 InvocationTargetException e) {
             throw new MyValidableAnnotationException("Failed to instantiate validator.", e);
         }
     }
