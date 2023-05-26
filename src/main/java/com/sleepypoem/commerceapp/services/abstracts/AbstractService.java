@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Slf4j
-public abstract class AbstractService<E extends IEntity> implements IService<E> {
+public abstract class AbstractService<E extends IEntity<?>> implements IService<E> {
 
     @Override
     public E getOneById(Long id) {

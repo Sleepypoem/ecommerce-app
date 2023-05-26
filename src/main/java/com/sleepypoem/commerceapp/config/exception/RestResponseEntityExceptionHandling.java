@@ -35,14 +35,12 @@ public class RestResponseEntityExceptionHandling extends ResponseEntityException
         String msg = null;
         Throwable cause = ex.getCause();
 
-        if (cause instanceof JsonParseException) {
-            JsonParseException jpe = (JsonParseException) cause;
+        if (cause instanceof JsonParseException jpe) {
             msg = jpe.getOriginalMessage();
         }
 
         // special case of JsonMappingException below, too much class detail in error messages
-        else if (cause instanceof MismatchedInputException) {
-            MismatchedInputException mie = (MismatchedInputException) cause;
+        else if (cause instanceof MismatchedInputException mie) {
             if (mie.getPath() != null && mie.getPath().size() > 0) {
                 msg = "Invalid request field: " + mie.getPath().get(0).getFieldName();
             }
@@ -51,8 +49,7 @@ public class RestResponseEntityExceptionHandling extends ResponseEntityException
             else {
                 msg = "Invalid request message";
             }
-        } else if (cause instanceof JsonMappingException) {
-            JsonMappingException jme = (JsonMappingException) cause;
+        } else if (cause instanceof JsonMappingException jme) {
             msg = jme.getOriginalMessage();
             if (jme.getPath() != null && jme.getPath().size() > 0) {
                 msg = "Invalid request field: " + jme.getPath().get(0).getFieldName() +

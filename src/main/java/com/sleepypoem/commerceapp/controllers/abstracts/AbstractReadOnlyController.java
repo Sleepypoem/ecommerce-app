@@ -8,7 +8,7 @@ import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
 
 import java.util.List;
 
-public abstract class AbstractReadOnlyController<D extends IDto, E extends IEntity> implements ReadOnlyController<D> {
+public abstract class AbstractReadOnlyController<D extends IDto<?>, E extends IEntity<?>> implements ReadOnlyController<D> {
 
     protected abstract AbstractService<E> getService();
 

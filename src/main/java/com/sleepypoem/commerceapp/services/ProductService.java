@@ -4,7 +4,6 @@ import com.sleepypoem.commerceapp.annotations.Validable;
 import com.sleepypoem.commerceapp.domain.entities.ProductEntity;
 import com.sleepypoem.commerceapp.repositories.ProductRepository;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
-import com.sleepypoem.commerceapp.services.validators.IValidator;
 import com.sleepypoem.commerceapp.services.validators.impl.ValidateProduct;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,7 @@ public class ProductService extends AbstractService<ProductEntity> {
         return dao;
     }
 
-    public ProductService(ProductRepository dao, IValidator<ProductEntity> validator) {
+    public ProductService(ProductRepository dao) {
         this.dao = dao;
     }
 

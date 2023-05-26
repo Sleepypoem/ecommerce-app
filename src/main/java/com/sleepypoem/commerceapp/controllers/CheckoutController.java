@@ -23,7 +23,7 @@ import java.util.List;
 @Slf4j
 public class CheckoutController extends AbstractController<CheckoutDto, CheckoutEntity> {
 
-    private CheckoutService service;
+    private final CheckoutService service;
 
     protected CheckoutController(BaseMapper<CheckoutEntity, CheckoutDto> mapper, CheckoutService service) {
         super(mapper);
