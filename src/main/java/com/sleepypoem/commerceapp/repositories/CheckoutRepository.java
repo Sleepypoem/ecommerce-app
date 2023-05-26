@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface CheckoutRepository extends JpaRepository<CheckoutEntity, Long> {
-    public List<CheckoutEntity> findByUserId(String userId);
+    List<CheckoutEntity> findByUserId(String userId);
 }
