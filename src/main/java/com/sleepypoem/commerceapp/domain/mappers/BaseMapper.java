@@ -9,6 +9,7 @@ public abstract class BaseMapper<E, D> {
 
     /**
      * Convert a DTO to an entity.
+     *
      * @param dto the DTO to convert.
      * @return the entity.
      */
@@ -16,6 +17,7 @@ public abstract class BaseMapper<E, D> {
 
     /**
      * Convert an entity to a DTO.
+     *
      * @param entity the entity to convert.
      * @return the DTO.
      */
