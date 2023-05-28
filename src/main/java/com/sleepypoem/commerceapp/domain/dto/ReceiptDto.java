@@ -1,8 +1,6 @@
 package com.sleepypoem.commerceapp.domain.dto;
 
 import com.sleepypoem.commerceapp.domain.abstracts.AbstractDto;
-import com.sleepypoem.commerceapp.domain.entities.AddressEntity;
-import com.sleepypoem.commerceapp.domain.entities.CheckoutItemEntity;
 import com.sleepypoem.commerceapp.domain.enums.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,10 +27,10 @@ public class ReceiptDto extends AbstractDto<Long> {
 
     private String paymentMethod;
 
-    private AddressEntity shippingAddress;
+    private AddressDto shippingAddress;
 
 
-    private List<CheckoutItemEntity> items;
+    private List<CheckoutItemDto> items;
 
     private Double total;
 

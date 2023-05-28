@@ -1,7 +1,6 @@
 package com.sleepypoem.commerceapp.domain.dto;
 
 import com.sleepypoem.commerceapp.domain.abstracts.AbstractDto;
-import com.sleepypoem.commerceapp.domain.entities.ReceiptEntity;
 import com.sleepypoem.commerceapp.domain.enums.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +15,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class PaymentDto extends AbstractDto<Long> {
     private String userId;
-    private ReceiptEntity receipt;
+    private ReceiptDto receipt;
     private PaymentStatus status;
 
     @Override

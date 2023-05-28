@@ -2,9 +2,6 @@ package com.sleepypoem.commerceapp.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sleepypoem.commerceapp.domain.abstracts.AbstractDto;
-import com.sleepypoem.commerceapp.domain.entities.AddressEntity;
-import com.sleepypoem.commerceapp.domain.entities.CheckoutItemEntity;
-import com.sleepypoem.commerceapp.domain.entities.PaymentMethodEntity;
 import com.sleepypoem.commerceapp.domain.enums.CheckoutStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,9 +18,9 @@ import java.util.List;
 @SuperBuilder
 public class CheckoutDto extends AbstractDto<Long> {
     private String userId;
-    private List<CheckoutItemEntity> items;
-    private AddressEntity address;
-    private PaymentMethodEntity paymentMethod;
+    private List<CheckoutItemDto> items;
+    private AddressDto address;
+    private PaymentMethodDto paymentMethod;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private CheckoutStatus status;

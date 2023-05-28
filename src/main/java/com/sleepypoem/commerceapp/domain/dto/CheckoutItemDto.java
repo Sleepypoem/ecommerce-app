@@ -1,7 +1,6 @@
 package com.sleepypoem.commerceapp.domain.dto;
 
 import com.sleepypoem.commerceapp.domain.abstracts.AbstractDto;
-import com.sleepypoem.commerceapp.domain.entities.ProductEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 public class CheckoutItemDto extends AbstractDto<Long> {
-    private ProductEntity product;
+    private ProductDto product;
     private int quantity;
 
     @Override
