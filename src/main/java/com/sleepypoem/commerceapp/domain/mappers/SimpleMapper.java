@@ -10,12 +10,14 @@ public abstract class SimpleMapper<D extends AbstractDto<?>, E extends AbstractE
 
     /**
      * Get the DTO instance.
+     *
      * @return the DTO instance.
      */
     public abstract D getDtoInstance();
 
     /**
      * Get the entity instance.
+     *
      * @return the entity instance.
      */
     public abstract E getEntityInstance();
