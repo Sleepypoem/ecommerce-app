@@ -1,5 +1,6 @@
 package com.sleepypoem.commerceapp.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sleepypoem.commerceapp.domain.abstracts.AbstractEntity;
 import com.sleepypoem.commerceapp.domain.enums.CheckoutStatus;
@@ -25,7 +26,8 @@ public class CheckoutEntity extends AbstractEntity<Long> {
     @NotNull
     private String userId;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "checkout")
+    @JsonManagedReference
     private List<CheckoutItemEntity> items;
 
     @OneToOne

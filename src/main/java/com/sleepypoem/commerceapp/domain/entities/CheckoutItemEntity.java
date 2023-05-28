@@ -1,12 +1,9 @@
 package com.sleepypoem.commerceapp.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.sleepypoem.commerceapp.domain.abstracts.AbstractEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,8 +23,12 @@ public class CheckoutItemEntity extends AbstractEntity<Long> {
     @NotNull
     private ProductEntity product;
 
-    @PositiveOrZero
     private int quantity;
+
+    @ManyToOne
+    @JoinColumn(name = "checkout_id", referencedColumnName = "id")
+    @JsonBackReference
+    private CheckoutEntity checkout;
 
     @Override
     public String toString() {
