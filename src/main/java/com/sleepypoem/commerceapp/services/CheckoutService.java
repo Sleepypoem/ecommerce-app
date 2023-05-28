@@ -1,6 +1,7 @@
 package com.sleepypoem.commerceapp.services;
 
 import com.sleepypoem.commerceapp.annotations.Validable;
+import com.sleepypoem.commerceapp.annotations.ValidableMethod;
 import com.sleepypoem.commerceapp.domain.entities.*;
 import com.sleepypoem.commerceapp.domain.enums.CheckoutStatus;
 import com.sleepypoem.commerceapp.repositories.CheckoutRepository;
@@ -9,9 +10,11 @@ import com.sleepypoem.commerceapp.services.validators.impl.ValidateCheckout;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Validable(ValidateCheckout.class)
@@ -36,25 +39,41 @@ public class CheckoutService extends AbstractService<CheckoutEntity> {
     }
 
     @Override
+    @ValidableMethod
     public CheckoutEntity create(CheckoutEntity checkout) {
-        reserveProducts(checkout);
+        reserveProducts(checkout.getItems());
         checkout.setStatus(CheckoutStatus.PENDING);
+        List<CheckoutItemEntity> items = new ArrayList<>();
+        for (CheckoutItemEntity checkoutItemEntity : checkout.getItems()) {
+            checkoutItemEntity.setCheckout(checkout);
+            items.add(checkoutItemService.create(checkoutItemEntity));
+        }
+        checkoutItemService.create(items);
         return super.create(checkout);
     }
 
-    private void reserveProducts(CheckoutEntity checkout) {
-        for (CheckoutItemEntity item : checkout.getItems()) {
+    private void reserveProducts(List<CheckoutItemEntity> items) {
+        for (CheckoutItemEntity item : items) {
             ProductEntity product = productService.getOneById(item.getProduct().getId());
-            log.info(String.valueOf(item.getQuantity()));
-            productService.modifyStock(product.getId(), product.getStock() - item.getQuantity());
+            manageStock(product.getStock(), item.getQuantity() + product.getStock(), product.getId());
         }
     }
 
     private void returnProducts(CheckoutItemEntity item) {
-        productService.modifyStock(item.getProduct().getId(), item.getProduct().getStock() + item.getQuantity());
+        manageStock(item.getProduct().getStock(), item.getProduct().getStock() - item.getQuantity(), item.getProduct().getId());
     }
 
-    public List<CheckoutEntity> getByUserId(String userId) {
+    private void addStock(Long productId, int quantity) {
+        ProductEntity product = productService.getOneById(productId);
+        productService.modifyStock(product.getId(), product.getStock() + quantity);
+    }
+
+    private void removeStock(Long productId, int quantity) {
+        ProductEntity product = productService.getOneById(productId);
+        productService.modifyStock(product.getId(), product.getStock() - quantity);
+    }
+
+    public List<CheckoutEntity> findAllByUserId(String userId) {
         return dao.findByUserId(userId);
     }
 
@@ -64,46 +83,62 @@ public class CheckoutService extends AbstractService<CheckoutEntity> {
         List<CheckoutItemEntity> items = checkout.getItems();
         items.addAll(checkoutItems);
         checkout.setItems(items);
-        reserveProducts(checkout);
+        reserveProducts(checkout.getItems());
         log.info(checkout.toString());
         return update(id, checkout);
     }
 
-    public CheckoutEntity removeItem(Long id, Long checkoutItemId) {
-
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void removeItem(Long id, Long checkoutItemId) {
         CheckoutEntity checkout = getOneById(id);
         CheckoutItemEntity checkoutItem = checkoutItemService.getOneById(checkoutItemId);
-
-        List<CheckoutItemEntity> items = checkout.getItems();
-        items.remove(checkoutItem);
-        checkout.setItems(items);
+        ServicePreconditions.checkExpression(checkout.getItems().contains(checkoutItem), "Item not found in this checkout");
+        checkoutItemService.delete(checkoutItemId);
         returnProducts(checkoutItem);
-        log.info(checkout.toString());
-        CheckoutEntity result = dao.save(checkout);
-
-        if (result.getItems().isEmpty()) {
-            getDao().deleteById(id);
-            return null;
+        if (checkout.getItems().size() == 1) {
+            dao.delete(checkout);
         }
-        return result;
     }
 
-    public CheckoutEntity modifyItemQuantity(Long id, Long itemId, int quantity) {
+    @Transactional(propagation = Propagation.NESTED)
+    public void cleanCart(Long id) {
+        CheckoutEntity checkout = getOneById(id);
+        for (CheckoutItemEntity item : checkout.getItems()) {
+            removeItem(id, item.getId());
+        }
+    }
+
+    /**
+     * Modifies the stock of a product based on the current and new quantities.
+     *
+     * @param currentQuantity The current quantity of the product in stock.
+     * @param newQuantity     The new quantity to set for the product.
+     * @param productId       The ID of the product.
+     */
+    private void manageStock(int currentQuantity, int newQuantity, Long productId) {
+        int difference = currentQuantity - newQuantity;
+        if (difference > 0) {
+            addStock(productId, difference);
+        } else {
+            removeStock(productId, Math.abs(difference));
+        }
+    }
+
+    public void modifyItemQuantity(Long id, Long itemId, int quantity) {
         CheckoutEntity checkout = getOneById(id);
         CheckoutItemEntity item = checkoutItemService.getOneById(itemId);
+        int currentQuantity = item.getQuantity();
 
-        CheckoutItemEntity modifiedItem = checkoutItemService.modifyQuantity(itemId, quantity);
-        List<CheckoutItemEntity> items = checkout.getItems();
-        items = items.stream().filter(i -> !i.equals(item)).collect(Collectors.toList());
-        items.add(modifiedItem);
-
-        return dao.save(checkout);
+        ServicePreconditions.checkExpression(checkout.getItems().contains(item), "Item not found in this checkout");
+        item.setQuantity(quantity);
+        manageStock(currentQuantity, quantity, item.getProduct().getId());
+        checkoutItemService.update(itemId, item);
     }
 
     public CheckoutEntity addPreferredAddress(Long id, AddressEntity address) {
         CheckoutEntity checkout = getOneById(id);
         checkout.setAddress(address);
-        return dao.save(checkout);
+        return update(id, checkout);
     }
 
     public void setStatusToCompleted(Long id) {
@@ -115,6 +150,6 @@ public class CheckoutService extends AbstractService<CheckoutEntity> {
     public CheckoutEntity addPreferredPaymentMethod(Long id, PaymentMethodEntity paymentMethod) {
         CheckoutEntity checkout = getOneById(id);
         checkout.setPaymentMethod(paymentMethod);
-        return dao.save(checkout);
+        return update(id, checkout);
     }
 }
