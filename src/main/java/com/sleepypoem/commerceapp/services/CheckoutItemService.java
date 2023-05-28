@@ -7,6 +7,10 @@ import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
 import com.sleepypoem.commerceapp.services.validators.impl.ValidateCheckoutItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Validable(ValidateCheckoutItem.class)
@@ -28,5 +32,14 @@ public class CheckoutItemService extends AbstractService<CheckoutItemEntity> {
         item.setQuantity(quantity);
 
         return update(id, item);
+    }
+
+    @Transactional
+    public List<CheckoutItemEntity> create(List<CheckoutItemEntity> items) {
+        List<CheckoutItemEntity> createdItems = new ArrayList<>();
+        for (CheckoutItemEntity item : items) {
+            createdItems.add(create(item));
+        }
+        return createdItems;
     }
 }
