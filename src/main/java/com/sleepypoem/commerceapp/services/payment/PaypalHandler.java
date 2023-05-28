@@ -33,8 +33,8 @@ public class PaypalHandler implements IHandler {
     public void setPaymentMethod(PaymentRequestDto paymentRequest) {
         this.paymentRequest = paymentRequest;
         this.checkout = paymentRequest.getCheckout();
-        this.address = paymentRequest.getCheckout().getAddress();
-        this.paymentMethod = paymentRequest.getCheckout().getPaymentMethod();
+        //this.address = paymentRequest.getCheckout().getAddress();
+        //this.paymentMethod = paymentRequest.getCheckout().getPaymentMethod();
         this.user = paymentRequest.getUser();
 
     }
@@ -68,7 +68,7 @@ public class PaypalHandler implements IHandler {
                 .init()
                 .addTimeStamps(localDateTime)
                 .setStatus(String.valueOf(status))
-                .fillItemList(checkout.getItems())
+                //.fillItemList(checkout.getItems())
                 .fillShippingAddress(address)
                 .fillUserInfo(user)
                 .build();
