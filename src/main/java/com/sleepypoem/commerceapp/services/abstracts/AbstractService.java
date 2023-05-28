@@ -16,10 +16,21 @@ public abstract class AbstractService<E extends IEntity<?>> implements IService<
 
     @Override
     public E getOneById(Long id) {
-        return getDao().findById(id).orElseThrow(() -> new MyEntityNotFoundException("Entity with id " + id + " not found"));
+        return getDao().findById(id).orElseThrow(() -> new MyEntityNotFoundException(getEntityName() + " with id " + id + " not found"));
+    }
+
+    /**
+     * Gets the name of the entity by removing "service" from the name of the class inheriting this class.
+     *
+     * @return the name of the entity
+     */
+    private String getEntityName() {
+        String className = this.getClass().getSimpleName();
+        return className.substring(0, className.length() - 7);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<E> getAll() {
         return getDao().findAll();
     }
@@ -42,13 +53,14 @@ public abstract class AbstractService<E extends IEntity<?>> implements IService<
     }
 
     @Override
+    @Transactional
     public boolean delete(Long id) {
         E entity = getOneById(id);
         try {
             getDao().delete(entity);
             return true;
         } catch (Exception e) {
-            log.error("Error while deleting entity with id {}.", id);
+            log.error("Error while deleting {} with id {}. Error: {}", getEntityName(), id, e.getMessage());
             return false;
         }
     }
