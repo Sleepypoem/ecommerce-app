@@ -7,9 +7,7 @@ import com.sleepypoem.commerceapp.domain.dto.UserRepresentationDto;
 import com.sleepypoem.commerceapp.exceptions.MyBadRequestException;
 import com.sleepypoem.commerceapp.exceptions.MyUserNameAlreadyUsedException;
 import com.sleepypoem.commerceapp.exceptions.MyUserNotFoundException;
-import com.sleepypoem.commerceapp.services.helpers.UserResourceBinder;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -35,9 +33,6 @@ public class UserService {
 
     private final String realmName;
 
-    @Autowired
-    private UserResourceBinder binder;
-
     public UserService(ObjectMapper mapper, @Value("${auth-server.admin-rest-prefix}") String uriPrefix,
                        @Value("${auth-server.realm-name}") String realmName,
                        @Value("${auth-server.token-endpoint}") String tokenEndpoint) throws Exception {
@@ -59,11 +54,7 @@ public class UserService {
 
         String responseBody = trimFirstAndLastChar(response.getBody());
         log.info("User found, attaching addresses, payment methods and checkouts");
-        UserDto user = mapper.readValue(responseBody, UserDto.class);
-        binder.attachAddresses(user);
-        binder.attachCheckout(user);
-        binder.attachPaymentMethods(user);
-        return user;
+        return mapper.readValue(responseBody, UserDto.class);
     }
 
     public UserDto getUserById(String id) throws Exception {
@@ -75,12 +66,8 @@ public class UserService {
 
         ResponseEntity<String> response = makeRequest(uriPrefix + realmName + "/users/" + id, HttpMethod.GET, entity);
         log.info("User found, attaching addresses, payment methods and checkouts");
-        UserDto user = mapper.readValue(response.getBody(), UserDto.class);
-        binder.attachAddresses(user);
-        binder.attachCheckout(user);
-        binder.attachPaymentMethods(user);
 
-        return user;
+        return mapper.readValue(response.getBody(), UserDto.class);
     }
 
     public String addUser(UserRepresentationDto user) throws Exception {
