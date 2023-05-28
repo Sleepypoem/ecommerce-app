@@ -6,8 +6,6 @@ import com.sleepypoem.commerceapp.domain.entities.ProductEntity;
 import com.sleepypoem.commerceapp.services.ProductService;
 import com.sleepypoem.commerceapp.services.UserService;
 import com.sleepypoem.commerceapp.services.validators.IValidator;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -16,16 +14,10 @@ import java.util.Map;
 @Component
 public class ValidateCheckout implements IValidator<CheckoutEntity> {
 
-    @Autowired
-    @Lazy
-    UserService userService;
-
-    @Autowired
-    @Lazy
-    ProductService productService;
-
     @Override
     public Map<String, String> isValid(CheckoutEntity checkout) {
+        UserService userService = getApplicationContext().getBean(UserService.class);
+        ProductService productService = getApplicationContext().getBean(ProductService.class);
         Map<String, String> errors = new HashMap<>();
         try {
             userService.getUserById(checkout.getUserId());
@@ -38,7 +30,7 @@ public class ValidateCheckout implements IValidator<CheckoutEntity> {
             ProductEntity product = productService.getOneById(item.getProduct().getId());
 
             if ((product.getStock() - item.getQuantity()) < 0) {
-                errors.put("stock", "The stock is not enough.");
+                errors.put("stock", "The stock is not enough. Current stock: " + product.getStock() + ".");
             }
         }
 
