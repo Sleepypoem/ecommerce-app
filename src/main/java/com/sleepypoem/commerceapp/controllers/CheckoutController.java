@@ -2,6 +2,7 @@ package com.sleepypoem.commerceapp.controllers;
 
 import com.sleepypoem.commerceapp.controllers.abstracts.AbstractController;
 import com.sleepypoem.commerceapp.domain.dto.CheckoutDto;
+import com.sleepypoem.commerceapp.domain.dto.CheckoutItemDto;
 import com.sleepypoem.commerceapp.domain.dto.ResourceStatusResponseDto;
 import com.sleepypoem.commerceapp.domain.entities.AddressEntity;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutEntity;
@@ -41,13 +42,16 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CheckoutDto> update(@PathVariable Long id, @RequestBody CheckoutEntity checkout) throws Exception {
+    public ResponseEntity<CheckoutDto> update(@PathVariable Long id, @RequestBody CheckoutEntity checkout) {
         return ResponseEntity.ok().body(updateInternal(id, checkout));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) {
-        return ResponseEntity.ok().body("Checkout with id " + " id has been deleted.");
+        boolean deleted = deleteInternal(id);
+        return ResponseEntity.ok().body(
+                deleted ? "Checkout with id " + id + " has been deleted." : "Checkout with id " + id + " has not been deleted."
+        );
     }
 
     @GetMapping("/{id}")
@@ -57,7 +61,7 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
 
     @GetMapping
     public ResponseEntity<List<CheckoutDto>> getByUserId(@RequestParam(value = "user-id") String userId) {
-        List<CheckoutEntity> checkouts = service.getByUserId(userId);
+        List<CheckoutEntity> checkouts = service.findAllByUserId(userId);
         return ResponseEntity.ok().body(mapper.convertToDtoList(checkouts));
     }
 
@@ -67,16 +71,29 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
     }
 
     @DeleteMapping("/{id}/items/{item-id}")
-    public ResponseEntity<CheckoutDto> removeItemFromCart(@PathVariable("id") Long id,
-                                                          @PathVariable("item-id") Long itemId) {
-        return ResponseEntity.ok().body(mapper.convertToDto(service.removeItem(id, itemId)));
+    public ResponseEntity<Void> removeItemFromCart(@PathVariable("id") Long id,
+                                                @PathVariable("item-id") Long itemId) {
+        service.removeItem(id, itemId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}/items")
+    public ResponseEntity<Void> removeAllItemsFromCart(@PathVariable("id") Long id) {
+        service.cleanCart(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/items/{item-id}")
     public ResponseEntity<CheckoutDto> modifyQuantity(@PathVariable("id") Long id,
                                                       @PathVariable("item-id") Long itemId,
                                                       @RequestBody int quantity) {
-        return ResponseEntity.ok().body(mapper.convertToDto(service.modifyItemQuantity(id, itemId, quantity)));
+        service.modifyItemQuantity(id, itemId, quantity);
+        return ResponseEntity.ok().body(getOneByIdInternal(id));
+    }
+
+    @GetMapping("/{id}/items")
+    public ResponseEntity<List<CheckoutItemDto>> getItems(@PathVariable Long id) {
+        return ResponseEntity.ok().body(getOneByIdInternal(id).getItems());
     }
 
     @PostMapping("/{id}/address")
