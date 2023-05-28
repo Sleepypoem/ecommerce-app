@@ -64,7 +64,8 @@ public class RestResponseEntityExceptionHandling extends ResponseEntityException
             MyResourceNotFoundException.class,
             MyValidationException.class,
             MyUserNameAlreadyUsedException.class,
-            MyUserNotFoundException.class
+            MyUserNotFoundException.class,
+            MyValidableAnnotationException.class
     })
     public ResponseEntity<Object> handleBadRequest(Exception ex, WebRequest request) {
         return handleExceptionInternal(ex, message(HttpStatus.BAD_REQUEST, ex), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
