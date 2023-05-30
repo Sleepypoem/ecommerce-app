@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.sleepypoem</groupId>
     <artifactId>commerceapp</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.4-SNAPSHOT</version>
     <name>commerceapp</name>
     <description>Final project of trainee program.</description>
     <properties>
@@ -91,11 +91,16 @@
             <version>3.12.0</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->
+        <!-- Utils -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
             <version>3.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.modelmapper</groupId>
+            <artifactId>modelmapper</artifactId>
+            <version>3.0.0</version>
         </dependency>
 
         <dependency>

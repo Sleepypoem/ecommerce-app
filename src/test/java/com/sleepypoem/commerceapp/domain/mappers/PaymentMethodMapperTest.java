@@ -2,83 +2,85 @@ package com.sleepypoem.commerceapp.domain.mappers;
 
 import com.sleepypoem.commerceapp.domain.dto.PaymentMethodDto;
 import com.sleepypoem.commerceapp.domain.entities.PaymentMethodEntity;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
+import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class PaymentMethodMapperTest {
-    PaymentMethodMapper mapper;
+class PaymentMethodMapperTest {
 
-    @BeforeEach
-    void init() {
-        mapper = new PaymentMethodMapper();
+    PaymentMethodMapper mapper = new PaymentMethodMapper();
+
+    @Test
+    @DisplayName("Testing if DTO is mapped to an entity")
+    void testMappingDtoToEntity() {
+        //arrange
+        PaymentMethodDto paymentMethodDto = new PaymentMethodDto();
+        paymentMethodDto.setId(1L);
+        paymentMethodDto.setUserId("User id");
+        //act
+        var result = mapper.convertToEntity(paymentMethodDto);
+        //assert
+        assertAll(
+                () -> assertEquals(paymentMethodDto.getId(), result.getId()),
+                () -> assertEquals(paymentMethodDto.getUserId(), result.getUserId())
+        );
     }
 
     @Test
-    void testMethodReturnsEntityInstance() {
-        PaymentMethodEntity entity = mapper.getEntityInstance();
-        assertNotNull(entity);
+    @DisplayName("Testing if entity is mapped to a DTO")
+    void testMappingEntityToDto() {
+        //arrange
+        PaymentMethodEntity paymentMethodEntity = new PaymentMethodEntity();
+        paymentMethodEntity.setId(1L);
+        paymentMethodEntity.setUserId("User id");
+        //act
+        var result = mapper.convertToDto(paymentMethodEntity);
+        //assert
+        assertAll(
+                () -> assertEquals(paymentMethodEntity.getId(), result.getId()),
+                () -> assertEquals(paymentMethodEntity.getUserId(), result.getUserId())
+        );
     }
 
     @Test
-    void testMethodReturnsDtoInstance() {
-        PaymentMethodDto dto = mapper.getDtoInstance();
-        assertNotNull(dto);
+    @DisplayName("Testing if a DTO list is mapped to a entity list")
+    void testMappingDtoListToEntityList() {
+        //arrange
+        PaymentMethodDto paymentMethodDto1 = new PaymentMethodDto();
+        paymentMethodDto1.setId(1L);
+
+        PaymentMethodDto paymentMethodDto2 = new PaymentMethodDto();
+        paymentMethodDto2.setId(2L);
+        List<PaymentMethodDto> dtos = List.of(paymentMethodDto1, paymentMethodDto2);
+        //act
+        var result = mapper.convertToEntityList(dtos);
+        //assert
+        assertAll(
+                () -> assertEquals(paymentMethodDto1.getId(), result.get(0).getId()),
+                () -> assertEquals(paymentMethodDto2.getId(), result.get(1).getId())
+        );
     }
 
     @Test
-    void testMapEntityToDto() {
-        PaymentMethodEntity entity = PaymentMethodEntity.
-                builder()
-                .id(1L)
-                .build();
-
-        PaymentMethodDto mappedDto = mapper.convertToDto(entity);
-        Long expected = entity.getId();
-        Long actual = mappedDto.getId();
-        assertThat(actual, is(equalTo(expected)));
+    @DisplayName("Testing if an entity list is mapped to a DTO list")
+    void testMappingEntityListToDtoList() {
+        //arrange
+        PaymentMethodEntity paymentMethodEntity1 = new PaymentMethodEntity();
+        paymentMethodEntity1.setId(1L);
+        PaymentMethodEntity paymentMethodEntity2 = new PaymentMethodEntity();
+        paymentMethodEntity2.setId(2L);
+        List<PaymentMethodEntity> entities = List.of(paymentMethodEntity1, paymentMethodEntity2);
+        //act
+        var result = mapper.convertToDtoList(entities);
+        //assert
+        assertAll(
+                () -> assertEquals(paymentMethodEntity1.getId(), result.get(0).getId()),
+                () -> assertEquals(paymentMethodEntity2.getId(), result.get(1).getId())
+        );
     }
 
-    @Test
-    void testMapDtoToEntity() {
-        PaymentMethodDto dto = PaymentMethodDto
-                .builder()
-                .id(1L)
-                .build();
-
-        PaymentMethodEntity mappedEntity = mapper.convertToEntity(dto);
-        Long expected = dto.getId();
-        Long actual = mappedEntity.getId();
-        assertThat(actual, is(equalTo(expected)));
-    }
-
-    @Test
-    void testMapDtoListToEntityList() {
-        ArrayList<PaymentMethodDto> dtoList = new ArrayList<>();
-        dtoList.add(PaymentMethodDto.builder().id(1L).build());
-        dtoList.add(PaymentMethodDto.builder().id(2L).build());
-
-        ArrayList<PaymentMethodEntity> mappedEntityList = (ArrayList<PaymentMethodEntity>) mapper.convertToEntity(dtoList);
-        String expected = dtoList.get(0).toString();
-        String actual = mappedEntityList.get(0).toString();
-        assertThat(actual, is(equalTo(expected)));
-    }
-
-    @Test
-    void testMapEntityListToDtoList() {
-        ArrayList<PaymentMethodEntity> entityList = new ArrayList<>();
-        entityList.add(PaymentMethodEntity.builder().id(1L).build());
-        entityList.add(PaymentMethodEntity.builder().id(2L).build());
-
-        ArrayList<PaymentMethodDto> mappedDtoList = (ArrayList<PaymentMethodDto>) mapper.convertToDto(entityList);
-        String expected = entityList.get(0).toString();
-        String actual = mappedDtoList.get(0).toString();
-        assertThat(actual, is(equalTo(expected)));
-    }
 }

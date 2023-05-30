@@ -1,22 +1,21 @@
 package com.sleepypoem.commerceapp.domain.dto;
 
-import com.sleepypoem.commerceapp.domain.entities.AddressEntity;
-import com.sleepypoem.commerceapp.domain.entities.CheckoutItemEntity;
+import com.sleepypoem.commerceapp.domain.abstracts.AbstractDto;
 import com.sleepypoem.commerceapp.domain.enums.PaymentStatus;
-import com.sleepypoem.commerceapp.domain.interfaces.IDto;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@Builder
-public class ReceiptDto implements IDto {
-
-    private Long id;
+@SuperBuilder
+public class ReceiptDto extends AbstractDto<Long> {
 
     private String userFirstName;
 
@@ -24,23 +23,16 @@ public class ReceiptDto implements IDto {
 
     private String currencyType;
 
-    private LocalDateTime createdAt;
-
     private PaymentStatus status;
 
     private String paymentMethod;
 
-    private AddressEntity shippingAddress;
+    private AddressDto shippingAddress;
 
 
-    private List<CheckoutItemEntity> items;
+    private List<CheckoutItemDto> items;
 
     private Double total;
-
-    @Override
-    public Long getId() {
-        return id;
-    }
 
     @Override
     public String toString() {
@@ -54,6 +46,8 @@ public class ReceiptDto implements IDto {
                 ", paymentMethod='" + paymentMethod + '\'' +
                 ", shippingAddress=" + shippingAddress +
                 ", total=" + total +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
                 '}';
     }
 }

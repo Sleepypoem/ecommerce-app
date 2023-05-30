@@ -1,32 +1,30 @@
 package com.sleepypoem.commerceapp.domain.entities;
 
+import com.sleepypoem.commerceapp.domain.abstracts.AbstractEntity;
 import com.sleepypoem.commerceapp.domain.enums.PaymentStatus;
-import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
-import jakarta.persistence.*;
-import lombok.*;
-
-import java.time.LocalDateTime;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "receipts")
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReceiptEntity implements IEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class ReceiptEntity extends AbstractEntity<Long> {
 
     private String userFirstName;
 
     private String userLastName;
 
     private String currencyType;
-
-    private LocalDateTime createdAt;
 
     private PaymentStatus status;
 
@@ -37,23 +35,20 @@ public class ReceiptEntity implements IEntity {
 
     private Double total;
 
-    @Override
-    public Long getId() {
-        return id;
-    }
 
     @Override
     public String toString() {
-        return "{" +
+        return "ReceiptEntity{" +
                 "id=" + id +
                 ", userFirstName='" + userFirstName + '\'' +
                 ", userLastName='" + userLastName + '\'' +
                 ", currencyType='" + currencyType + '\'' +
-                ", createdAt=" + createdAt +
                 ", status=" + status +
                 ", paymentMethod='" + paymentMethod + '\'' +
                 ", shippingAddress=" + shippingAddress +
                 ", total=" + total +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
                 '}';
     }
 }

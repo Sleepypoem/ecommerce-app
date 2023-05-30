@@ -1,31 +1,33 @@
 package com.sleepypoem.commerceapp.utils;
 
-import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.sleepypoem.commerceapp.domain.entities.ProductEntity;
+import org.junit.jupiter.api.Test;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class TestEntity implements IEntity {
-    private Long id;
+public class TestEntity {
 
-    private String property1;
-
-    private int property2;
-
-    @Override
-    public Long getId() {
-        return id;
+    @Test
+    void testTwoProductsAreEqualsIfTheyHaveTheSameId() {
+        // given
+        ProductEntity testEntity1 = new ProductEntity();
+        testEntity1.setId(1L);
+        ProductEntity testEntity2 = new ProductEntity();
+        testEntity2.setId(1L);
+        // when
+        boolean result = testEntity1.equals(testEntity2);
+        // then
+        assert result;
     }
 
-    @Override
-    public String toString() {
-        return "{" +
-                "\"id\" : \"" + id + "\"" +
-                ", \"property1\" : \"" + property1 + "\"" +
-                ", \"property2\" : \"" + property2 + "\"" +
-                '}';
+    @Test
+    void testTwoProductsAreNotEqualsIfTheyHaveDifferentId() {
+        // given
+        ProductEntity testEntity1 = new ProductEntity();
+        testEntity1.setId(1L);
+        ProductEntity testEntity2 = new ProductEntity();
+        testEntity2.setId(2L);
+        // when
+        boolean result = testEntity1.equals(testEntity2);
+        // then
+        assert !result;
     }
 }

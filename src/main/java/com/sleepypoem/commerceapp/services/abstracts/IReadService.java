@@ -1,13 +1,21 @@
 package com.sleepypoem.commerceapp.services.abstracts;
 
-import com.sleepypoem.commerceapp.domain.interfaces.IDto;
-
 import java.util.List;
-import java.util.Optional;
 
-public interface IReadService<T extends IDto> {
+public interface IReadService<E> {
 
-    Optional<T> getOneById(Long id);
+    /**
+     * Gets an entity by id.
+     *
+     * @param id the id of the entity to get
+     * @return the entity
+     */
+    E getOneById(Long id);
 
-    List<T> getAll();
+    /**
+     * Gets all the entities
+     *
+     * @return the list of entities
+     */
+    List<E> getAll();
 }

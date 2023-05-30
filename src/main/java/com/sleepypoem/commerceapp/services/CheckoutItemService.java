@@ -1,56 +1,51 @@
 package com.sleepypoem.commerceapp.services;
 
-import com.sleepypoem.commerceapp.domain.dto.CheckoutItemDto;
+import com.sleepypoem.commerceapp.annotations.Validable;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutItemEntity;
-import com.sleepypoem.commerceapp.domain.mappers.BaseMapper;
-import com.sleepypoem.commerceapp.domain.mappers.CheckoutItemMapper;
-import com.sleepypoem.commerceapp.exceptions.MyEntityNotFoundException;
 import com.sleepypoem.commerceapp.repositories.CheckoutItemRepository;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
-import com.sleepypoem.commerceapp.services.validators.IValidator;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.sleepypoem.commerceapp.services.validators.impl.ValidateCheckoutItem;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
-@Transactional
-public class CheckoutItemService extends AbstractService<CheckoutItemDto, CheckoutItemEntity> {
+@Validable(ValidateCheckoutItem.class)
+public class CheckoutItemService extends AbstractService<CheckoutItemEntity> {
 
-    @Autowired
-    IValidator<CheckoutItemEntity> validateCheckoutItem;
+    private final CheckoutItemRepository dao;
 
-    @Autowired
-    CheckoutItemRepository dao;
-
-    @Autowired
-    CheckoutItemMapper mapper;
+    public CheckoutItemService(CheckoutItemRepository dao) {
+        this.dao = dao;
+    }
 
     @Override
     protected JpaRepository<CheckoutItemEntity, Long> getDao() {
         return dao;
     }
 
-    @Override
-    protected BaseMapper<CheckoutItemEntity, CheckoutItemDto> getMapper() {
-        return mapper;
-    }
-
-    @Override
-    protected IValidator<CheckoutItemEntity> getValidator() {
-        return validateCheckoutItem;
-    }
-
-    public CheckoutItemDto modifyQuantity(Long id, int quantity) {
-        Optional<CheckoutItemEntity> searchedItem = dao.findById(id);
-        if (searchedItem.isEmpty()) {
-            throw new MyEntityNotFoundException("Item with id " + id + " not found");
-        }
-        CheckoutItemEntity item = searchedItem.get();
+    public CheckoutItemEntity modifyQuantity(Long id, int quantity) {
+        CheckoutItemEntity item = getOneById(id);
         item.setQuantity(quantity);
 
-        return mapper.convertToDto(dao.save(item));
+        return update(id, item);
+    }
+
+    public Page<CheckoutItemEntity> getByCheckoutIdPaginatedAndSorted(Long checkoutId, int page, int size, String sortBy, String sortOrder) {
+        return dao.findByCheckoutId(checkoutId, PageRequest.of(page, size, createSort(sortBy, sortOrder)));
+    }
+
+    @Transactional
+    public List<CheckoutItemEntity> create(List<CheckoutItemEntity> items) {
+        List<CheckoutItemEntity> createdItems = new ArrayList<>();
+        for (CheckoutItemEntity item : items) {
+            createdItems.add(create(item));
+        }
+        return createdItems;
     }
 }

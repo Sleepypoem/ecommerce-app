@@ -1,16 +1,16 @@
 package com.sleepypoem.commerceapp.domain.dto;
 
-import com.sleepypoem.commerceapp.domain.interfaces.IDto;
+import com.sleepypoem.commerceapp.domain.abstracts.AbstractDto;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @ToString
-public class PaymentMethodDto implements IDto {
-    private Long id;
+public class PaymentMethodDto extends AbstractDto<Long> {
     private String paymentId;
     private String userId;
     private String paymentType;
@@ -22,6 +22,8 @@ public class PaymentMethodDto implements IDto {
                 ", paymentId='" + paymentId + '\'' +
                 ", userId='" + userId + '\'' +
                 ", paymentType='" + paymentType + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
                 '}';
     }
 }

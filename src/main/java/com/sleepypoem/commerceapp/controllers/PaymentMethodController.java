@@ -1,34 +1,33 @@
 package com.sleepypoem.commerceapp.controllers;
 
 import com.sleepypoem.commerceapp.controllers.abstracts.AbstractController;
+import com.sleepypoem.commerceapp.controllers.utils.Paginator;
+import com.sleepypoem.commerceapp.domain.dto.PaginatedDto;
 import com.sleepypoem.commerceapp.domain.dto.PaymentMethodDto;
 import com.sleepypoem.commerceapp.domain.dto.ResourceStatusResponseDto;
 import com.sleepypoem.commerceapp.domain.entities.PaymentMethodEntity;
-import com.sleepypoem.commerceapp.domain.mappers.PaymentMethodMapper;
-import com.sleepypoem.commerceapp.exceptions.MyResourceNotFoundException;
+import com.sleepypoem.commerceapp.domain.mappers.BaseMapper;
 import com.sleepypoem.commerceapp.services.PaymentMethodService;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("payment-methods")
 public class PaymentMethodController extends AbstractController<PaymentMethodDto, PaymentMethodEntity> {
 
-    @Autowired
     PaymentMethodService service;
 
-    @Autowired
-    PaymentMethodMapper mapper;
+    protected PaymentMethodController(BaseMapper<PaymentMethodEntity, PaymentMethodDto> mapper, PaymentMethodService service) {
+        super(mapper);
+        this.service = service;
+    }
 
     @Override
-    protected AbstractService<PaymentMethodDto, PaymentMethodEntity> getService() {
+    public AbstractService<PaymentMethodEntity> getService() {
         return service;
     }
 
@@ -44,17 +43,18 @@ public class PaymentMethodController extends AbstractController<PaymentMethodDto
 
     @GetMapping("/{id}")
     public ResponseEntity<PaymentMethodDto> findOneById(@PathVariable Long id) {
-        Optional<PaymentMethodDto> searched = getOneByIdInternal(id);
-        if (searched.isEmpty()) {
-            throw new MyResourceNotFoundException("Payment method with id " + " not found");
-        }
-        return ResponseEntity.ok().body(searched.get());
+
+        return ResponseEntity.ok().body(getOneByIdInternal(id));
     }
 
-    @GetMapping
-    public ResponseEntity<List<PaymentMethodDto>> getByUserId(@RequestParam(value = "user-id") String userId) {
-        List<PaymentMethodEntity> paymentMethods = service.findByUserId(userId);
-        return ResponseEntity.ok().body(mapper.convertToDtoList(paymentMethods));
+    @GetMapping(params = {"user-id"}, produces = "application/json")
+    public ResponseEntity<PaginatedDto<PaymentMethodDto>> getByUserId(@RequestParam(value = "user-id") String userId,
+                                                                      @RequestParam(value = "page", defaultValue = "0") int page,
+                                                                      @RequestParam(value = "size", defaultValue = "10") int size,
+                                                                      @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
+                                                                      @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
+        Paginator<PaymentMethodEntity, PaymentMethodDto> paginator = new Paginator<>(mapper);
+        return ResponseEntity.ok().body(paginator.getPaginatedDto(service.getAllPaginatedAndSortedByUserId(userId, page, size, sortBy, sortOrder), "payment-methods"));
     }
 
     @PutMapping("/{id}")

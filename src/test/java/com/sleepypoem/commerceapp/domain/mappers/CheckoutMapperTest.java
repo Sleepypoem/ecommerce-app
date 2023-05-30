@@ -2,84 +2,86 @@ package com.sleepypoem.commerceapp.domain.mappers;
 
 import com.sleepypoem.commerceapp.domain.dto.CheckoutDto;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutEntity;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
+import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class CheckoutMapperTest {
+class CheckoutMapperTest {
 
-    CheckoutMapper mapper;
+    CheckoutMapper mapper = new CheckoutMapper();
 
-    @BeforeEach
-    void init() {
-        mapper = new CheckoutMapper();
+    @Test
+    @DisplayName("Testing if DTO is mapped to an entity")
+    void testMappingDtoToEntity() {
+        //arrange
+        CheckoutDto checkoutDto = new CheckoutDto();
+        checkoutDto.setId(1L);
+        checkoutDto.setUserId("1");
+        //act
+        var result = mapper.convertToEntity(checkoutDto);
+        //assert
+        assertAll(
+                () -> assertEquals(checkoutDto.getId(), result.getId()),
+                () -> assertEquals(checkoutDto.getUserId(), result.getUserId())
+
+        );
     }
 
     @Test
-    void testMethodReturnsEntityInstance() {
-        CheckoutEntity entity = mapper.getEntityInstance();
-        assertNotNull(entity);
+    @DisplayName("Testing if entity is mapped to a DTO")
+    void testMappingEntityToDto() {
+        //arrange
+        CheckoutEntity checkoutEntity = new CheckoutEntity();
+        checkoutEntity.setId(1L);
+        checkoutEntity.setUserId("1");
+        //act
+        var result = mapper.convertToDto(checkoutEntity);
+        //assert
+        assertAll(
+                () -> assertEquals(checkoutEntity.getId(), result.getId()),
+                () -> assertEquals(checkoutEntity.getUserId(), result.getUserId())
+        );
     }
 
     @Test
-    void testMethodReturnsDtoInstance() {
-        CheckoutDto dto = mapper.getDtoInstance();
-        assertNotNull(dto);
+    @DisplayName("Testing if a DTO list is mapped to a entity list")
+    void testMappingDtoListToEntityList() {
+        //arrange
+        CheckoutDto checkoutDto1 = new CheckoutDto();
+        checkoutDto1.setId(1L);
+
+        CheckoutDto checkoutDto2 = new CheckoutDto();
+        checkoutDto2.setId(2L);
+        List<CheckoutDto> dtos = List.of(checkoutDto1, checkoutDto2);
+        //act
+        var result = mapper.convertToEntityList(dtos);
+        //assert
+        assertAll(
+                () -> assertEquals(checkoutDto1.getId(), result.get(0).getId()),
+                () -> assertEquals(checkoutDto2.getId(), result.get(1).getId())
+        );
     }
 
     @Test
-    void testMapEntityToDto() {
-        CheckoutEntity entity = CheckoutEntity.
-                builder()
-                .id(1L)
-                .build();
-
-        CheckoutDto mappedDto = mapper.convertToDto(entity);
-        Long expected = entity.getId();
-        Long actual = mappedDto.getId();
-        assertThat(actual, is(equalTo(expected)));
+    @DisplayName("Testing if an entity list is mapped to a DTO list")
+    void testMappingEntityListToDtoList() {
+        //arrange
+        CheckoutEntity checkoutEntity1 = new CheckoutEntity();
+        checkoutEntity1.setId(1L);
+        CheckoutEntity checkoutEntity2 = new CheckoutEntity();
+        checkoutEntity2.setId(2L);
+        List<CheckoutEntity> entities = List.of(checkoutEntity1, checkoutEntity2);
+        //act
+        var result = mapper.convertToDtoList(entities);
+        //assert
+        assertAll(
+                () -> assertEquals(checkoutEntity1.getId(), result.get(0).getId()),
+                () -> assertEquals(checkoutEntity2.getId(), result.get(1).getId())
+        );
     }
 
-    @Test
-    void testMapDtoToEntity() {
-        CheckoutDto dto = CheckoutDto
-                .builder()
-                .id(1L)
-                .build();
-
-        CheckoutEntity mappedEntity = mapper.convertToEntity(dto);
-        Long expected = dto.getId();
-        Long actual = mappedEntity.getId();
-        assertThat(actual, is(equalTo(expected)));
-    }
-
-    @Test
-    void testMapDtoListToEntityList() {
-        ArrayList<CheckoutDto> dtoList = new ArrayList<>();
-        dtoList.add(CheckoutDto.builder().id(1L).build());
-        dtoList.add(CheckoutDto.builder().id(2L).build());
-
-        ArrayList<CheckoutEntity> mappedEntityList = (ArrayList<CheckoutEntity>) mapper.convertToEntity(dtoList);
-        String expected = dtoList.get(0).toString();
-        String actual = mappedEntityList.get(0).toString();
-        assertThat(actual, is(equalTo(expected)));
-    }
-
-    @Test
-    void testMapEntityListToDtoList() {
-        ArrayList<CheckoutEntity> entityList = new ArrayList<>();
-        entityList.add(CheckoutEntity.builder().id(1L).build());
-        entityList.add(CheckoutEntity.builder().id(2L).build());
-
-        ArrayList<CheckoutDto> mappedDtoList = (ArrayList<CheckoutDto>) mapper.convertToDto(entityList);
-        String expected = entityList.get(0).toString();
-        String actual = mappedDtoList.get(0).toString();
-        assertThat(actual, is(equalTo(expected)));
-    }
 }

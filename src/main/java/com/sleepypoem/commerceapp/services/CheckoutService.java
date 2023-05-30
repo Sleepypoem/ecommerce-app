@@ -1,54 +1,40 @@
 package com.sleepypoem.commerceapp.services;
 
-import com.sleepypoem.commerceapp.domain.dto.CheckoutDto;
-import com.sleepypoem.commerceapp.domain.dto.CheckoutItemDto;
-import com.sleepypoem.commerceapp.domain.dto.ProductDto;
-import com.sleepypoem.commerceapp.domain.entities.AddressEntity;
-import com.sleepypoem.commerceapp.domain.entities.CheckoutEntity;
-import com.sleepypoem.commerceapp.domain.entities.CheckoutItemEntity;
-import com.sleepypoem.commerceapp.domain.entities.PaymentMethodEntity;
+import com.sleepypoem.commerceapp.annotations.Validable;
+import com.sleepypoem.commerceapp.annotations.ValidableMethod;
+import com.sleepypoem.commerceapp.domain.entities.*;
 import com.sleepypoem.commerceapp.domain.enums.CheckoutStatus;
-import com.sleepypoem.commerceapp.domain.mappers.BaseMapper;
-import com.sleepypoem.commerceapp.domain.mappers.CheckoutItemMapper;
-import com.sleepypoem.commerceapp.domain.mappers.CheckoutMapper;
-import com.sleepypoem.commerceapp.exceptions.MyEntityNotFoundException;
-import com.sleepypoem.commerceapp.exceptions.MyResourceNotFoundException;
 import com.sleepypoem.commerceapp.repositories.CheckoutRepository;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
-import com.sleepypoem.commerceapp.services.validators.IValidator;
+import com.sleepypoem.commerceapp.services.abstracts.HaveUser;
+import com.sleepypoem.commerceapp.services.validators.impl.ValidateCheckout;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@Validable(ValidateCheckout.class)
 @Slf4j
-public class CheckoutService extends AbstractService<CheckoutDto, CheckoutEntity> {
+public class CheckoutService extends AbstractService<CheckoutEntity> implements HaveUser<CheckoutEntity> {
 
+    private final CheckoutRepository dao;
 
-    @Autowired
-    IValidator<CheckoutEntity> validateCheckout;
+    private final CheckoutItemService checkoutItemService;
 
-    @Autowired
-    CheckoutRepository dao;
+    private final ProductService productService;
 
-    @Autowired
-    CheckoutMapper mapper;
-
-    @Autowired
-    CheckoutItemService checkoutItemService;
-
-    @Autowired
-    ProductService productService;
-
-    @Autowired
-    CheckoutItemMapper checkoutItemMapper;
+    public CheckoutService(CheckoutRepository dao, CheckoutItemService checkoutItemService, ProductService productService) {
+        this.dao = dao;
+        this.checkoutItemService = checkoutItemService;
+        this.productService = productService;
+    }
 
     @Override
     protected JpaRepository<CheckoutEntity, Long> getDao() {
@@ -56,132 +42,122 @@ public class CheckoutService extends AbstractService<CheckoutDto, CheckoutEntity
     }
 
     @Override
-    protected BaseMapper<CheckoutEntity, CheckoutDto> getMapper() {
-        return mapper;
-    }
-
-    @Override
-    protected IValidator<CheckoutEntity> getValidator() {
-        return validateCheckout;
-    }
-
-    @Override
-    public CheckoutDto create(CheckoutEntity checkout) throws Exception {
-        reserveProducts(checkout);
+    @ValidableMethod
+    public CheckoutEntity create(CheckoutEntity checkout) {
+        reserveProducts(checkout.getItems());
         checkout.setStatus(CheckoutStatus.PENDING);
+        List<CheckoutItemEntity> items = new ArrayList<>();
+        for (CheckoutItemEntity checkoutItemEntity : checkout.getItems()) {
+            checkoutItemEntity.setCheckout(checkout);
+            items.add(checkoutItemService.create(checkoutItemEntity));
+        }
+        checkoutItemService.create(items);
         return super.create(checkout);
     }
 
-    private void reserveProducts(CheckoutEntity checkout) {
-        for (CheckoutItemEntity item : checkout.getItems()) {
-            Optional<ProductDto> searchedProduct = productService.getOneById(item.getProduct().getId());
-            if (searchedProduct.isEmpty()) {
-                throw new MyResourceNotFoundException("Product with id " + item.getProduct().getId() + " not found.");
-            }
-            ProductDto product = searchedProduct.get();
-            log.info(String.valueOf(item.getQuantity()));
-            productService.modifyStock(product.getId(), product.getStock() - item.getQuantity());
+    private void reserveProducts(List<CheckoutItemEntity> items) {
+        for (CheckoutItemEntity item : items) {
+            ProductEntity product = productService.getOneById(item.getProduct().getId());
+            manageStock(product.getStock(), item.getQuantity() + product.getStock(), product.getId());
         }
     }
 
     private void returnProducts(CheckoutItemEntity item) {
-        productService.modifyStock(item.getProduct().getId(), item.getProduct().getStock() + item.getQuantity());
+        manageStock(item.getProduct().getStock(), item.getProduct().getStock() - item.getQuantity(), item.getProduct().getId());
     }
 
-    public List<CheckoutEntity> getByUserId(String userId) {
-        return dao.findByUserId(userId);
+    private void addStock(Long productId, int quantity) {
+        ProductEntity product = productService.getOneById(productId);
+        productService.modifyStock(product.getId(), product.getStock() + quantity);
     }
 
-    public CheckoutDto addItems(Long id, List<CheckoutItemEntity> checkoutItems) throws Exception {
-        Optional<CheckoutEntity> searchedCheckout = dao.findById(id);
-        log.info(String.valueOf(id));
-        if (searchedCheckout.isEmpty()) {
-            throw new MyEntityNotFoundException("Checkout with id " + id + " not found");
-        }
-        CheckoutEntity checkout = searchedCheckout.get();
+    private void removeStock(Long productId, int quantity) {
+        ProductEntity product = productService.getOneById(productId);
+        productService.modifyStock(product.getId(), product.getStock() - quantity);
+    }
+
+    public CheckoutEntity addItems(Long id, List<CheckoutItemEntity> checkoutItems) {
+        CheckoutEntity checkout = getOneById(id);
 
         List<CheckoutItemEntity> items = checkout.getItems();
         items.addAll(checkoutItems);
         checkout.setItems(items);
-        reserveProducts(checkout);
+        reserveProducts(checkout.getItems());
         log.info(checkout.toString());
         return update(id, checkout);
     }
 
-    public CheckoutDto removeItem(Long id, Long checkoutItemId) {
-        Optional<CheckoutEntity> searchedCheckout = dao.findById(id);
-        Optional<CheckoutItemEntity> searchedCheckoutItem = checkoutItemService.getDao().findById(checkoutItemId);
-
-        if (searchedCheckout.isEmpty() || searchedCheckoutItem.isEmpty()) {
-            String message = searchedCheckout.isEmpty() ? "Checkout with id " + id : "Item with id " + checkoutItemId;
-            throw new MyEntityNotFoundException(message + " not found");
-        }
-
-        CheckoutEntity checkout = searchedCheckout.get();
-        CheckoutItemEntity checkoutItem = searchedCheckoutItem.get();
-
-        List<CheckoutItemEntity> items = checkout.getItems();
-        items.remove(checkoutItem);
-        checkout.setItems(items);
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void removeItem(Long id, Long checkoutItemId) {
+        CheckoutEntity checkout = getOneById(id);
+        CheckoutItemEntity checkoutItem = checkoutItemService.getOneById(checkoutItemId);
+        ServicePreconditions.checkExpression(checkout.getItems().contains(checkoutItem), "Item not found in this checkout");
+        checkoutItemService.delete(checkoutItemId);
         returnProducts(checkoutItem);
-        log.info(checkout.toString());
-        CheckoutDto result = getMapper().convertToDto(dao.save(checkout));
-
-        if (result.getItems().isEmpty()) {
-            getDao().deleteById(id);
-            return null;
+        if (checkout.getItems().size() == 1) {
+            dao.delete(checkout);
         }
-        return result;
     }
 
-    public CheckoutDto modifyItemQuantity(Long id, Long itemId, int quantity) {
-        Optional<CheckoutEntity> searchedCheckout = dao.findById(id);
-        Optional<CheckoutItemEntity> searchedItem = checkoutItemService.getDao().findById(itemId);
-
-        if (searchedCheckout.isEmpty() || searchedItem.isEmpty()) {
-            String message = searchedCheckout.isEmpty() ? "Checkout with id " + id : "Item with id " + itemId;
-            throw new MyEntityNotFoundException(message + " not found");
+    @Transactional(propagation = Propagation.NESTED)
+    public void cleanCart(Long id) {
+        CheckoutEntity checkout = getOneById(id);
+        for (CheckoutItemEntity item : checkout.getItems()) {
+            removeItem(id, item.getId());
         }
-        CheckoutEntity checkout = searchedCheckout.get();
-        CheckoutItemEntity item = searchedItem.get();
-
-        CheckoutItemDto modifiedItem = checkoutItemService.modifyQuantity(itemId, quantity);
-        List<CheckoutItemEntity> items = checkout.getItems();
-        items = items.stream().filter(i -> !i.equals(item)).collect(Collectors.toList());
-        items.add(checkoutItemMapper.convertToEntity(modifiedItem));
-
-        return getMapper().convertToDto(dao.save(checkout));
     }
 
-    public CheckoutDto addPreferredAddress(Long id, AddressEntity address) {
-        Optional<CheckoutEntity> searchedCheckout = dao.findById(id);
-        if (searchedCheckout.isEmpty()) {
-            throw new MyEntityNotFoundException("Checkout with id " + id + " not found");
+    /**
+     * Modifies the stock of a product based on the current and new quantities.
+     *
+     * @param currentQuantity The current quantity of the product in stock.
+     * @param newQuantity     The new quantity to set for the product.
+     * @param productId       The ID of the product.
+     */
+    private void manageStock(int currentQuantity, int newQuantity, Long productId) {
+        int difference = currentQuantity - newQuantity;
+        if (difference > 0) {
+            addStock(productId, difference);
+        } else {
+            removeStock(productId, Math.abs(difference));
         }
+    }
 
-        CheckoutEntity checkout = searchedCheckout.get();
+    public void modifyItemQuantity(Long id, Long itemId, int quantity) {
+        CheckoutEntity checkout = getOneById(id);
+        CheckoutItemEntity item = checkoutItemService.getOneById(itemId);
+        int currentQuantity = item.getQuantity();
+
+        ServicePreconditions.checkExpression(checkout.getItems().contains(item), "Item not found in this checkout");
+        item.setQuantity(quantity);
+        manageStock(currentQuantity, quantity, item.getProduct().getId());
+        checkoutItemService.update(itemId, item);
+    }
+
+    public CheckoutEntity addPreferredAddress(Long id, AddressEntity address) {
+        CheckoutEntity checkout = getOneById(id);
         checkout.setAddress(address);
-        return getMapper().convertToDto(dao.save(checkout));
+        return update(id, checkout);
     }
 
     public void setStatusToCompleted(Long id) {
-        Optional<CheckoutEntity> searchedCheckout = dao.findById(id);
-        if (searchedCheckout.isEmpty()) {
-            throw new MyEntityNotFoundException("Checkout with id " + id + " not found");
-        }
-        CheckoutEntity checkout = searchedCheckout.get();
+        CheckoutEntity checkout = getOneById(id);
         checkout.setStatus(CheckoutStatus.COMPLETED);
         dao.save(checkout);
     }
 
-    public CheckoutDto addPreferredPaymentMethod(Long id, PaymentMethodEntity paymentMethod) {
-        Optional<CheckoutEntity> searchedCheckout = dao.findById(id);
-        if (searchedCheckout.isEmpty()) {
-            throw new MyEntityNotFoundException("Checkout with id " + id + " not found");
-        }
-
-        CheckoutEntity checkout = searchedCheckout.get();
+    public CheckoutEntity addPreferredPaymentMethod(Long id, PaymentMethodEntity paymentMethod) {
+        CheckoutEntity checkout = getOneById(id);
         checkout.setPaymentMethod(paymentMethod);
-        return getMapper().convertToDto(dao.save(checkout));
+        return update(id, checkout);
+    }
+
+    public Page<CheckoutItemEntity> getAllItemsPaginatedAndSorted(Long id, int page, int size, String sortBy, String sortOrder) {
+        return checkoutItemService.getByCheckoutIdPaginatedAndSorted(id, page, size, sortBy, sortOrder);
+    }
+
+    @Override
+    public Page<CheckoutEntity> getAllPaginatedAndSortedByUserId(String userId, int page, int size, String sortBy, String sortOrder) {
+        return dao.findAllByUserId(userId, PageRequest.of(page, size, createSort(sortBy, sortOrder)));
     }
 }

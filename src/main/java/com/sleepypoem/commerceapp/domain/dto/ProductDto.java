@@ -1,52 +1,23 @@
 package com.sleepypoem.commerceapp.domain.dto;
 
 
-import com.sleepypoem.commerceapp.domain.interfaces.IDto;
-import com.sleepypoem.commerceapp.domain.interfaces.INameableDto;
-import lombok.*;
-
-import java.util.Objects;
+import com.sleepypoem.commerceapp.domain.abstracts.AbstractDto;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@Builder
-public class ProductDto implements IDto, INameableDto {
-    private long id;
+@SuperBuilder
+public class ProductDto extends AbstractDto<Long> {
     private String name;
     private int stock;
     private String description;
     private Double price;
-
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public Long getId() {
-        return id;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ProductDto that = (ProductDto) o;
-        return id == that.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
 
     @Override
     public String toString() {
@@ -56,6 +27,8 @@ public class ProductDto implements IDto, INameableDto {
                 ", stock=" + stock +
                 ", description='" + description + '\'' +
                 ", price=" + price +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
                 '}';
     }
 }

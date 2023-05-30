@@ -1,22 +1,23 @@
 package com.sleepypoem.commerceapp.domain.entities;
 
 
-import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
-import jakarta.persistence.*;
+import com.sleepypoem.commerceapp.domain.abstracts.AbstractEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaymentMethodEntity implements IEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class PaymentMethodEntity extends AbstractEntity<Long> {
 
     @Column(name = "payment_id")
     @NotNull
@@ -31,17 +32,14 @@ public class PaymentMethodEntity implements IEntity {
     private String paymentType;
 
     @Override
-    public Long getId() {
-        return id;
-    }
-
-    @Override
     public String toString() {
-        return "{" +
+        return "PaymentMethodEntity{" +
                 "id=" + id +
                 ", paymentId='" + paymentId + '\'' +
                 ", userId='" + userId + '\'' +
                 ", paymentType='" + paymentType + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
                 '}';
     }
 }

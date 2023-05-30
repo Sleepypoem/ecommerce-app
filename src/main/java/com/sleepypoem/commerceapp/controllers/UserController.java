@@ -7,6 +7,7 @@ import com.sleepypoem.commerceapp.services.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,5 +39,14 @@ public class UserController {
     @GetMapping
     public ResponseEntity<UserDto> getUserByUserName(@RequestParam(value = "username") String username) throws Exception {
         return ResponseEntity.ok().body(service.getUserByUserName(username));
+    }
+
+    @GetMapping(value = "/test")
+    public ResponseEntity<String> test() {
+        UserDto userPrincipal = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal() instanceof UserDto ? (UserDto) SecurityContextHolder.getContext().getAuthentication().getPrincipal() : null;
+        return ResponseEntity.ok().body("Principal:  " + userPrincipal + "\n");
     }
 }

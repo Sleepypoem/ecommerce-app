@@ -9,16 +9,19 @@ spring:
         format_sql: true
     hibernate:
       ddl-auto: create-drop
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: ${auth-server.prefix}${auth-server.realm-name}
           jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
-
 auth-server:
   realm-name: Final-project
-  prefix: http://localhost:8080/auth/realms/
+  prefix: http://${LOCAL_HOST:localhost}:8080/auth/realms/
   admin-rest-prefix: http://localhost:8080/auth/admin/realms/
   token-endpoint: ${auth-server.prefix}${auth-server.realm-name}/protocol/openid-connect/token
 server:
@@ -47,3 +50,7 @@ logging:
                 BasicBinder: TRACE
 keycloak:
   use-resource-role-mappings: false
+
+
+
+

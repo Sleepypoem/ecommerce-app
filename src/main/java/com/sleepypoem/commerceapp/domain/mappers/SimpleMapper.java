@@ -1,20 +1,32 @@
 package com.sleepypoem.commerceapp.domain.mappers;
 
-import com.sleepypoem.commerceapp.domain.interfaces.IDto;
-import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
-import org.springframework.beans.BeanUtils;
+import com.sleepypoem.commerceapp.domain.abstracts.AbstractDto;
+import com.sleepypoem.commerceapp.domain.abstracts.AbstractEntity;
+import org.modelmapper.ModelMapper;
 
-public abstract class SimpleMapper<D extends IDto, E extends IEntity> extends BaseMapper<E, D> {
+public abstract class SimpleMapper<D extends AbstractDto<?>, E extends AbstractEntity<?>> extends BaseMapper<E, D> {
 
+    protected final ModelMapper modelMapper = new ModelMapper();
+
+    /**
+     * Get the DTO instance.
+     *
+     * @return the DTO instance.
+     */
     public abstract D getDtoInstance();
 
+    /**
+     * Get the entity instance.
+     *
+     * @return the entity instance.
+     */
     public abstract E getEntityInstance();
 
     @Override
     public E convertToEntity(D dto) {
         E entity = getEntityInstance();
         if (dto != null) {
-            BeanUtils.copyProperties(dto, entity);
+            modelMapper.map(dto, entity);
         }
         return entity;
     }
@@ -23,7 +35,7 @@ public abstract class SimpleMapper<D extends IDto, E extends IEntity> extends Ba
     public D convertToDto(E entity) {
         D dto = getDtoInstance();
         if (entity != null) {
-            BeanUtils.copyProperties(entity, dto);
+            modelMapper.map(entity, dto);
         }
         return dto;
     }

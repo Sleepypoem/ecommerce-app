@@ -2,85 +2,93 @@ package com.sleepypoem.commerceapp.domain.mappers;
 
 import com.sleepypoem.commerceapp.domain.dto.ReceiptDto;
 import com.sleepypoem.commerceapp.domain.entities.ReceiptEntity;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
+import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ReceiptMapperTest {
+class ReceiptMapperTest {
 
+    ReceiptMapper mapper = new ReceiptMapper();
 
-    ReceiptMapper mapper;
-
-    @BeforeEach
-    void init() {
-        mapper = new ReceiptMapper();
+    @Test
+    @DisplayName("Testing if DTO is mapped to an entity")
+    void testMappingDtoToEntity() {
+        //arrange
+        ReceiptDto receiptDto = new ReceiptDto();
+        receiptDto.setId(1L);
+        receiptDto.setCurrencyType("USD");
+        receiptDto.setTotal(100.0);
+        receiptDto.setUserFirstName("test");
+        receiptDto.setUserLastName("test");
+        //act
+        var result = mapper.convertToEntity(receiptDto);
+        //assert
+        assertAll(
+                () -> assertEquals(receiptDto.getId(), result.getId()),
+                () -> assertEquals(receiptDto.getCurrencyType(), result.getCurrencyType()),
+                () -> assertEquals(receiptDto.getTotal(), result.getTotal()),
+                () -> assertEquals(receiptDto.getUserFirstName(), result.getUserFirstName()),
+                () -> assertEquals(receiptDto.getUserLastName(), result.getUserLastName())
+        );
     }
 
     @Test
-    void testMethodReturnsEntityInstance() {
-        ReceiptEntity entity = mapper.getEntityInstance();
-        assertNotNull(entity);
+    @DisplayName("Testing if entity is mapped to a DTO")
+    void testMappingEntityToDto() {
+        //arrange
+        ReceiptEntity receiptEntity = new ReceiptEntity();
+        receiptEntity.setId(1L);
+        //act
+        var result = mapper.convertToDto(receiptEntity);
+        //assert
+        assertAll(
+                () -> assertEquals(receiptEntity.getId(), result.getId()),
+                () -> assertEquals(receiptEntity.getCurrencyType(), result.getCurrencyType()),
+                () -> assertEquals(receiptEntity.getTotal(), result.getTotal()),
+                () -> assertEquals(receiptEntity.getUserFirstName(), result.getUserFirstName()),
+                () -> assertEquals(receiptEntity.getUserLastName(), result.getUserLastName())
+        );
     }
 
     @Test
-    void testMethodReturnsDtoInstance() {
-        ReceiptDto dto = mapper.getDtoInstance();
-        assertNotNull(dto);
+    @DisplayName("Testing if a DTO list is mapped to a entity list")
+    void testMappingDtoListToEntityList() {
+        //arrange
+        ReceiptDto receiptDto1 = new ReceiptDto();
+        receiptDto1.setId(1L);
+
+        ReceiptDto receiptDto2 = new ReceiptDto();
+        receiptDto2.setId(2L);
+        List<ReceiptDto> dtos = List.of(receiptDto1, receiptDto2);
+        //act
+        var result = mapper.convertToEntityList(dtos);
+        //assert
+        assertAll(
+                () -> assertEquals(receiptDto1.getId(), result.get(0).getId()),
+                () -> assertEquals(receiptDto2.getId(), result.get(1).getId())
+        );
     }
 
     @Test
-    void testMapEntityToDto() {
-        ReceiptEntity entity = ReceiptEntity.
-                builder()
-                .id(1L)
-                .build();
-
-        ReceiptDto mappedDto = mapper.convertToDto(entity);
-        Long expected = entity.getId();
-        Long actual = mappedDto.getId();
-        assertThat(actual, is(equalTo(expected)));
+    @DisplayName("Testing if an entity list is mapped to a DTO list")
+    void testMappingEntityListToDtoList() {
+        //arrange
+        ReceiptEntity receiptEntity1 = new ReceiptEntity();
+        receiptEntity1.setId(1L);
+        ReceiptEntity receiptEntity2 = new ReceiptEntity();
+        receiptEntity2.setId(2L);
+        List<ReceiptEntity> entities = List.of(receiptEntity1, receiptEntity2);
+        //act
+        var result = mapper.convertToDtoList(entities);
+        //assert
+        assertAll(
+                () -> assertEquals(receiptEntity1.getId(), result.get(0).getId()),
+                () -> assertEquals(receiptEntity2.getId(), result.get(1).getId())
+        );
     }
 
-    @Test
-    void testMapDtoToEntity() {
-        ReceiptDto dto = ReceiptDto
-                .builder()
-                .id(1L)
-                .build();
-
-        ReceiptEntity mappedEntity = mapper.convertToEntity(dto);
-        Long expected = dto.getId();
-        Long actual = mappedEntity.getId();
-        assertThat(actual, is(equalTo(expected)));
-    }
-
-    @Test
-    void testMapDtoListToEntityList() {
-        ArrayList<ReceiptDto> dtoList = new ArrayList<>();
-        dtoList.add(ReceiptDto.builder().id(1L).build());
-        dtoList.add(ReceiptDto.builder().id(2L).build());
-
-        ArrayList<ReceiptEntity> mappedEntityList = (ArrayList<ReceiptEntity>) mapper.convertToEntity(dtoList);
-        String expected = dtoList.get(0).toString();
-        String actual = mappedEntityList.get(0).toString();
-        assertThat(actual, is(equalTo(expected)));
-    }
-
-    @Test
-    void testMapEntityListToDtoList() {
-        ArrayList<ReceiptEntity> entityList = new ArrayList<>();
-        entityList.add(ReceiptEntity.builder().id(1L).build());
-        entityList.add(ReceiptEntity.builder().id(2L).build());
-
-        ArrayList<ReceiptDto> mappedDtoList = (ArrayList<ReceiptDto>) mapper.convertToDto(entityList);
-        String expected = entityList.get(0).toString();
-        String actual = mappedDtoList.get(0).toString();
-        assertThat(actual, is(equalTo(expected)));
-    }
 }

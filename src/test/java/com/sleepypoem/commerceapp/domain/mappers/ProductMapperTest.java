@@ -2,84 +2,94 @@ package com.sleepypoem.commerceapp.domain.mappers;
 
 import com.sleepypoem.commerceapp.domain.dto.ProductDto;
 import com.sleepypoem.commerceapp.domain.entities.ProductEntity;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
+import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ProductMapperTest {
+class ProductMapperTest {
 
-    ProductMapper mapper;
+    ProductMapper mapper = new ProductMapper();
 
-    @BeforeEach
-    void init() {
-        mapper = new ProductMapper();
+    @Test
+    @DisplayName("Testing if DTO is mapped to an entity")
+    void testMappingDtoToEntity() {
+        //arrange
+        ProductDto productDto = new ProductDto();
+        productDto.setId(1L);
+        productDto.setDescription("test");
+        productDto.setPrice(1.0);
+        productDto.setStock(1);
+        //act
+        var result = mapper.convertToEntity(productDto);
+        //assert
+        assertAll(
+                () -> assertEquals(productDto.getId(), result.getId()),
+                () -> assertEquals(productDto.getDescription(), result.getDescription()),
+                () -> assertEquals(productDto.getPrice(), result.getPrice()),
+                () -> assertEquals(productDto.getStock(), result.getStock())
+        );
     }
 
     @Test
-    void testMethodReturnsEntityInstance() {
-        ProductEntity entity = mapper.getEntityInstance();
-        assertNotNull(entity);
+    @DisplayName("Testing if entity is mapped to a DTO")
+    void testMappingEntityToDto() {
+        //arrange
+        ProductEntity productEntity = new ProductEntity();
+        productEntity.setId(1L);
+        productEntity.setId(1L);
+        productEntity.setDescription("test");
+        productEntity.setPrice(1.0);
+        productEntity.setStock(1);
+        //act
+        var result = mapper.convertToDto(productEntity);
+        //assert
+        assertAll(
+                () -> assertEquals(productEntity.getId(), result.getId()),
+                () -> assertEquals(productEntity.getDescription(), result.getDescription()),
+                () -> assertEquals(productEntity.getPrice(), result.getPrice()),
+                () -> assertEquals(productEntity.getStock(), result.getStock())
+        );
     }
 
     @Test
-    void testMethodReturnsDtoInstance() {
-        ProductDto dto = mapper.getDtoInstance();
-        assertNotNull(dto);
+    @DisplayName("Testing if a DTO list is mapped to a entity list")
+    void testMappingDtoListToEntityList() {
+        //arrange
+        ProductDto productDto1 = new ProductDto();
+        productDto1.setId(1L);
+
+        ProductDto productDto2 = new ProductDto();
+        productDto2.setId(2L);
+        List<ProductDto> dtos = List.of(productDto1, productDto2);
+        //act
+        var result = mapper.convertToEntityList(dtos);
+        //assert
+        assertAll(
+                () -> assertEquals(productDto1.getId(), result.get(0).getId()),
+                () -> assertEquals(productDto2.getId(), result.get(1).getId())
+        );
     }
 
     @Test
-    void testMapEntityToDto() {
-        ProductEntity entity = ProductEntity.
-                builder()
-                .id(1L)
-                .build();
-
-        ProductDto mappedDto = mapper.convertToDto(entity);
-        Long expected = entity.getId();
-        Long actual = mappedDto.getId();
-        assertThat(actual, is(equalTo(expected)));
+    @DisplayName("Testing if an entity list is mapped to a DTO list")
+    void testMappingEntityListToDtoList() {
+        //arrange
+        ProductEntity productEntity1 = new ProductEntity();
+        productEntity1.setId(1L);
+        ProductEntity productEntity2 = new ProductEntity();
+        productEntity2.setId(2L);
+        List<ProductEntity> entities = List.of(productEntity1, productEntity2);
+        //act
+        var result = mapper.convertToDtoList(entities);
+        //assert
+        assertAll(
+                () -> assertEquals(productEntity1.getId(), result.get(0).getId()),
+                () -> assertEquals(productEntity2.getId(), result.get(1).getId())
+        );
     }
 
-    @Test
-    void testMapDtoToEntity() {
-        ProductDto dto = ProductDto
-                .builder()
-                .id(1L)
-                .build();
-
-        ProductEntity mappedEntity = mapper.convertToEntity(dto);
-        Long expected = dto.getId();
-        Long actual = mappedEntity.getId();
-        assertThat(actual, is(equalTo(expected)));
-    }
-
-    @Test
-    void testMapDtoListToEntityList() {
-        ArrayList<ProductDto> dtoList = new ArrayList<>();
-        dtoList.add(ProductDto.builder().id(1L).build());
-        dtoList.add(ProductDto.builder().id(2L).build());
-
-        ArrayList<ProductEntity> mappedEntityList = (ArrayList<ProductEntity>) mapper.convertToEntity(dtoList);
-        String expected = dtoList.get(0).toString();
-        String actual = mappedEntityList.get(0).toString();
-        assertThat(actual, is(equalTo(expected)));
-    }
-
-    @Test
-    void testMapEntityListToDtoList() {
-        ArrayList<ProductEntity> entityList = new ArrayList<>();
-        entityList.add(ProductEntity.builder().id(1L).build());
-        entityList.add(ProductEntity.builder().id(2L).build());
-
-        ArrayList<ProductDto> mappedDtoList = (ArrayList<ProductDto>) mapper.convertToDto(entityList);
-        String expected = entityList.get(0).toString();
-        String actual = mappedDtoList.get(0).toString();
-        assertThat(actual, is(equalTo(expected)));
-    }
 }
