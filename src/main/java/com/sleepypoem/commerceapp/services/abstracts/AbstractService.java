@@ -34,9 +34,10 @@ public abstract class AbstractService<E extends IEntity<?>> implements IService<
 
     /**
      * Gets all the entities paginated and sorted.
-     * @param page the page number
-     * @param size the size of the page
-     * @param sortBy the field to sort by
+     *
+     * @param page      the page number
+     * @param size      the size of the page
+     * @param sortBy    the field to sort by
      * @param sortOrder the sort order
      * @return the page of entities
      */
@@ -83,7 +84,8 @@ public abstract class AbstractService<E extends IEntity<?>> implements IService<
 
     /**
      * Creates a sort object from the given parameters.
-     * @param sortBy the field to sort by
+     *
+     * @param sortBy    the field to sort by
      * @param sortOrder the sort order
      * @return the sort object
      */

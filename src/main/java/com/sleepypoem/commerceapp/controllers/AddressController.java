@@ -15,7 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 
 @Controller
 @RequestMapping("addresses")
@@ -51,19 +50,19 @@ public class AddressController extends AbstractController<AddressDto, AddressEnt
 
     @GetMapping(params = {"user-id"}, produces = "application/json")
     public ResponseEntity<PaginatedDto<AddressDto>> getByUserId(@RequestParam(value = "user-id") String userId,
-                                                                 @RequestParam(value = "page", defaultValue = "0") int page,
-                                                                 @RequestParam(value = "size", defaultValue = "10") int size,
-                                                                 @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
-                                                                 @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
+                                                                @RequestParam(value = "page", defaultValue = "0") int page,
+                                                                @RequestParam(value = "size", defaultValue = "10") int size,
+                                                                @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
+                                                                @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
         Paginator<AddressEntity, AddressDto> paginator = new Paginator<>(mapper);
         return ResponseEntity.ok().body(paginator.getPaginatedDto(service.findByUserId(userId, page, size, sortBy, sortOrder), "addresses"));
     }
 
     @GetMapping(produces = "application/json")
-    public  ResponseEntity<PaginatedDto<AddressDto>> getAllPaginatedAndSorted(@RequestParam(value = "page", defaultValue = "0") int page,
-                                                                              @RequestParam(value = "size", defaultValue = "10") int size,
-                                                                              @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
-                                                                              @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder ){
+    public ResponseEntity<PaginatedDto<AddressDto>> getAllPaginatedAndSorted(@RequestParam(value = "page", defaultValue = "0") int page,
+                                                                             @RequestParam(value = "size", defaultValue = "10") int size,
+                                                                             @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
+                                                                             @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
         return ResponseEntity.ok().body(getAllPaginatedAndSortedInternal(page, size, sortBy, sortOrder, "products"));
     }
 

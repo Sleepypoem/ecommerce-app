@@ -158,6 +158,6 @@ public class CheckoutService extends AbstractService<CheckoutEntity> implements 
 
     @Override
     public Page<CheckoutEntity> getAllPaginatedAndSortedByUserId(String userId, int page, int size, String sortBy, String sortOrder) {
-        return dao.findByUserId(userId, PageRequest.of(page, size, createSort(sortBy, sortOrder)));
+        return dao.findAllByUserId(userId, PageRequest.of(page, size, createSort(sortBy, sortOrder)));
     }
 }

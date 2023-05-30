@@ -6,6 +6,7 @@ public interface IWriteService<E extends IEntity> {
 
     /**
      * Creates an entity.
+     *
      * @param entity the entity to create
      * @return the created entity
      */
@@ -13,7 +14,8 @@ public interface IWriteService<E extends IEntity> {
 
     /**
      * Updates an entity.
-     * @param id the id of the entity to update
+     *
+     * @param id     the id of the entity to update
      * @param entity the entity to update
      * @return the updated entity
      */
@@ -21,6 +23,7 @@ public interface IWriteService<E extends IEntity> {
 
     /**
      * Deletes an entity.
+     *
      * @param id the id of the entity to delete
      * @return true if the entity was deleted, false otherwise
      */

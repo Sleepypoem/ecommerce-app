@@ -88,7 +88,7 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
 
     @DeleteMapping("/{id}/items/{item-id}")
     public ResponseEntity<Void> removeItemFromCart(@PathVariable("id") Long id,
-                                                @PathVariable("item-id") Long itemId) {
+                                                   @PathVariable("item-id") Long itemId) {
         service.removeItem(id, itemId);
         return ResponseEntity.noContent().build();
     }

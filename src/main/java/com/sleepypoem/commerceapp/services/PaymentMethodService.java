@@ -11,8 +11,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @Validable(ValidatePaymentMethod.class)
 public class PaymentMethodService extends AbstractService<PaymentMethodEntity> implements HaveUser<PaymentMethodEntity> {

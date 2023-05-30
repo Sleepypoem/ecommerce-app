@@ -6,6 +6,7 @@ public interface IReadService<E> {
 
     /**
      * Gets an entity by id.
+     *
      * @param id the id of the entity to get
      * @return the entity
      */
@@ -13,6 +14,7 @@ public interface IReadService<E> {
 
     /**
      * Gets all the entities
+     *
      * @return the list of entities
      */
     List<E> getAll();

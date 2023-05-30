@@ -11,8 +11,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @Validable(ValidateAddress.class)
 public class AddressService extends AbstractService<AddressEntity> implements HaveUser<AddressEntity> {

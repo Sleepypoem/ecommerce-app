@@ -4,7 +4,7 @@ import com.sleepypoem.commerceapp.domain.dto.PaginatedDto;
 import com.sleepypoem.commerceapp.domain.mappers.BaseMapper;
 import org.springframework.data.domain.Page;
 
-public class Paginator<E, D>{
+public class Paginator<E, D> {
 
     private final BaseMapper<E, D> mapper;
 
