@@ -1,9 +1,14 @@
 package com.sleepypoem.commerceapp.utils;
 
+
+import com.sleepypoem.commerceapp.domain.entities.AddressEntity;
 import com.sleepypoem.commerceapp.domain.entities.ProductEntity;
 import org.junit.jupiter.api.Test;
 
-public class TestEntity {
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class BaseMapperTest {
 
     @Test
     void testTwoProductsAreEqualsIfTheyHaveTheSameId() {
@@ -15,7 +20,7 @@ public class TestEntity {
         // when
         boolean result = testEntity1.equals(testEntity2);
         // then
-        assert result;
+        assertTrue(result);
     }
 
     @Test
@@ -28,6 +33,19 @@ public class TestEntity {
         // when
         boolean result = testEntity1.equals(testEntity2);
         // then
-        assert !result;
+        assertFalse(result);
+    }
+
+    @Test
+    void testTwoEntitiesAreNotEqualsIfTheyAreNotTheSame() {
+        // given
+        ProductEntity testEntity1 = new ProductEntity();
+        testEntity1.setId(1L);
+        AddressEntity testEntity2 = new AddressEntity();
+        testEntity2.setId(1L);
+        // when
+        boolean result = testEntity1.equals(testEntity2);
+        // then
+        assertFalse(result);
     }
 }
