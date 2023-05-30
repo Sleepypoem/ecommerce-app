@@ -1,6 +1,7 @@
 package com.sleepypoem.commerceapp.controllers;
 
 import com.sleepypoem.commerceapp.controllers.abstracts.AbstractController;
+import com.sleepypoem.commerceapp.domain.dto.PaginatedDto;
 import com.sleepypoem.commerceapp.domain.dto.ProductDto;
 import com.sleepypoem.commerceapp.domain.dto.ResourceStatusResponseDto;
 import com.sleepypoem.commerceapp.domain.entities.ProductEntity;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 
 @Controller
 @RequestMapping("products")
@@ -32,8 +32,11 @@ public class ProductController extends AbstractController<ProductDto, ProductEnt
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductDto>> getAll() {
-        return ResponseEntity.ok().body((List<ProductDto>) getAllInternal());
+    public ResponseEntity<PaginatedDto<ProductDto>> getAll(@RequestParam(value = "page", defaultValue = "0") int page,
+                                                           @RequestParam(value = "size", defaultValue = "10") int size,
+                                                           @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
+                                                           @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
+        return ResponseEntity.ok().body(getAllPaginatedAndSortedInternal(page, size, sortBy, sortOrder, "products"));
     }
 
     @PostMapping

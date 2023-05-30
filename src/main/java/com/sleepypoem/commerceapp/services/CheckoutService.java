@@ -6,8 +6,11 @@ import com.sleepypoem.commerceapp.domain.entities.*;
 import com.sleepypoem.commerceapp.domain.enums.CheckoutStatus;
 import com.sleepypoem.commerceapp.repositories.CheckoutRepository;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
+import com.sleepypoem.commerceapp.services.abstracts.HaveUser;
 import com.sleepypoem.commerceapp.services.validators.impl.ValidateCheckout;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -19,7 +22,7 @@ import java.util.List;
 @Service
 @Validable(ValidateCheckout.class)
 @Slf4j
-public class CheckoutService extends AbstractService<CheckoutEntity> {
+public class CheckoutService extends AbstractService<CheckoutEntity> implements HaveUser<CheckoutEntity> {
 
     private final CheckoutRepository dao;
 
@@ -71,10 +74,6 @@ public class CheckoutService extends AbstractService<CheckoutEntity> {
     private void removeStock(Long productId, int quantity) {
         ProductEntity product = productService.getOneById(productId);
         productService.modifyStock(product.getId(), product.getStock() - quantity);
-    }
-
-    public List<CheckoutEntity> findAllByUserId(String userId) {
-        return dao.findByUserId(userId);
     }
 
     public CheckoutEntity addItems(Long id, List<CheckoutItemEntity> checkoutItems) {
@@ -151,5 +150,14 @@ public class CheckoutService extends AbstractService<CheckoutEntity> {
         CheckoutEntity checkout = getOneById(id);
         checkout.setPaymentMethod(paymentMethod);
         return update(id, checkout);
+    }
+
+    public Page<CheckoutItemEntity> getAllItemsPaginatedAndSorted(Long id, int page, int size, String sortBy, String sortOrder) {
+        return checkoutItemService.getByCheckoutIdPaginatedAndSorted(id, page, size, sortBy, sortOrder);
+    }
+
+    @Override
+    public Page<CheckoutEntity> getAllPaginatedAndSortedByUserId(String userId, int page, int size, String sortBy, String sortOrder) {
+        return dao.findByUserId(userId, PageRequest.of(page, size, createSort(sortBy, sortOrder)));
     }
 }

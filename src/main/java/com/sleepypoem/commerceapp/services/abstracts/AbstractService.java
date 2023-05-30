@@ -5,6 +5,9 @@ import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
 import com.sleepypoem.commerceapp.exceptions.MyEntityNotFoundException;
 import com.sleepypoem.commerceapp.services.ServicePreconditions;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +30,19 @@ public abstract class AbstractService<E extends IEntity<?>> implements IService<
     private String getEntityName() {
         String className = this.getClass().getSimpleName();
         return className.substring(0, className.length() - 7);
+    }
+
+    /**
+     * Gets all the entities paginated and sorted.
+     * @param page the page number
+     * @param size the size of the page
+     * @param sortBy the field to sort by
+     * @param sortOrder the sort order
+     * @return the page of entities
+     */
+    @Transactional(readOnly = true)
+    public Page<E> getAllPaginatedAndSorted(int page, int size, String sortBy, String sortOrder) {
+        return getDao().findAll(PageRequest.of(page, size, createSort(sortBy, sortOrder)));
     }
 
     @Override
@@ -63,6 +79,16 @@ public abstract class AbstractService<E extends IEntity<?>> implements IService<
             log.error("Error while deleting {} with id {}. Error: {}", getEntityName(), id, e.getMessage());
             return false;
         }
+    }
+
+    /**
+     * Creates a sort object from the given parameters.
+     * @param sortBy the field to sort by
+     * @param sortOrder the sort order
+     * @return the sort object
+     */
+    protected Sort createSort(String sortBy, String sortOrder) {
+        return Sort.by(Sort.Direction.fromString(sortOrder), sortBy);
     }
 
     protected abstract JpaRepository<E, Long> getDao();

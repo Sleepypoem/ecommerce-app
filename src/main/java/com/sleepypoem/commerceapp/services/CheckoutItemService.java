@@ -5,6 +5,8 @@ import com.sleepypoem.commerceapp.domain.entities.CheckoutItemEntity;
 import com.sleepypoem.commerceapp.repositories.CheckoutItemRepository;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
 import com.sleepypoem.commerceapp.services.validators.impl.ValidateCheckoutItem;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +34,10 @@ public class CheckoutItemService extends AbstractService<CheckoutItemEntity> {
         item.setQuantity(quantity);
 
         return update(id, item);
+    }
+
+    public Page<CheckoutItemEntity> getByCheckoutIdPaginatedAndSorted(Long checkoutId, int page, int size, String sortBy, String sortOrder) {
+        return dao.findByCheckoutId(checkoutId, PageRequest.of(page, size, createSort(sortBy, sortOrder)));
     }
 
     @Transactional

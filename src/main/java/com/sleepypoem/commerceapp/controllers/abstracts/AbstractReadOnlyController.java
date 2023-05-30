@@ -1,6 +1,8 @@
 package com.sleepypoem.commerceapp.controllers.abstracts;
 
 import com.sleepypoem.commerceapp.controllers.interfaces.ReadOnlyController;
+import com.sleepypoem.commerceapp.controllers.utils.Paginator;
+import com.sleepypoem.commerceapp.domain.dto.PaginatedDto;
 import com.sleepypoem.commerceapp.domain.interfaces.IDto;
 import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
 import com.sleepypoem.commerceapp.domain.mappers.BaseMapper;
@@ -27,5 +29,10 @@ public abstract class AbstractReadOnlyController<D extends IDto<?>, E extends IE
     public Iterable<D> getAllInternal() {
         List<E> entities = getService().getAll();
         return mapper.convertToDto(entities);
+    }
+
+    public PaginatedDto<D> getAllPaginatedAndSortedInternal(int page, int size, String sortBy, String sortOrder, String resourceName) {
+        Paginator<E, D> paginator = new Paginator<>(mapper);
+        return paginator.getPaginatedDto(getService().getAllPaginatedAndSorted(page, size, sortBy, sortOrder), resourceName);
     }
 }

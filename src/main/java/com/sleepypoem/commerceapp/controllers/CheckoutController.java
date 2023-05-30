@@ -1,17 +1,21 @@
 package com.sleepypoem.commerceapp.controllers;
 
 import com.sleepypoem.commerceapp.controllers.abstracts.AbstractController;
+import com.sleepypoem.commerceapp.controllers.utils.Paginator;
 import com.sleepypoem.commerceapp.domain.dto.CheckoutDto;
 import com.sleepypoem.commerceapp.domain.dto.CheckoutItemDto;
+import com.sleepypoem.commerceapp.domain.dto.PaginatedDto;
 import com.sleepypoem.commerceapp.domain.dto.ResourceStatusResponseDto;
 import com.sleepypoem.commerceapp.domain.entities.AddressEntity;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutEntity;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutItemEntity;
 import com.sleepypoem.commerceapp.domain.entities.PaymentMethodEntity;
 import com.sleepypoem.commerceapp.domain.mappers.BaseMapper;
+import com.sleepypoem.commerceapp.domain.mappers.CheckoutItemMapper;
 import com.sleepypoem.commerceapp.services.CheckoutService;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -59,10 +63,22 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
         return ResponseEntity.ok().body(getOneByIdInternal(id));
     }
 
+    @GetMapping(params = {"user-id"}, produces = "application/json")
+    public ResponseEntity<PaginatedDto<CheckoutDto>> getByUserId(@RequestParam(value = "user-id") String userId,
+                                                                 @RequestParam(value = "page", defaultValue = "0") int page,
+                                                                 @RequestParam(value = "size", defaultValue = "10") int size,
+                                                                 @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
+                                                                 @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
+        Paginator<CheckoutEntity, CheckoutDto> paginator = new Paginator<>(mapper);
+        return ResponseEntity.ok().body(paginator.getPaginatedDto(service.getAllPaginatedAndSortedByUserId(userId, page, size, sortBy, sortOrder), "checkouts"));
+    }
+
     @GetMapping
-    public ResponseEntity<List<CheckoutDto>> getByUserId(@RequestParam(value = "user-id") String userId) {
-        List<CheckoutEntity> checkouts = service.findAllByUserId(userId);
-        return ResponseEntity.ok().body(mapper.convertToDtoList(checkouts));
+    public ResponseEntity<PaginatedDto<CheckoutDto>> getAllPaginatedAndSorted(@RequestParam(value = "page", defaultValue = "0") int page,
+                                                                              @RequestParam(value = "size", defaultValue = "10") int size,
+                                                                              @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
+                                                                              @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
+        return ResponseEntity.ok().body(getAllPaginatedAndSortedInternal(page, size, sortBy, sortOrder, "checkouts"));
     }
 
     @PostMapping("/{id}/items")
@@ -92,8 +108,14 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
     }
 
     @GetMapping("/{id}/items")
-    public ResponseEntity<List<CheckoutItemDto>> getItems(@PathVariable Long id) {
-        return ResponseEntity.ok().body(getOneByIdInternal(id).getItems());
+    public ResponseEntity<PaginatedDto<CheckoutItemDto>> getItems(@PathVariable Long id,
+                                                                  @RequestParam(value = "page", defaultValue = "0") int page,
+                                                                  @RequestParam(value = "size", defaultValue = "10") int size,
+                                                                  @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
+                                                                  @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
+        Paginator<CheckoutItemEntity, CheckoutItemDto> paginator = new Paginator<>(new CheckoutItemMapper());
+        Page<CheckoutItemEntity> pagedItems = service.getAllItemsPaginatedAndSorted(id, page, size, sortBy, sortOrder);
+        return ResponseEntity.ok().body(paginator.getPaginatedDto(pagedItems, "checkouts/" + id + "items"));
     }
 
     @PostMapping("/{id}/address")

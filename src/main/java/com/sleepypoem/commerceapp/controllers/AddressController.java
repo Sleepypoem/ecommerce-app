@@ -1,7 +1,9 @@
 package com.sleepypoem.commerceapp.controllers;
 
 import com.sleepypoem.commerceapp.controllers.abstracts.AbstractController;
+import com.sleepypoem.commerceapp.controllers.utils.Paginator;
 import com.sleepypoem.commerceapp.domain.dto.AddressDto;
+import com.sleepypoem.commerceapp.domain.dto.PaginatedDto;
 import com.sleepypoem.commerceapp.domain.dto.ResourceStatusResponseDto;
 import com.sleepypoem.commerceapp.domain.entities.AddressEntity;
 import com.sleepypoem.commerceapp.domain.mappers.BaseMapper;
@@ -28,7 +30,7 @@ public class AddressController extends AbstractController<AddressDto, AddressEnt
     }
 
     @PostMapping
-    public ResponseEntity<ResourceStatusResponseDto> create(@RequestBody AddressEntity address) throws Exception {
+    public ResponseEntity<ResourceStatusResponseDto> create(@RequestBody AddressEntity address) {
         AddressDto created = createInternal(address);
         String message = "Address created with id " + created.getId();
         String url = "GET : /api/addresses/" + created.getId();
@@ -38,7 +40,7 @@ public class AddressController extends AbstractController<AddressDto, AddressEnt
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<AddressDto> update(@PathVariable Long id, @RequestBody AddressEntity address) throws Exception {
+    public ResponseEntity<AddressDto> update(@PathVariable Long id, @RequestBody AddressEntity address) {
         return ResponseEntity.ok(updateInternal(id, address));
     }
 
@@ -47,10 +49,22 @@ public class AddressController extends AbstractController<AddressDto, AddressEnt
         return ResponseEntity.ok().body(getOneByIdInternal(id));
     }
 
-    @GetMapping
-    public ResponseEntity<List<AddressDto>> getByUserId(@RequestParam(value = "user-id") String userId) {
-        List<AddressEntity> addresses = service.findByUserId(userId);
-        return ResponseEntity.ok().body(mapper.convertToDtoList(addresses));
+    @GetMapping(params = {"user-id"}, produces = "application/json")
+    public ResponseEntity<PaginatedDto<AddressDto>> getByUserId(@RequestParam(value = "user-id") String userId,
+                                                                 @RequestParam(value = "page", defaultValue = "0") int page,
+                                                                 @RequestParam(value = "size", defaultValue = "10") int size,
+                                                                 @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
+                                                                 @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
+        Paginator<AddressEntity, AddressDto> paginator = new Paginator<>(mapper);
+        return ResponseEntity.ok().body(paginator.getPaginatedDto(service.findByUserId(userId, page, size, sortBy, sortOrder), "addresses"));
+    }
+
+    @GetMapping(produces = "application/json")
+    public  ResponseEntity<PaginatedDto<AddressDto>> getAllPaginatedAndSorted(@RequestParam(value = "page", defaultValue = "0") int page,
+                                                                              @RequestParam(value = "size", defaultValue = "10") int size,
+                                                                              @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
+                                                                              @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder ){
+        return ResponseEntity.ok().body(getAllPaginatedAndSortedInternal(page, size, sortBy, sortOrder, "products"));
     }
 
     @Override
