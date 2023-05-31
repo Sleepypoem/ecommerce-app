@@ -51,6 +51,6 @@ logging:
 keycloak:
   use-resource-role-mappings: false
 
-
-
-
+stripe:
+  public-key: paste-your-public-key
+  secret-key: paste-your-secret-key
