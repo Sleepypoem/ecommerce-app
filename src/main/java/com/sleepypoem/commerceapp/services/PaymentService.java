@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @Validable(ValidatePayment.class)
-public class PaymentService extends AbstractService<PaymentEntity> {
+public class PaymentService extends AbstractService<PaymentEntity, Long> {
 
     private final PaymentRepository dao;
 

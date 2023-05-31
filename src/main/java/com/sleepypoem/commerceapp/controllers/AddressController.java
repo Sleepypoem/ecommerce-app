@@ -19,7 +19,7 @@ import java.net.URI;
 @Controller
 @RequestMapping("addresses")
 @Slf4j
-public class AddressController extends AbstractController<AddressDto, AddressEntity> {
+public class AddressController extends AbstractController<AddressDto, AddressEntity, Long> {
 
     AddressService service;
 
@@ -67,7 +67,7 @@ public class AddressController extends AbstractController<AddressDto, AddressEnt
     }
 
     @Override
-    public AbstractService<AddressEntity> getService() {
+    public AbstractService<AddressEntity, Long> getService() {
         return service;
     }
 }

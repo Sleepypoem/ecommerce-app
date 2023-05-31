@@ -34,15 +34,10 @@ public class CheckoutEntity extends AbstractEntity<Long> {
     private AddressEntity address;
 
     @OneToOne
-    private PaymentMethodEntity paymentMethod;
+    private CardEntity paymentMethod;
     @Enumerated(EnumType.STRING)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private CheckoutStatus status;
-
-    @Override
-    public Long getId() {
-        return id;
-    }
 
     @Override
     public String toString() {

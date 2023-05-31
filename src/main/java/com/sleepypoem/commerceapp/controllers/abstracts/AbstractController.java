@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Objects;
 
 @Slf4j
-public abstract class AbstractController<D extends IDto<?>, E extends IEntity<?>> extends AbstractReadOnlyController<D, E> {
+public abstract class AbstractController<D extends IDto<?>, E extends IEntity<?>, ID> extends AbstractReadOnlyController<D, E, ID> {
 
 
     protected AbstractController(BaseMapper<E, D> mapper) {
@@ -22,7 +22,7 @@ public abstract class AbstractController<D extends IDto<?>, E extends IEntity<?>
         return mapper.convertToDto(createdEntity);
     }
 
-    public D updateInternal(Long id, E entity) {
+    public D updateInternal(ID id, E entity) {
         RequestPreconditions.checkRequestElementNotNull(entity);
         RequestPreconditions.checkRequestState(entity.getId() == null);
         RequestPreconditions.checkRequestState(!Objects.equals(id, entity.getId()), "Id in URI doesn't match resource Id.");
@@ -30,7 +30,7 @@ public abstract class AbstractController<D extends IDto<?>, E extends IEntity<?>
         return mapper.convertToDto(updatedEntity);
     }
 
-    public boolean deleteInternal(Long id) {
+    public boolean deleteInternal(ID id) {
         return getService().delete(id);
     }
 

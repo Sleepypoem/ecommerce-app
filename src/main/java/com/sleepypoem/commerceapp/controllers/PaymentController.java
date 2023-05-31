@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/payments")
-public class PaymentController extends AbstractReadOnlyController<PaymentDto, PaymentEntity> {
+public class PaymentController extends AbstractReadOnlyController<PaymentDto, PaymentEntity, Long> {
 
     private final PaymentService service;
 
@@ -37,7 +37,7 @@ public class PaymentController extends AbstractReadOnlyController<PaymentDto, Pa
     }
 
     @Override
-    protected AbstractService<PaymentEntity> getService() {
+    protected AbstractService<PaymentEntity, Long> getService() {
         return service;
     }
 }

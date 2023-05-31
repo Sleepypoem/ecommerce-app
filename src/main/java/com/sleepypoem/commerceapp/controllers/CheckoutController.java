@@ -26,7 +26,7 @@ import java.util.List;
 @Controller
 @RequestMapping("checkouts")
 @Slf4j
-public class CheckoutController extends AbstractController<CheckoutDto, CheckoutEntity> {
+public class CheckoutController extends AbstractController<CheckoutDto, CheckoutEntity, Long> {
 
     private final CheckoutService service;
 
@@ -129,7 +129,7 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
     }
 
     @Override
-    public AbstractService<CheckoutEntity> getService() {
+    public AbstractService<CheckoutEntity, Long> getService() {
         return service;
     }
 }

@@ -1,8 +1,8 @@
 package com.sleepypoem.commerceapp.controllers.interfaces;
 
-public interface ReadOnlyController<D> {
+public interface ReadOnlyController<D, ID> {
 
-    D getOneByIdInternal(Long id);
+    D getOneByIdInternal(ID id);
 
     Iterable<D> getAllInternal();
 

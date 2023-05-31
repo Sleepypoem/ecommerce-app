@@ -22,7 +22,7 @@ import java.util.List;
 @Service
 @Validable(ValidateCheckout.class)
 @Slf4j
-public class CheckoutService extends AbstractService<CheckoutEntity> implements HaveUser<CheckoutEntity> {
+public class CheckoutService extends AbstractService<CheckoutEntity, Long> implements HaveUser<CheckoutEntity> {
 
     private final CheckoutRepository dao;
 
@@ -148,7 +148,7 @@ public class CheckoutService extends AbstractService<CheckoutEntity> implements 
 
     public CheckoutEntity addPreferredPaymentMethod(Long id, PaymentMethodEntity paymentMethod) {
         CheckoutEntity checkout = getOneById(id);
-        checkout.setPaymentMethod(paymentMethod);
+        checkout.setPaymentMethod((CardEntity) paymentMethod);
         return update(id, checkout);
     }
 
