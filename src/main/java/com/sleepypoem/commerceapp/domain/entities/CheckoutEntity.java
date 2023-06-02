@@ -34,7 +34,8 @@ public class CheckoutEntity extends AbstractEntity<Long> {
     private AddressEntity address;
 
     @OneToOne
-    private CardEntity paymentMethod;
+    private PaymentMethodEntity paymentMethod;
+
     @Enumerated(EnumType.STRING)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private CheckoutStatus status;

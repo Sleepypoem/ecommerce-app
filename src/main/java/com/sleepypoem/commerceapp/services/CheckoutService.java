@@ -148,7 +148,7 @@ public class CheckoutService extends AbstractService<CheckoutEntity, Long> imple
 
     public CheckoutEntity addPreferredPaymentMethod(Long id, PaymentMethodEntity paymentMethod) {
         CheckoutEntity checkout = getOneById(id);
-        checkout.setPaymentMethod((CardEntity) paymentMethod);
+        checkout.setPaymentMethod(paymentMethod);
         return update(id, checkout);
     }
 

@@ -1,12 +1,16 @@
 package com.sleepypoem.commerceapp.services;
 
+import com.sleepypoem.commerceapp.annotations.Validable;
 import com.sleepypoem.commerceapp.config.payment.StripeFacadeImpl;
-import com.sleepypoem.commerceapp.domain.entities.CardEntity;
+import com.sleepypoem.commerceapp.domain.entities.PaymentMethodEntity;
 import com.sleepypoem.commerceapp.domain.entities.PaymentMethodEntity;
 import com.sleepypoem.commerceapp.exceptions.MyStripeException;
-import com.sleepypoem.commerceapp.repositories.CardRepository;
+import com.sleepypoem.commerceapp.repositories.PaymentMethodRepository;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
 import com.sleepypoem.commerceapp.services.abstracts.HaveUser;
+import com.sleepypoem.commerceapp.services.validators.impl.ValidatePaymentMethod;
+import com.stripe.exception.StripeException;
+import com.stripe.model.Customer;
 import com.stripe.model.PaymentMethod;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -17,34 +21,31 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Validable(ValidatePaymentMethod.class)
 @Slf4j
-public class CardService extends AbstractService<CardEntity, Long> implements HaveUser<CardEntity> {
+public class PaymentMethodService extends AbstractService<PaymentMethodEntity, Long> implements HaveUser<PaymentMethodEntity> {
 
-    private final CardRepository cardRepository;
+    private final PaymentMethodRepository dao;
 
     private final StripeFacadeImpl stripeFacade;
 
-    private final StripeUserService stripeUserService;
-
-    public CardService(CardRepository cardRepository, StripeFacadeImpl stripeFacade, StripeUserService stripeUserService) {
-        this.cardRepository = cardRepository;
+    public PaymentMethodService(PaymentMethodRepository dao, StripeFacadeImpl stripeFacade) {
+        this.dao = dao;
         this.stripeFacade = stripeFacade;
-        this.stripeUserService = stripeUserService;
-    }
-    @Override
-    protected JpaRepository<CardEntity, Long> getDao() {
-        return cardRepository;
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     public PaymentMethodEntity createCard(String cardToken, String userId) {
-        CardEntity entity = new CardEntity();
+        PaymentMethodEntity entity = new PaymentMethodEntity();
         PaymentMethod paymentMethod;
-        stripeUserService.create(userId);
+        String customerId;
+        log.info("Creating card for user: {}", userId);
         try {
+            customerId = stripeFacade.createCustomer(userId);
             paymentMethod = stripeFacade.createPaymentMethod(cardToken);
-            stripeFacade.attachPaymentMethod(paymentMethod.getId(), userId);
+            stripeFacade.attachPaymentMethod(customerId, paymentMethod.getId());
             entity.setUserId(userId);
+            entity.setStripeUserId(customerId);
             entity.setPaymentId(paymentMethod.getId());
             entity.setPaymentType(paymentMethod.getType());
             entity.setBrand(paymentMethod.getCard().getBrand());
@@ -55,12 +56,18 @@ public class CardService extends AbstractService<CardEntity, Long> implements Ha
         } catch (Exception e) {
             throw new MyStripeException(e.getMessage());
         }
+        log.info("Card created: {}", entity);
 
         return super.create(entity);
     }
 
     @Override
-    public Page<CardEntity> getAllPaginatedAndSortedByUserId(String userId, int page, int size, String sortBy, String sortOrder) {
-        return cardRepository.findByUserId(userId, PageRequest.of(page, size, createSort(sortBy, sortOrder)));
+    protected JpaRepository<PaymentMethodEntity, Long> getDao() {
+        return dao;
+    }
+
+    @Override
+    public Page<PaymentMethodEntity> getAllPaginatedAndSortedByUserId(String userId, int page, int size, String sortBy, String sortOrder) {
+        return dao.findByUserId(userId, PageRequest.of(page, size, createSort(sortBy, sortOrder)));
     }
 }

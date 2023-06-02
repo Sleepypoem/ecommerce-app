@@ -9,11 +9,15 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @SuperBuilder
-@ToString
 public class PaymentMethodDto extends AbstractDto<Long> {
     private String paymentId;
     private String userId;
     private String paymentType;
+    private String last4;
+    private String brand;
+    private String expMonth;
+    private String expYear;
+    private String stripeUserId;
 
     @Override
     public String toString() {
