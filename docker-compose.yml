@@ -87,10 +87,10 @@ services:
     image: sleepypoem:ecommerce-front-0.1
     container_name: spring-app-front
     build:
-        context: ./front
-        dockerfile: Dockerfile-front
+      context: ./front
+      dockerfile: Dockerfile-front
     ports:
-        - "8083:3030"
+      - "8083:3030"
     networks:
       - spring-app-front
       - spring-keycloak
