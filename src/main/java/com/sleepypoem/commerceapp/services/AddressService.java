@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Validable(ValidateAddress.class)
-public class AddressService extends AbstractService<AddressEntity> implements HaveUser<AddressEntity> {
+public class AddressService extends AbstractService<AddressEntity, Long> implements HaveUser<AddressEntity> {
     AddressRepository dao;
 
     public AddressService(AddressRepository dao) {

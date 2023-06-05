@@ -2,13 +2,15 @@ package com.sleepypoem.commerceapp.controllers;
 
 import com.sleepypoem.commerceapp.controllers.abstracts.AbstractController;
 import com.sleepypoem.commerceapp.controllers.utils.Paginator;
+import com.sleepypoem.commerceapp.domain.dto.CardDto;
 import com.sleepypoem.commerceapp.domain.dto.PaginatedDto;
 import com.sleepypoem.commerceapp.domain.dto.PaymentMethodDto;
 import com.sleepypoem.commerceapp.domain.dto.ResourceStatusResponseDto;
 import com.sleepypoem.commerceapp.domain.entities.PaymentMethodEntity;
-import com.sleepypoem.commerceapp.domain.mappers.BaseMapper;
+import com.sleepypoem.commerceapp.domain.mappers.PaymentMethodMapper;
 import com.sleepypoem.commerceapp.services.PaymentMethodService;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -17,23 +19,24 @@ import java.net.URI;
 
 @Controller
 @RequestMapping("payment-methods")
-public class PaymentMethodController extends AbstractController<PaymentMethodDto, PaymentMethodEntity> {
+@Slf4j
+public class PaymentMethodController extends AbstractController<PaymentMethodDto, PaymentMethodEntity, Long> {
 
     PaymentMethodService service;
 
-    protected PaymentMethodController(BaseMapper<PaymentMethodEntity, PaymentMethodDto> mapper, PaymentMethodService service) {
+    protected PaymentMethodController(PaymentMethodMapper mapper, PaymentMethodService service) {
         super(mapper);
         this.service = service;
     }
 
     @Override
-    public AbstractService<PaymentMethodEntity> getService() {
+    public AbstractService<PaymentMethodEntity, Long> getService() {
         return service;
     }
 
     @PostMapping
-    public ResponseEntity<ResourceStatusResponseDto> create(@RequestBody PaymentMethodEntity paymentMethod) throws Exception {
-        PaymentMethodDto created = createInternal(paymentMethod);
+    public ResponseEntity<ResourceStatusResponseDto> create(@RequestBody CardDto cardDto) throws Exception {
+        PaymentMethodEntity created = service.createCard(cardDto.getCardToken(), cardDto.getUserId());
         String message = "Payment method created with id " + created.getId();
         String url = "GET : /api/payment-methods/" + created.getId();
         return ResponseEntity
@@ -43,7 +46,6 @@ public class PaymentMethodController extends AbstractController<PaymentMethodDto
 
     @GetMapping("/{id}")
     public ResponseEntity<PaymentMethodDto> findOneById(@PathVariable Long id) {
-
         return ResponseEntity.ok().body(getOneByIdInternal(id));
     }
 
@@ -58,7 +60,8 @@ public class PaymentMethodController extends AbstractController<PaymentMethodDto
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PaymentMethodDto> update(@PathVariable Long id, @RequestBody PaymentMethodEntity paymentMethod) throws Exception {
-        return ResponseEntity.ok().body(updateInternal(id, paymentMethod));
+    public ResponseEntity<PaymentMethodDto> update(@PathVariable Long id, @RequestBody CardDto cardDto) {
+        PaymentMethodEntity paymentMethodEntity = service.updateCard(id, cardDto.getCardToken());
+        return ResponseEntity.ok().body(mapper.convertToDto(paymentMethodEntity));
     }
 }

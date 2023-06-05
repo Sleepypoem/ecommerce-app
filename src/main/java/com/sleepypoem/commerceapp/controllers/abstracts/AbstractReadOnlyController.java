@@ -10,9 +10,9 @@ import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
 
 import java.util.List;
 
-public abstract class AbstractReadOnlyController<D extends IDto<?>, E extends IEntity<?>> implements ReadOnlyController<D> {
+public abstract class AbstractReadOnlyController<D extends IDto<?>, E extends IEntity<?>, ID> implements ReadOnlyController<D, ID> {
 
-    protected abstract AbstractService<E> getService();
+    protected abstract AbstractService<E, ID> getService();
 
     protected BaseMapper<E, D> mapper;
 
@@ -21,7 +21,7 @@ public abstract class AbstractReadOnlyController<D extends IDto<?>, E extends IE
     }
 
     @Override
-    public D getOneByIdInternal(Long id) {
+    public D getOneByIdInternal(ID id) {
         return mapper.convertToDto(getService().getOneById(id));
     }
 

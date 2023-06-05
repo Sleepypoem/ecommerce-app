@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Validable(ValidateProduct.class)
-public class ProductService extends AbstractService<ProductEntity> {
+public class ProductService extends AbstractService<ProductEntity, Long> {
 
     ProductRepository dao;
 

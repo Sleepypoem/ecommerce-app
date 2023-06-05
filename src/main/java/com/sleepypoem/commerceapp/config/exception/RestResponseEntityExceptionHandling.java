@@ -60,15 +60,28 @@ public class RestResponseEntityExceptionHandling extends ResponseEntityException
     }
 
     @ExceptionHandler(value = {MyBadRequestException.class,
-            MyEntityNotFoundException.class,
-            MyResourceNotFoundException.class,
             MyValidationException.class,
             MyUserNameAlreadyUsedException.class,
-            MyUserNotFoundException.class,
-            MyValidableAnnotationException.class
+            MyUserNotFoundException.class
     })
     public ResponseEntity<Object> handleBadRequest(Exception ex, WebRequest request) {
         return handleExceptionInternal(ex, message(HttpStatus.BAD_REQUEST, ex), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler(value = {
+            MyEntityNotFoundException.class,
+            MyResourceNotFoundException.class,
+    })
+    public ResponseEntity<Object> handleNotFound(Exception ex, WebRequest request) {
+        return handleExceptionInternal(ex, message(HttpStatus.NOT_FOUND, ex), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+    }
+
+    @ExceptionHandler(value = {
+            MyStripeException.class,
+            MyValidableAnnotationException.class
+    })
+    public ResponseEntity<Object> handleInternalErrorException(Exception ex, WebRequest request) {
+        return handleExceptionInternal(ex, message(HttpStatus.INTERNAL_SERVER_ERROR, ex), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 
     @ExceptionHandler(value = {ConstraintViolationException.class})

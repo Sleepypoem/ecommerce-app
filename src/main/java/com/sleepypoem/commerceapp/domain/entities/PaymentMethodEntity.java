@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.util.Objects;
+
 @Entity
 @Getter
 @Setter
@@ -21,15 +23,42 @@ public class PaymentMethodEntity extends AbstractEntity<Long> {
 
     @Column(name = "payment_id")
     @NotNull
-    private String paymentId;
+    protected String paymentId;
 
     @Column(name = "user_id")
     @NotNull
-    private String userId;
+    protected String userId;
 
     @Column(name = "payment_type")
     @NotNull
-    private String paymentType;
+    protected String paymentType;
+
+    @Column(name = "stripe_user_id")
+    private String stripeUserId;
+
+    @Column(name = "last_four")
+    private String last4;
+
+    private String brand;
+
+    @Column(name = "exp_month")
+    private String expMonth;
+
+    @Column(name = "exp_year")
+    private String expYear;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PaymentMethodEntity that = (PaymentMethodEntity) o;
+        return Objects.equals(id, that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 
     @Override
     public String toString() {

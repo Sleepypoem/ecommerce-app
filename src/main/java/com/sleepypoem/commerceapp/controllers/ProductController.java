@@ -17,7 +17,7 @@ import java.net.URI;
 
 @Controller
 @RequestMapping("products")
-public class ProductController extends AbstractController<ProductDto, ProductEntity> {
+public class ProductController extends AbstractController<ProductDto, ProductEntity, Long> {
 
     @Autowired
     ProductService service;
@@ -27,7 +27,7 @@ public class ProductController extends AbstractController<ProductDto, ProductEnt
     }
 
     @Override
-    public AbstractService<ProductEntity> getService() {
+    public AbstractService<ProductEntity, Long> getService() {
         return service;
     }
 

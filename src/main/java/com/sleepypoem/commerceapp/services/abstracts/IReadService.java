@@ -2,7 +2,7 @@ package com.sleepypoem.commerceapp.services.abstracts;
 
 import java.util.List;
 
-public interface IReadService<E> {
+public interface IReadService<E, ID> {
 
     /**
      * Gets an entity by id.
@@ -10,7 +10,7 @@ public interface IReadService<E> {
      * @param id the id of the entity to get
      * @return the entity
      */
-    E getOneById(Long id);
+    E getOneById(ID id);
 
     /**
      * Gets all the entities
