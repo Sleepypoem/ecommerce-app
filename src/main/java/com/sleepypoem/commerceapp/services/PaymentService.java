@@ -1,28 +1,43 @@
 package com.sleepypoem.commerceapp.services;
 
 import com.sleepypoem.commerceapp.annotations.Validable;
+import com.sleepypoem.commerceapp.config.payment.StripeFacade;
+import com.sleepypoem.commerceapp.config.payment.StripeFacadeImpl;
 import com.sleepypoem.commerceapp.domain.dto.PaymentRequestDto;
+import com.sleepypoem.commerceapp.domain.entities.CheckoutEntity;
 import com.sleepypoem.commerceapp.domain.entities.PaymentEntity;
+import com.sleepypoem.commerceapp.domain.enums.CheckoutStatus;
+import com.sleepypoem.commerceapp.domain.enums.Currency;
+import com.sleepypoem.commerceapp.domain.enums.PaymentStatus;
 import com.sleepypoem.commerceapp.repositories.PaymentRepository;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
-import com.sleepypoem.commerceapp.services.payment.PaymentChain;
+import com.sleepypoem.commerceapp.services.abstracts.HaveUser;
 import com.sleepypoem.commerceapp.services.validators.impl.ValidatePayment;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentIntent;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Objects;
 
 @Service
 @Slf4j
 @Validable(ValidatePayment.class)
-public class PaymentService extends AbstractService<PaymentEntity, Long> {
+public class PaymentService extends AbstractService<PaymentEntity, Long> implements HaveUser<PaymentEntity> {
 
     private final PaymentRepository dao;
+    private final StripeFacade stripeFacade;
+    private final CheckoutService checkoutService;
 
-    private final PaymentChain paymentChain;
-
-    public PaymentService(PaymentRepository dao, PaymentChain paymentChain) {
+    public PaymentService(PaymentRepository dao, StripeFacadeImpl stripeFacade, CheckoutService checkoutService) {
         this.dao = dao;
-        this.paymentChain = paymentChain;
+        this.stripeFacade = stripeFacade;
+        this.checkoutService = checkoutService;
     }
 
     @Override
@@ -30,12 +45,51 @@ public class PaymentService extends AbstractService<PaymentEntity, Long> {
         return dao;
     }
 
-    public PaymentEntity processPayment(PaymentRequestDto paymentRequest) throws Exception {
-        ServicePreconditions.checkEntityNotNull(paymentRequest.getCheckout(), "You need to start a checkout to start a payment");
-        ServicePreconditions.checkEntityNotNull(paymentRequest.getCheckout().getPaymentMethod(), "You need a payment method to start a payment");
-        ServicePreconditions.checkEntityNotNull(paymentRequest.getCheckout().getAddress(), "You need a address to start a payment");
-        PaymentEntity payment = paymentChain.startChain(paymentRequest);
-        log.info(payment.toString());
+    public PaymentEntity startPayment(PaymentRequestDto paymentRequest) {
+        CheckoutEntity checkout = checkoutService.getOneById(paymentRequest.getCheckout().getId());
+        ServicePreconditions.checkExpression(checkout.getStatus().equals(CheckoutStatus.PENDING), "Checkout is not pending");
+        ServicePreconditions.checkEntityNotNull(checkout.getPaymentMethod(), "Payment method not set");
+        ServicePreconditions.checkEntityNotNull(checkout.getAddress(), "Address not set");
+        PaymentEntity payment = new PaymentEntity();
+        payment.setUserId(checkout.getUserId());
+        payment.setCheckout(checkout);
+        payment.setCurrency(paymentRequest.getCurrency() == null ? Currency.USD : paymentRequest.getCurrency());
+        payment.setStatus(PaymentStatus.PROCESSING);
         return super.create(payment);
+    }
+
+    public PaymentEntity confirmPayment(Long paymentId) throws Exception {
+        PaymentEntity payment = getOneById(paymentId);
+        PaymentIntent paymentIntent;
+        try {
+            paymentIntent = stripeFacade.createAndConfirmPaymentIntent(
+                    payment.getCheckout().getPaymentMethod().getStripeUserId(),
+                    payment.getCheckout().getPaymentMethod().getPaymentId(),
+                    payment.getCheckout().getTotal().multiply(BigDecimal.valueOf(100)).intValue(),
+                    payment.getCurrency().toString()
+            );
+        } catch (Exception e) {
+            log.error("Error confirming payment: id={}", paymentId, e);
+            payment.setStatus(PaymentStatus.FAILED);
+            payment.setPaymentProviderMessage(e.getMessage());
+            return super.update(paymentId, payment);
+        }
+        payment.setStatus(PaymentStatus.SUCCESS);
+        checkoutService.setStatusToCompleted(payment.getCheckout().getId());
+        payment.setPaymentProviderMessage("Status: " + paymentIntent.getStatus());
+        return super.update(paymentId, payment);
+    }
+
+    public PaymentEntity cancelPayment(Long paymentId) {
+        PaymentEntity payment = getOneById(paymentId);
+        checkoutService.setStatusToCanceled(payment.getCheckout().getId());
+        payment.setStatus(PaymentStatus.CANCELED);
+        payment.setPaymentProviderMessage("Status: canceled");
+        return super.update(paymentId, payment);
+    }
+
+    @Override
+    public Page<PaymentEntity> getAllPaginatedAndSortedByUserId(String userId, int page, int size, String sortBy, String sortOrder) {
+        return dao.findByUserId(userId, PageRequest.of(page, size, createSort(sortBy, sortOrder)));
     }
 }
