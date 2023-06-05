@@ -19,8 +19,6 @@ public class PaymentMethodDto extends AbstractDto<Long> {
     private String expMonth;
     private String expYear;
     private String stripeUserId;
-    private String paymentProviderMessage;
-    private Currency currency;
 
     @Override
     public String toString() {
