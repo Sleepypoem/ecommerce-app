@@ -101,12 +101,12 @@ public class StripeFacadeImpl implements StripeFacade {
     }
 
     @Override
-    public PaymentIntent createAndConfirmPaymentIntent(String customerId, String paymentMethodId, int amount) throws Exception {
+    public PaymentIntent createAndConfirmPaymentIntent(String customerId, String paymentMethodId, int amount, String currency) throws Exception {
         Stripe.apiKey = stripePropertyLoader.getSecretKey();
         return PaymentIntent.create(
                 Map.of(
                         "amount", amount,
-                        "currency", "usd",
+                        "currency", currency,
                         "customer", customerId,
                         "payment_method", paymentMethodId,
                         "off_session", true,

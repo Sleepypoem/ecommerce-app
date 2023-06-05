@@ -24,7 +24,7 @@ public interface StripeFacade {
 
     PaymentIntent getPaymentIntent(String paymentIntentId) throws Exception;
 
-    PaymentIntent createAndConfirmPaymentIntent(String customerId, String paymentMethodId, int amount) throws Exception;
+    PaymentIntent createAndConfirmPaymentIntent(String customerId, String paymentMethodId, int amount, String currency) throws Exception;
 
     PaymentIntent confirmPaymentIntent(String paymentIntentId) throws Exception;
 
