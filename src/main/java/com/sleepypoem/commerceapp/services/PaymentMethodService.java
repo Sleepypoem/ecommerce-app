@@ -1,16 +1,14 @@
 package com.sleepypoem.commerceapp.services;
 
 import com.sleepypoem.commerceapp.annotations.Validable;
+import com.sleepypoem.commerceapp.config.payment.StripeFacade;
 import com.sleepypoem.commerceapp.config.payment.StripeFacadeImpl;
-import com.sleepypoem.commerceapp.domain.entities.PaymentMethodEntity;
 import com.sleepypoem.commerceapp.domain.entities.PaymentMethodEntity;
 import com.sleepypoem.commerceapp.exceptions.MyStripeException;
 import com.sleepypoem.commerceapp.repositories.PaymentMethodRepository;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
 import com.sleepypoem.commerceapp.services.abstracts.HaveUser;
 import com.sleepypoem.commerceapp.services.validators.impl.ValidatePaymentMethod;
-import com.stripe.exception.StripeException;
-import com.stripe.model.Customer;
 import com.stripe.model.PaymentMethod;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -27,7 +25,7 @@ public class PaymentMethodService extends AbstractService<PaymentMethodEntity, L
 
     private final PaymentMethodRepository dao;
 
-    private final StripeFacadeImpl stripeFacade;
+    private final StripeFacade stripeFacade;
 
     public PaymentMethodService(PaymentMethodRepository dao, StripeFacadeImpl stripeFacade) {
         this.dao = dao;
@@ -41,24 +39,42 @@ public class PaymentMethodService extends AbstractService<PaymentMethodEntity, L
         String customerId;
         log.info("Creating card for user: {}", userId);
         try {
-            customerId = stripeFacade.createCustomer(userId);
             paymentMethod = stripeFacade.createPaymentMethod(cardToken);
+            customerId = stripeFacade.createCustomer(userId);
             stripeFacade.attachPaymentMethod(customerId, paymentMethod.getId());
-            entity.setUserId(userId);
-            entity.setStripeUserId(customerId);
-            entity.setPaymentId(paymentMethod.getId());
-            entity.setPaymentType(paymentMethod.getType());
-            entity.setBrand(paymentMethod.getCard().getBrand());
-            entity.setLast4(paymentMethod.getCard().getLast4());
-            entity.setExpMonth(String.valueOf(paymentMethod.getCard().getExpMonth()));
-            entity.setExpYear(String.valueOf(paymentMethod.getCard().getExpYear()));
-
         } catch (Exception e) {
             throw new MyStripeException(e.getMessage());
         }
+        entity.setUserId(userId);
+        entity.setStripeUserId(customerId);
+        entity.setPaymentId(paymentMethod.getId());
+        entity.setPaymentType(paymentMethod.getType());
+        entity.setBrand(paymentMethod.getCard().getBrand());
+        entity.setLast4(paymentMethod.getCard().getLast4());
+        entity.setExpMonth(String.valueOf(paymentMethod.getCard().getExpMonth()));
+        entity.setExpYear(String.valueOf(paymentMethod.getCard().getExpYear()));
         log.info("Card created: {}", entity);
 
         return super.create(entity);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public PaymentMethodEntity updateCard(Long id, String cardToken) {
+        PaymentMethodEntity entity = getOneById(id);
+        PaymentMethod paymentMethod;
+        log.info("Updating card...");
+        try {
+            paymentMethod = stripeFacade.updatePaymentMethod(entity.getPaymentId(), cardToken);
+        } catch (Exception e) {
+            throw new MyStripeException(e.getMessage());
+        }
+        entity.setBrand(paymentMethod.getCard().getBrand());
+        entity.setLast4(paymentMethod.getCard().getLast4());
+        entity.setExpMonth(String.valueOf(paymentMethod.getCard().getExpMonth()));
+        entity.setExpYear(String.valueOf(paymentMethod.getCard().getExpYear()));
+        log.info("Card updated!");
+
+        return super.update(id, entity);
     }
 
     @Override
