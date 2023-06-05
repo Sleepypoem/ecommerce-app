@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @AllArgsConstructor
@@ -21,6 +22,7 @@ public class CheckoutDto extends AbstractDto<Long> {
     private List<CheckoutItemDto> items;
     private AddressDto address;
     private PaymentMethodDto paymentMethod;
+    private BigDecimal total;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private CheckoutStatus status;
@@ -36,6 +38,7 @@ public class CheckoutDto extends AbstractDto<Long> {
                 ", status=" + status +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
+                ", total=" + total +
                 '}';
     }
 }
