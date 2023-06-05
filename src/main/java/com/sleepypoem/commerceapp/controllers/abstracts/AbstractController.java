@@ -24,8 +24,7 @@ public abstract class AbstractController<D extends IDto<?>, E extends IEntity<?>
 
     public D updateInternal(ID id, E entity) {
         RequestPreconditions.checkRequestElementNotNull(entity);
-        RequestPreconditions.checkRequestState(entity.getId() == null);
-        RequestPreconditions.checkRequestState(!Objects.equals(id, entity.getId()), "Id in URI doesn't match resource Id.");
+        RequestPreconditions.checkRequestState(Objects.equals(id, entity.getId()), "Id in URI doesn't match resource Id.");
         E updatedEntity = getService().update(id, entity);
         return mapper.convertToDto(updatedEntity);
     }
