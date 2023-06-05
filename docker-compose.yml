@@ -6,6 +6,8 @@ services:
     image: mysql/mysql-server:8.0
     volumes:
       - C:\Users\oskri\OneDrive\Documentos\sql\keycloak:/var/lib/mysql
+    ports:
+      - '3360:3306'
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: ecommerce
@@ -69,6 +71,7 @@ services:
     networks:
       - springmysql-net
       - spring-keycloak
+      - spring-app-front
     environment:
       - MYSQL_HOST=db
       - MYSQL_USERNAME=admin
@@ -81,17 +84,20 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
   app-front:
-    image: sleepypoem:ecommerce-front-0.4
+    image: sleepypoem:ecommerce-front-0.1
     container_name: spring-app-front
     build:
         context: ./front
         dockerfile: Dockerfile-front
     ports:
-        - "4200:4200"
-        - "3000:3000"
-        - "8083:8080"
+        - "8083:3030"
+    networks:
+      - spring-app-front
+      - spring-keycloak
 networks:
   springmysql-net:
   spring-keycloak:
   keycloak-mysql:
+    driver: bridge
+  spring-app-front:
     driver: bridge
