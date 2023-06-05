@@ -44,9 +44,7 @@ public class PaymentService extends AbstractService<PaymentEntity, Long> impleme
 
     public PaymentEntity startPayment(PaymentRequestDto paymentRequest) {
         CheckoutEntity checkout = checkoutService.getOneById(paymentRequest.getCheckout().getId());
-        ServicePreconditions.checkExpression(checkout.getStatus().equals(CheckoutStatus.PENDING), "Checkout is not pending");
-        ServicePreconditions.checkEntityNotNull(checkout.getPaymentMethod(), "Payment method not set");
-        ServicePreconditions.checkEntityNotNull(checkout.getAddress(), "Address not set");
+        validateCheckoutBeforeProcessing(checkout);
         PaymentEntity payment = new PaymentEntity();
         payment.setUserId(checkout.getUserId());
         payment.setCheckout(checkout);
@@ -55,8 +53,9 @@ public class PaymentService extends AbstractService<PaymentEntity, Long> impleme
         return super.create(payment);
     }
 
-    public PaymentEntity confirmPayment(Long paymentId) throws Exception {
+    public PaymentEntity confirmPayment(Long paymentId) {
         PaymentEntity payment = getOneById(paymentId);
+        ServicePreconditions.checkExpression(payment.getStatus().equals(PaymentStatus.PROCESSING), "Payment is not processing");
         PaymentIntent paymentIntent;
         try {
             paymentIntent = stripeFacade.createAndConfirmPaymentIntent(
@@ -79,6 +78,7 @@ public class PaymentService extends AbstractService<PaymentEntity, Long> impleme
 
     public PaymentEntity cancelPayment(Long paymentId) {
         PaymentEntity payment = getOneById(paymentId);
+        ServicePreconditions.checkExpression(payment.getStatus().equals(PaymentStatus.PROCESSING), "Payment is not processing");
         checkoutService.setStatusToCanceled(payment.getCheckout().getId());
         payment.setStatus(PaymentStatus.CANCELED);
         payment.setPaymentProviderMessage("Status: canceled");
@@ -88,5 +88,11 @@ public class PaymentService extends AbstractService<PaymentEntity, Long> impleme
     @Override
     public Page<PaymentEntity> getAllPaginatedAndSortedByUserId(String userId, int page, int size, String sortBy, String sortOrder) {
         return dao.findByUserId(userId, PageRequest.of(page, size, createSort(sortBy, sortOrder)));
+    }
+
+    private void validateCheckoutBeforeProcessing(CheckoutEntity checkout) {
+        ServicePreconditions.checkExpression(checkout.getStatus().equals(CheckoutStatus.PENDING), "Checkout is not pending");
+        ServicePreconditions.checkEntityNotNull(checkout.getPaymentMethod(), "Payment method not set");
+        ServicePreconditions.checkEntityNotNull(checkout.getAddress(), "Address not set");
     }
 }
