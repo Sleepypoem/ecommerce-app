@@ -1,5 +1,6 @@
 package com.sleepypoem.commerceapp.domain.abstracts;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
 import jakarta.persistence.*;
 import lombok.experimental.SuperBuilder;
@@ -15,9 +16,11 @@ public class AbstractEntity<ID> implements IEntity<ID> {
     @GeneratedValue(strategy = GenerationType.AUTO)
     protected ID id;
 
+    @JsonIgnore
     @Column(name = "created_at")
     protected LocalDateTime createdAt;
 
+    @JsonIgnore
     @Column(name = "updated_at")
     protected LocalDateTime updatedAt;
 
