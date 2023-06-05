@@ -1,7 +1,5 @@
 package com.sleepypoem.commerceapp.controllers;
 
-import com.sleepypoem.commerceapp.config.beans.ApplicationContextProvider;
-import com.sleepypoem.commerceapp.config.payment.StripePropertyLoader;
 import com.sleepypoem.commerceapp.controllers.abstracts.AbstractController;
 import com.sleepypoem.commerceapp.domain.dto.PaginatedDto;
 import com.sleepypoem.commerceapp.domain.dto.ProductDto;

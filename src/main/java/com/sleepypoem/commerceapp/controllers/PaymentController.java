@@ -38,9 +38,9 @@ public class PaymentController extends AbstractReadOnlyController<PaymentDto, Pa
     @PatchMapping("/{id}")
     public ResponseEntity<ResourceStatusResponseDto> updatePaymentStatus(@PathVariable Long id, @RequestParam String action) throws Exception {
         PaymentEntity payment;
-        if(action.equals("cancel")) {
+        if (action.equals("cancel")) {
             payment = service.cancelPayment(id);
-        } else if(action.equals("confirm")) {
+        } else if (action.equals("confirm")) {
             payment = service.confirmPayment(id);
         } else {
             throw new MyBadRequestException("Invalid action, must be cancel or confirm");
@@ -52,9 +52,12 @@ public class PaymentController extends AbstractReadOnlyController<PaymentDto, Pa
 
     private String generateMessageBasedOnStatus(PaymentEntity payment) {
         return switch (payment.getStatus()) {
-            case CANCELED -> "Payment with id " + payment.getId() + " was canceled. Message: " + payment.getPaymentProviderMessage();
-            case SUCCESS -> "Payment with id " + payment.getId() + " was confirmed. Message: " + payment.getPaymentProviderMessage();
-            case FAILED -> "Payment with id " + payment.getId() + " failed, check card details and try again. Message: " + payment.getPaymentProviderMessage();
+            case CANCELED ->
+                    "Payment with id " + payment.getId() + " was canceled. Message: " + payment.getPaymentProviderMessage();
+            case SUCCESS ->
+                    "Payment with id " + payment.getId() + " was confirmed. Message: " + payment.getPaymentProviderMessage();
+            case FAILED ->
+                    "Payment with id " + payment.getId() + " failed, check card details and try again. Message: " + payment.getPaymentProviderMessage();
             default -> throw new IllegalStateException("Unexpected value: " + payment.getStatus());
         };
     }

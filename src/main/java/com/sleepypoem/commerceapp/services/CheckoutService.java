@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -48,9 +47,9 @@ public class CheckoutService extends AbstractService<CheckoutEntity, Long> imple
         checkout.setStatus(CheckoutStatus.PENDING);
         List<CheckoutItemEntity> items = checkout.getItems().stream()
                 .map(item -> {
-            item.setCheckout(checkout);
-            return item;
-        }).toList();
+                    item.setCheckout(checkout);
+                    return item;
+                }).toList();
         checkoutItemService.create(items);
         checkout.setStatus(CheckoutStatus.PENDING);
         return super.create(checkout);
@@ -64,7 +63,7 @@ public class CheckoutService extends AbstractService<CheckoutEntity, Long> imple
     }
 
     private void returnProductStock(CheckoutItemEntity item) {
-       increaseStock(item.getProduct().getId(), item.getQuantity());
+        increaseStock(item.getProduct().getId(), item.getQuantity());
     }
 
     private void increaseStock(Long productId, int quantity) {

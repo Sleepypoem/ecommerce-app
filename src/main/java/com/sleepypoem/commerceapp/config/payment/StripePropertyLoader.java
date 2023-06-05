@@ -9,8 +9,8 @@ import org.springframework.context.annotation.Configuration;
 @Data
 public class StripePropertyLoader {
 
-    private  String secretKey;
+    private String secretKey;
 
-    private  String publicKey;
+    private String publicKey;
 
 }

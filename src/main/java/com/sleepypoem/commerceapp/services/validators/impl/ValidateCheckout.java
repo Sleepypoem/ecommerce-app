@@ -27,7 +27,7 @@ public class ValidateCheckout implements IValidator<CheckoutEntity> {
             errors.put("userId", "The user does not exist.");
         }
 
-        if (Objects.equals(checkout.getStatus(), CheckoutStatus.CANCELED)|| Objects.equals(checkout.getStatus(), CheckoutStatus.COMPLETED)) {
+        if (Objects.equals(checkout.getStatus(), CheckoutStatus.CANCELED) || Objects.equals(checkout.getStatus(), CheckoutStatus.COMPLETED)) {
             errors.put("status", "Must provide a pending checkout. Provided status: " + checkout.getStatus() + ".");
         }
 

@@ -11,13 +11,13 @@ import java.util.Enumeration;
 public class MyRequestInterceptor implements HandlerInterceptor {
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)  {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         Enumeration<String> headerNames = request.getHeaderNames();
-        log.info("Request: {} {} {}" , request.getMethod() , request.getRequestURI() , request.getProtocol() );
+        log.info("Request: {} {} {}", request.getMethod(), request.getRequestURI(), request.getProtocol());
         while (headerNames.hasMoreElements()) {
             String headerName = headerNames.nextElement();
             String headerValue = request.getHeader(headerName);
-            log.trace("Header: {} = {}" , headerName , headerValue);
+            log.trace("Header: {} = {}", headerName, headerValue);
         }
 
         return true;

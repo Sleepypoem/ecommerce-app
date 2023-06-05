@@ -72,7 +72,7 @@ public class RestResponseEntityExceptionHandling extends ResponseEntityException
             MyEntityNotFoundException.class,
             MyResourceNotFoundException.class,
     })
-    public  ResponseEntity<Object> handleNotFound(Exception ex, WebRequest request) {
+    public ResponseEntity<Object> handleNotFound(Exception ex, WebRequest request) {
         return handleExceptionInternal(ex, message(HttpStatus.NOT_FOUND, ex), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
 
