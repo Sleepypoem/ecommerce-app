@@ -12,6 +12,8 @@ public interface StripeFacade {
 
     PaymentMethod createPaymentMethod(String cardToken) throws Exception;
 
+    PaymentMethod updatePaymentMethod(String paymentMethodId, String cardToken) throws Exception;
+
     String attachPaymentMethod(String customerId, String paymentMethodId) throws Exception;
 
     Customer getCustomer(String customerId) throws Exception;
@@ -22,7 +24,11 @@ public interface StripeFacade {
 
     PaymentIntent getPaymentIntent(String paymentIntentId) throws Exception;
 
-    String createPaymentIntent(String customerId, String paymentMethodId, String amount) throws Exception;
+    PaymentIntent createAndConfirmPaymentIntent(String customerId, String paymentMethodId, int amount) throws Exception;
+
+    PaymentIntent confirmPaymentIntent(String paymentIntentId) throws Exception;
+
+    PaymentIntent cancelPaymentIntent(String paymentIntentId) throws Exception;
 
     String capturePaymentIntent(String paymentIntentId) throws Exception;
 

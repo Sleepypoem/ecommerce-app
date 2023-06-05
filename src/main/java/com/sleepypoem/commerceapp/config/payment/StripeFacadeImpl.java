@@ -4,7 +4,8 @@ import com.stripe.Stripe;
 import com.stripe.model.Customer;
 import com.stripe.model.PaymentIntent;
 import com.stripe.model.PaymentMethod;
-import com.stripe.param.CustomerCreateParams;
+import com.stripe.param.PaymentMethodCreateParams;
+import com.stripe.param.PaymentMethodUpdateParams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -23,14 +24,15 @@ public class StripeFacadeImpl implements StripeFacade {
     }
 
     @Override
-    public String createCustomer(String email) throws Exception {
+    public String createCustomer(String id) throws Exception {
         Stripe.apiKey = stripePropertyLoader.getSecretKey();
-        log.info("Creating customer: email={}", email);
-        Customer customer = Customer.create(
-                CustomerCreateParams.builder()
-                        .setEmail(email)
-                        .build()
-        );
+        log.info("Creating customer: email={}", id);
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", id);
+        params.put("description", "Customer for " + id);
+        Customer customer;
+        customer = Customer.create(params);
+
         return customer.getId();
     }
 
@@ -38,8 +40,24 @@ public class StripeFacadeImpl implements StripeFacade {
     public PaymentMethod createPaymentMethod(String cardToken) throws Exception {
         Stripe.apiKey = stripePropertyLoader.getSecretKey();
 
-        return PaymentMethod.create(
-                Map.of("type", "card", "card", cardToken)
+        PaymentMethodCreateParams params =
+                PaymentMethodCreateParams.builder()
+                        .setType(PaymentMethodCreateParams.Type.CARD)
+                        .setCard(PaymentMethodCreateParams.CardDetails.builder().putExtraParam("token", cardToken).build())
+                        .build();
+
+        return PaymentMethod.create(params);
+    }
+
+    @Override
+    public PaymentMethod updatePaymentMethod(String paymentMethodId, String cardToken) throws Exception {
+        Stripe.apiKey = stripePropertyLoader.getSecretKey();
+
+        PaymentMethod paymentMethod = getPaymentMethod(paymentMethodId);
+        return paymentMethod.update(
+                PaymentMethodUpdateParams.builder()
+                        .setCard(PaymentMethodUpdateParams.Card.builder().putExtraParam("token", cardToken).build())
+                        .build()
         );
     }
 
@@ -78,12 +96,37 @@ public class StripeFacadeImpl implements StripeFacade {
 
     @Override
     public PaymentIntent getPaymentIntent(String paymentIntentId) throws Exception {
-        return null;
+        Stripe.apiKey = stripePropertyLoader.getSecretKey();
+        return PaymentIntent.retrieve(paymentIntentId);
     }
 
     @Override
-    public String createPaymentIntent(String customerId, String paymentMethodId, String amount) throws Exception {
-        return null;
+    public PaymentIntent createAndConfirmPaymentIntent(String customerId, String paymentMethodId, int amount) throws Exception {
+        Stripe.apiKey = stripePropertyLoader.getSecretKey();
+        return PaymentIntent.create(
+                Map.of(
+                        "amount", amount,
+                        "currency", "usd",
+                        "customer", customerId,
+                        "payment_method", paymentMethodId,
+                        "off_session", true,
+                        "confirm", true
+                )
+        );
+    }
+
+    @Override
+    public PaymentIntent confirmPaymentIntent(String paymentIntentId) throws Exception {
+        Stripe.apiKey = stripePropertyLoader.getSecretKey();
+        PaymentIntent paymentIntent = getPaymentIntent(paymentIntentId);
+        return paymentIntent.confirm();
+    }
+
+    @Override
+    public PaymentIntent cancelPaymentIntent(String paymentIntentId) throws Exception {
+        Stripe.apiKey = stripePropertyLoader.getSecretKey();
+        PaymentIntent paymentIntent = getPaymentIntent(paymentIntentId);
+        return paymentIntent.cancel();
     }
 
     @Override
