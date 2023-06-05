@@ -1,6 +1,7 @@
 package com.sleepypoem.commerceapp.domain.dto;
 
 import com.sleepypoem.commerceapp.domain.abstracts.AbstractDto;
+import com.sleepypoem.commerceapp.domain.enums.Currency;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -18,6 +19,8 @@ public class PaymentMethodDto extends AbstractDto<Long> {
     private String expMonth;
     private String expYear;
     private String stripeUserId;
+    private String paymentProviderMessage;
+    private Currency currency;
 
     @Override
     public String toString() {

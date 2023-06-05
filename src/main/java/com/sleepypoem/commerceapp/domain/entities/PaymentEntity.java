@@ -1,6 +1,7 @@
 package com.sleepypoem.commerceapp.domain.entities;
 
 import com.sleepypoem.commerceapp.domain.abstracts.AbstractEntity;
+import com.sleepypoem.commerceapp.domain.enums.Currency;
 import com.sleepypoem.commerceapp.domain.enums.PaymentStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -29,6 +30,14 @@ public class PaymentEntity extends AbstractEntity<Long> {
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
 
+    @OneToOne
+    private CheckoutEntity checkout;
+
+    @Enumerated(EnumType.STRING)
+    private Currency currency;
+
+    @Transient
+    private String paymentProviderMessage;
     @Override
     public String toString() {
         return "{" +
