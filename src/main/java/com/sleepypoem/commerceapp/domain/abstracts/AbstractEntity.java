@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @MappedSuperclass
 @SuperBuilder
@@ -52,18 +51,5 @@ public class AbstractEntity<ID> implements IEntity<ID> {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        AbstractEntity<?> that = (AbstractEntity<?>) o;
-        return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 }

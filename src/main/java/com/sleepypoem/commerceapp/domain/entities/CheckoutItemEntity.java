@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.util.Objects;
+
 @Entity
 @Getter
 @Setter
@@ -29,6 +31,19 @@ public class CheckoutItemEntity extends AbstractEntity<Long> {
     @JoinColumn(name = "checkout_id", referencedColumnName = "id")
     @JsonBackReference
     private CheckoutEntity checkout;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CheckoutItemEntity that = (CheckoutItemEntity) o;
+        return Objects.equals(id, that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 
     @Override
     public String toString() {
