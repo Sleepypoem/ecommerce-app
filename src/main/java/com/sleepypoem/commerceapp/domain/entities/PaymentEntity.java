@@ -24,9 +24,6 @@ public class PaymentEntity extends AbstractEntity<Long> {
     @NotNull
     private String userId;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private ReceiptEntity receipt;
-
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
 
@@ -38,13 +35,16 @@ public class PaymentEntity extends AbstractEntity<Long> {
 
     @Transient
     private String paymentProviderMessage;
+
     @Override
     public String toString() {
-        return "{" +
-                "id=" + id +
-                ", userId='" + userId + '\'' +
-                ", receipt='" + receipt + '\'' +
+        return "PaymentEntity{" +
+                "userId='" + userId + '\'' +
                 ", status=" + status +
+                ", checkout=" + checkout +
+                ", currency=" + currency +
+                ", paymentProviderMessage='" + paymentProviderMessage + '\'' +
+                ", id=" + id +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';
