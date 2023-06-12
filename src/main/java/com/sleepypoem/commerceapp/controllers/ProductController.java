@@ -1,13 +1,15 @@
 package com.sleepypoem.commerceapp.controllers;
 
+import com.sleepypoem.commerceapp.annotations.security.IsAdminOrSuperUser;
 import com.sleepypoem.commerceapp.controllers.abstracts.AbstractController;
 import com.sleepypoem.commerceapp.domain.dto.PaginatedDto;
-import com.sleepypoem.commerceapp.domain.dto.ProductDto;
 import com.sleepypoem.commerceapp.domain.dto.ResourceStatusResponseDto;
+import com.sleepypoem.commerceapp.domain.dto.entities.ProductDto;
 import com.sleepypoem.commerceapp.domain.entities.ProductEntity;
 import com.sleepypoem.commerceapp.domain.mappers.BaseMapper;
 import com.sleepypoem.commerceapp.services.ProductService;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,6 +19,7 @@ import java.net.URI;
 
 @Controller
 @RequestMapping("products")
+@Slf4j
 public class ProductController extends AbstractController<ProductDto, ProductEntity, Long> {
 
     @Autowired
@@ -40,7 +43,8 @@ public class ProductController extends AbstractController<ProductDto, ProductEnt
     }
 
     @PostMapping
-    public ResponseEntity<ResourceStatusResponseDto> create(@RequestBody ProductEntity product) throws Exception {
+    @IsAdminOrSuperUser
+    public ResponseEntity<ResourceStatusResponseDto> create(@RequestBody ProductEntity product) {
         ProductDto created = createInternal(product);
         String message = "Product created with id " + created.getId();
         String url = "GET : /api/products/" + created.getId();
@@ -55,7 +59,8 @@ public class ProductController extends AbstractController<ProductDto, ProductEnt
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductDto> update(@PathVariable Long id, @RequestBody ProductEntity product) throws Exception {
+    @IsAdminOrSuperUser
+    public ResponseEntity<ProductDto> update(@PathVariable Long id, @RequestBody ProductEntity product) {
         return ResponseEntity.ok().body(updateInternal(id, product));
     }
 }
