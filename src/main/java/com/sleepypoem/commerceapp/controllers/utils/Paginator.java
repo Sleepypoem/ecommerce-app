@@ -4,25 +4,46 @@ import com.sleepypoem.commerceapp.domain.dto.PaginatedDto;
 import com.sleepypoem.commerceapp.domain.mappers.BaseMapper;
 import org.springframework.data.domain.Page;
 
-public class Paginator<E, D> {
+import java.util.List;
+import java.util.Objects;
 
-    private final BaseMapper<E, D> mapper;
+public class Paginator<D> {
 
-    public Paginator(BaseMapper<E, D> mapper) {
-        this.mapper = mapper;
+    public static final String API_PATH = "/api/";
+
+    public static final String PAGE = "page=";
+
+    public static final String SIZE = "size=";
+
+    private final String resourceName;
+
+    public Paginator(String resourceName) {
+        this.resourceName = resourceName;
     }
 
-    public PaginatedDto<D> getPaginatedDto(Page<E> pagedEntity, String resourceName) {
+    public <E> PaginatedDto<D> getPaginatedDtoFromPage(Page<E> pagedEntity, BaseMapper<E, D> mapper) {
         PaginatedDto<D> paginatedDto = new PaginatedDto<>();
         paginatedDto.setCurrentPage(pagedEntity.getNumber());
         paginatedDto.setTotalElements(pagedEntity.getTotalElements());
         paginatedDto.setContent(mapper.convertToDtoList(pagedEntity.getContent()));
         if (pagedEntity.hasPrevious()) {
-            paginatedDto.setPreviousPage("/api/" + resourceName + "?page=" + pagedEntity.previousPageable().getPageNumber() + "&size=" + pagedEntity.previousPageable().getPageSize());
+            paginatedDto.setPreviousPage(API_PATH + resourceName + "?" + PAGE + pagedEntity.previousPageable().getPageNumber() + "&" + SIZE + pagedEntity.previousPageable().getPageSize());
         }
         if (pagedEntity.hasNext()) {
-            paginatedDto.setNextPage("/api/" + resourceName + "?page=" + pagedEntity.nextPageable().getPageNumber() + "&size=" + pagedEntity.nextPageable().getPageSize());
+            paginatedDto.setNextPage(API_PATH + resourceName + "?" + PAGE + pagedEntity.nextPageable().getPageNumber() + "&" + SIZE + pagedEntity.nextPageable().getPageSize());
         }
+        return paginatedDto;
+    }
+
+    public PaginatedDto<D> getPaginatedDtoFromList(Integer currentPage, Integer size, Long totalElements, List<D> content) {
+        PaginatedDto<D> paginatedDto = new PaginatedDto<>();
+        String nextPage = Objects.equals(Long.valueOf(currentPage), totalElements) ? API_PATH + resourceName + "&" + PAGE + (currentPage + 1) + "&" + SIZE + size : null;
+        String previousPage = currentPage == 0 ? null : API_PATH + resourceName + "&" + PAGE + (currentPage - 1) + "&" + SIZE + size;
+        paginatedDto.setContent(content);
+        paginatedDto.setTotalElements(totalElements);
+        paginatedDto.setCurrentPage(currentPage);
+        paginatedDto.setNextPage(nextPage);
+        paginatedDto.setPreviousPage(previousPage);
         return paginatedDto;
     }
 }

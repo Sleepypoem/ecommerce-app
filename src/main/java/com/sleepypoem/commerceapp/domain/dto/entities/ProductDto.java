@@ -1,4 +1,5 @@
-package com.sleepypoem.commerceapp.domain.dto;
+package com.sleepypoem.commerceapp.domain.dto.entities;
+
 
 import com.sleepypoem.commerceapp.domain.abstracts.AbstractDto;
 import lombok.AllArgsConstructor;
@@ -14,16 +15,20 @@ import java.util.Objects;
 @Getter
 @Setter
 @SuperBuilder
-public class CheckoutItemDto extends AbstractDto<Long> {
-    private ProductDto product;
-    private int quantity;
+public class ProductDto extends AbstractDto<Long> {
+    private String name;
+    private int stock;
+    private String description;
+    private Double price;
 
     @Override
     public String toString() {
-        return "CheckoutItemDto{" +
-                ", id=" + id +
-                "product=" + product +
-                ", quantity=" + quantity +
+        return "{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", stock=" + stock +
+                ", description='" + description + '\'' +
+                ", price=" + price +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

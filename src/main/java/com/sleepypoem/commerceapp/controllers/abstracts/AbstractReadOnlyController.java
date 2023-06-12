@@ -32,7 +32,7 @@ public abstract class AbstractReadOnlyController<D extends IDto<?>, E extends IE
     }
 
     public PaginatedDto<D> getAllPaginatedAndSortedInternal(int page, int size, String sortBy, String sortOrder, String resourceName) {
-        Paginator<E, D> paginator = new Paginator<>(mapper);
-        return paginator.getPaginatedDto(getService().getAllPaginatedAndSorted(page, size, sortBy, sortOrder), resourceName);
+        Paginator<D> paginator = new Paginator<>(resourceName);
+        return paginator.getPaginatedDtoFromPage(getService().getAllPaginatedAndSorted(page, size, sortBy, sortOrder), mapper);
     }
 }

@@ -3,11 +3,10 @@ package com.sleepypoem.commerceapp.controllers;
 import com.sleepypoem.commerceapp.domain.dto.ResourceStatusResponseDto;
 import com.sleepypoem.commerceapp.domain.dto.UserDto;
 import com.sleepypoem.commerceapp.domain.dto.UserRepresentationDto;
+import com.sleepypoem.commerceapp.exceptions.MyUserNotFoundException;
 import com.sleepypoem.commerceapp.services.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,11 +17,14 @@ import java.net.URI;
 @Slf4j
 public class UserController {
 
-    @Autowired
-    UserService service;
+    private final UserService service;
+
+    public UserController(UserService service) {
+        this.service = service;
+    }
 
     @PostMapping(produces = {"application/json"})
-    public ResponseEntity<ResourceStatusResponseDto> createUser(@RequestBody UserRepresentationDto user) throws Exception {
+    public ResponseEntity<ResourceStatusResponseDto> createUser(@RequestBody UserRepresentationDto user) {
         String userId = service.addUser(user);
         String message = "User created with id " + userId;
         String url = "GET : /api/users/" + userId;
@@ -32,21 +34,24 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable String id) throws Exception {
+    public ResponseEntity<UserDto> getUserById(@PathVariable String id) throws MyUserNotFoundException {
         return ResponseEntity.ok().body(service.getUserById(id));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResourceStatusResponseDto> deleteUserById(@PathVariable String id) throws MyUserNotFoundException {
+        service.deleteUser(id);
+        String message = "User deleted with id " + id;
+        return ResponseEntity.ok().body(new ResourceStatusResponseDto(id, message, null));
+    }
+
     @GetMapping
-    public ResponseEntity<UserDto> getUserByUserName(@RequestParam(value = "username") String username) throws Exception {
+    public ResponseEntity<UserDto> getUserByUserName(@RequestParam(value = "username") String username) {
         return ResponseEntity.ok().body(service.getUserByUserName(username));
     }
 
-    @GetMapping(value = "/test")
-    public ResponseEntity<String> test() {
-        UserDto userPrincipal = SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getPrincipal() instanceof UserDto ? (UserDto) SecurityContextHolder.getContext().getAuthentication().getPrincipal() : null;
-        return ResponseEntity.ok().body("Principal:  " + userPrincipal + "\n");
+    @PutMapping("/{id}")
+    public ResponseEntity<UserDto> updateUser(@PathVariable String id, @RequestBody UserRepresentationDto user) throws MyUserNotFoundException {
+        return ResponseEntity.ok().body(service.updateUser(id, user));
     }
 }
