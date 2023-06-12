@@ -11,6 +11,7 @@ public class CustomJwtAuthToken extends AbstractOAuth2TokenAuthenticationToken<J
 
     protected CustomJwtAuthToken(Jwt token, Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities) {
         super(token, principal, credentials, authorities);
+        this.setAuthenticated(true);
     }
 
     @Override
