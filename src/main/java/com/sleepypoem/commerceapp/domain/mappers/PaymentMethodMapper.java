@@ -1,6 +1,6 @@
 package com.sleepypoem.commerceapp.domain.mappers;
 
-import com.sleepypoem.commerceapp.domain.dto.PaymentMethodDto;
+import com.sleepypoem.commerceapp.domain.dto.entities.PaymentMethodDto;
 import com.sleepypoem.commerceapp.domain.entities.PaymentMethodEntity;
 import org.springframework.stereotype.Component;
 

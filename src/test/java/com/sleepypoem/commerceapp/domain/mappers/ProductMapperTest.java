@@ -1,6 +1,6 @@
 package com.sleepypoem.commerceapp.domain.mappers;
 
-import com.sleepypoem.commerceapp.domain.dto.ProductDto;
+import com.sleepypoem.commerceapp.domain.dto.entities.ProductDto;
 import com.sleepypoem.commerceapp.domain.entities.ProductEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
