@@ -3,6 +3,7 @@ package com.sleepypoem.commerceapp.config.exception;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import com.sleepypoem.commerceapp.domain.dto.KeycloakErrorDto;
 import com.sleepypoem.commerceapp.domain.dto.errors.ApiError;
 import com.sleepypoem.commerceapp.domain.dto.errors.RequestFieldError;
 import com.sleepypoem.commerceapp.exceptions.*;
@@ -29,6 +30,7 @@ import java.util.Set;
 @Slf4j
 public class RestResponseEntityExceptionHandling extends ResponseEntityExceptionHandler {
 
+
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         log.info(ex.getLocalizedMessage());
@@ -41,7 +43,7 @@ public class RestResponseEntityExceptionHandling extends ResponseEntityException
 
         // special case of JsonMappingException below, too much class detail in error messages
         else if (cause instanceof MismatchedInputException mie) {
-            if (mie.getPath() != null && mie.getPath().size() > 0) {
+            if (mie.getPath() != null && !mie.getPath().isEmpty()) {
                 msg = "Invalid request field: " + mie.getPath().get(0).getFieldName();
             }
 
@@ -51,7 +53,7 @@ public class RestResponseEntityExceptionHandling extends ResponseEntityException
             }
         } else if (cause instanceof JsonMappingException jme) {
             msg = jme.getOriginalMessage();
-            if (jme.getPath() != null && jme.getPath().size() > 0) {
+            if (jme.getPath() != null && !jme.getPath().isEmpty()) {
                 msg = "Invalid request field: " + jme.getPath().get(0).getFieldName() +
                         ": " + msg;
             }
@@ -59,16 +61,45 @@ public class RestResponseEntityExceptionHandling extends ResponseEntityException
         return handleExceptionInternal(ex, message(HttpStatus.BAD_REQUEST, msg, ex), headers, HttpStatus.BAD_REQUEST, request);
     }
 
-    @ExceptionHandler(value = {MyBadRequestException.class,
-            MyEntityNotFoundException.class,
-            MyResourceNotFoundException.class,
+    @ExceptionHandler(value = {
+            MyBadRequestException.class,
             MyValidationException.class,
-            MyUserNameAlreadyUsedException.class,
-            MyUserNotFoundException.class,
-            MyValidableAnnotationException.class
+            MyUserNameAlreadyUsedException.class
     })
     public ResponseEntity<Object> handleBadRequest(Exception ex, WebRequest request) {
         return handleExceptionInternal(ex, message(HttpStatus.BAD_REQUEST, ex), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler(value = {
+            MyEntityNotFoundException.class,
+            MyResourceNotFoundException.class,
+            MyUserNotFoundException.class,
+    })
+    public ResponseEntity<Object> handleNotFound(Exception ex, WebRequest request) {
+        return handleExceptionInternal(ex, message(HttpStatus.NOT_FOUND, ex), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+    }
+
+    @ExceptionHandler(value = {
+            MyStripeException.class,
+            MyValidableAnnotationException.class,
+            MyInternalException.class
+    })
+    public ResponseEntity<Object> handleInternalErrorException(Exception ex, WebRequest request) {
+        return handleExceptionInternal(ex, message(HttpStatus.INTERNAL_SERVER_ERROR, ex), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+    }
+
+    @ExceptionHandler(value = {MyAuthServerException.class})
+    public ResponseEntity<Object> handleAuthServerException(MyAuthServerException ex, WebRequest request) {
+        KeycloakErrorDto errorDto = ex.getErrorDto();
+        if (errorDto == null) {
+            return handleExceptionInternal(ex, message(HttpStatus.INTERNAL_SERVER_ERROR, ex), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+        }
+        return handleExceptionInternal(ex, message(HttpStatus.INTERNAL_SERVER_ERROR, errorDto.toJsonString(), ex), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+    }
+
+    @ExceptionHandler(value = {MyForbiddenException.class})
+    public ResponseEntity<Object> handleForbiddenException(MyForbiddenException ex, WebRequest request) {
+        return handleExceptionInternal(ex, message(HttpStatus.FORBIDDEN, ex), new HttpHeaders(), HttpStatus.FORBIDDEN, request);
     }
 
     @ExceptionHandler(value = {ConstraintViolationException.class})
@@ -81,11 +112,6 @@ public class RestResponseEntityExceptionHandling extends ResponseEntityException
             errors.put(String.valueOf(violation.getPropertyPath()), violation.getMessage());
         }
         return handleExceptionInternal(ex, fields(HttpStatus.BAD_REQUEST, errors), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
-    }
-
-    @ExceptionHandler(value = HttpClientErrorException.class)
-    public ResponseEntity<Object> handleRestTemplateNotFoundException(HttpClientErrorException ex, WebRequest request) {
-        return handleExceptionInternal(ex, message(HttpStatus.NOT_FOUND, ex), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
 
     private ApiError message(HttpStatus status, Exception ex) {

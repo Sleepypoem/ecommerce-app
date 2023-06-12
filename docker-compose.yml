@@ -6,6 +6,8 @@ services:
     image: mysql/mysql-server:8.0
     volumes:
       - C:\Users\oskri\OneDrive\Documentos\sql\keycloak:/var/lib/mysql
+    ports:
+      - '3360:3306'
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: ecommerce
@@ -28,7 +30,7 @@ services:
       # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the MySQL JDBC driver documentation in order to use it.
       #JDBC_PARAMS: "connectTimeout=30000"
     ports:
-      - "8080:8080"
+      - "8082:8080"
     depends_on:
       - mysql
     networks:
@@ -58,14 +60,18 @@ services:
       - C:\Users\oskri\OneDrive\Documentos\sql\spring:/var/lib/mysql
   app:
     image: sleepypoem:ecommerce-0.4
+    build:
+      context: .
     container_name: spring-app
     depends_on:
       - db
+      - keycloak
     ports:
       - "8081:8081"
     networks:
       - springmysql-net
       - spring-keycloak
+      - spring-app-front
     environment:
       - MYSQL_HOST=db
       - MYSQL_USERNAME=admin
@@ -77,8 +83,21 @@ services:
       - keycloak
     extra_hosts:
       - "host.docker.internal:host-gateway"
+  app-front:
+    image: sleepypoem:ecommerce-front-0.1
+    container_name: spring-app-front
+    build:
+      context: ./front
+      dockerfile: Dockerfile-front
+    ports:
+      - "8083:3030"
+    networks:
+      - spring-app-front
+      - spring-keycloak
 networks:
   springmysql-net:
   spring-keycloak:
   keycloak-mysql:
+    driver: bridge
+  spring-app-front:
     driver: bridge

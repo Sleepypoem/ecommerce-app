@@ -16,7 +16,7 @@ import java.util.List;
 
 @Service
 @Validable(ValidateCheckoutItem.class)
-public class CheckoutItemService extends AbstractService<CheckoutItemEntity> {
+public class CheckoutItemService extends AbstractService<CheckoutItemEntity, Long> {
 
     private final CheckoutItemRepository dao;
 

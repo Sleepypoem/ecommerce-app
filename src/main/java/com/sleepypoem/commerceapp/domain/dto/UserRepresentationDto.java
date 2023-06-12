@@ -11,6 +11,7 @@ import java.util.List;
 @Builder
 @ToString
 public class UserRepresentationDto {
+    private String id;
     private String username;
     private String firstName;
     private String lastName;
@@ -18,4 +19,16 @@ public class UserRepresentationDto {
     private String enabled = "true";
     private String emailVerified = "true";
     private List<CredentialsDto> credentials;
+
+    public String toJsonString() {
+        return "{" +
+                "\"username\":\"" + username + '\"' +
+                ", \"firstName\":\"" + firstName + '\"' +
+                ", \"lastName\":\"" + lastName + '\"' +
+                ", \"email\":\"" + email + '\"' +
+                ", \"enabled\":\"" + enabled + '\"' +
+                ", \"emailVerified\":\"" + emailVerified + '\"' +
+                ", \"credentials\":" + credentials +
+                '}';
+    }
 }

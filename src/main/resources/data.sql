@@ -1040,3 +1040,5 @@ insert into products (id, name, description, stock, price, created_at, updated_a
 insert into products (id, name, description, stock, price, created_at, updated_at) values (998, 'Bread Base - Italian', 'Donec diam neque, vestibulum eget, vulputate ut, ultrices vel, augue.', 47, 995.97, '2022-12-10 17:09:24', '2023-04-08 07:52:26');
 insert into products (id, name, description, stock, price, created_at, updated_at) values (999, 'Wine - Cava Aria Estate Brut', 'Quisque erat eros, viverra eget, congue eget, semper rutrum, nulla.', 99, 216.23, '2022-09-22 23:39:54', '2023-02-14 12:52:17');
 insert into products (id, name, description, stock, price, created_at, updated_at) values (1000, 'Grapefruit - Pink', 'Maecenas leo odio, condimentum id, luctus nec, molestie sed, justo.', 13, 861.68, '2023-04-25 12:48:54', '2022-06-10 10:37:54');
+
+update ecommerce.products_seq SET next_val=20001;

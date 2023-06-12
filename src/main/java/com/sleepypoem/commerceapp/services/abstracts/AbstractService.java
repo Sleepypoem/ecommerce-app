@@ -15,10 +15,10 @@ import java.util.List;
 import java.util.Objects;
 
 @Slf4j
-public abstract class AbstractService<E extends IEntity<?>> implements IService<E> {
+public abstract class AbstractService<E extends IEntity<?>, ID> implements IService<E, ID> {
 
     @Override
-    public E getOneById(Long id) {
+    public E getOneById(ID id) {
         return getDao().findById(id).orElseThrow(() -> new MyEntityNotFoundException(getEntityName() + " with id " + id + " not found"));
     }
 
@@ -63,7 +63,7 @@ public abstract class AbstractService<E extends IEntity<?>> implements IService<
     @Override
     @ValidableMethod
     @Transactional
-    public E update(Long id, E entity) {
+    public E update(ID id, E entity) {
         ServicePreconditions.checkEntityNotNull(entity);
         ServicePreconditions.checkExpression(Objects.equals(id, entity.getId()), "Id in URI doesn't match with entity id.");
         return getDao().save(entity);
@@ -71,7 +71,7 @@ public abstract class AbstractService<E extends IEntity<?>> implements IService<
 
     @Override
     @Transactional
-    public boolean delete(Long id) {
+    public boolean delete(ID id) {
         E entity = getOneById(id);
         try {
             getDao().delete(entity);
@@ -93,5 +93,5 @@ public abstract class AbstractService<E extends IEntity<?>> implements IService<
         return Sort.by(Sort.Direction.fromString(sortOrder), sortBy);
     }
 
-    protected abstract JpaRepository<E, Long> getDao();
+    protected abstract JpaRepository<E, ID> getDao();
 }

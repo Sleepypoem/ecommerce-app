@@ -2,7 +2,7 @@ package com.sleepypoem.commerceapp.services.abstracts;
 
 import com.sleepypoem.commerceapp.domain.interfaces.IEntity;
 
-public interface IWriteService<E extends IEntity> {
+public interface IWriteService<E extends IEntity, ID> {
 
     /**
      * Creates an entity.
@@ -19,7 +19,7 @@ public interface IWriteService<E extends IEntity> {
      * @param entity the entity to update
      * @return the updated entity
      */
-    E update(Long id, E entity);
+    E update(ID id, E entity);
 
     /**
      * Deletes an entity.
@@ -27,5 +27,5 @@ public interface IWriteService<E extends IEntity> {
      * @param id the id of the entity to delete
      * @return true if the entity was deleted, false otherwise
      */
-    boolean delete(Long id);
+    boolean delete(ID id);
 }
