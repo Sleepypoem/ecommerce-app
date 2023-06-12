@@ -1,5 +1,6 @@
 package com.sleepypoem.commerceapp.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sleepypoem.commerceapp.domain.abstracts.AbstractEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,6 +25,7 @@ public class AddressEntity extends AbstractEntity<Long> {
 
     @Column(name = "user_id")
     @NotNull
+    @JsonIgnore
     private String userId;
 
     @NotNull
