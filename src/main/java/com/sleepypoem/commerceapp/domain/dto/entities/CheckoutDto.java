@@ -1,12 +1,16 @@
-package com.sleepypoem.commerceapp.domain.dto;
+package com.sleepypoem.commerceapp.domain.dto.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sleepypoem.commerceapp.domain.abstracts.AbstractDto;
+import com.sleepypoem.commerceapp.domain.enums.CheckoutStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 
 @AllArgsConstructor
@@ -14,32 +18,28 @@ import java.util.Objects;
 @Getter
 @Setter
 @SuperBuilder
-public class AddressDto extends AbstractDto<Long> {
-
+public class CheckoutDto extends AbstractDto<Long> {
     private String userId;
+    private List<CheckoutItemDto> items;
+    private AddressDto address;
+    private PaymentMethodDto paymentMethod;
+    private BigDecimal total;
 
-    private String country;
-
-    private String state;
-
-    private String zipCode;
-
-    private String firstLine;
-
-    private String secondLine;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private CheckoutStatus status;
 
     @Override
     public String toString() {
-        return "AddressDto{" +
+        return "CheckoutDto{" +
                 ", id=" + id +
                 "userId='" + userId + '\'' +
-                ", country='" + country + '\'' +
-                ", state='" + state + '\'' +
-                ", zipCode='" + zipCode + '\'' +
-                ", firstLine='" + firstLine + '\'' +
-                ", secondLine='" + secondLine + '\'' +
+                ", items=" + items +
+                ", address=" + address +
+                ", paymentMethod=" + paymentMethod +
+                ", status=" + status +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
+                ", total=" + total +
                 '}';
     }
 

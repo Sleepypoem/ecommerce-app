@@ -1,8 +1,6 @@
-package com.sleepypoem.commerceapp.domain.dto;
+package com.sleepypoem.commerceapp.domain.dto.entities;
 
 import com.sleepypoem.commerceapp.domain.abstracts.AbstractDto;
-import com.sleepypoem.commerceapp.domain.enums.Currency;
-import com.sleepypoem.commerceapp.domain.enums.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,19 +14,16 @@ import java.util.Objects;
 @Getter
 @Setter
 @SuperBuilder
-public class PaymentDto extends AbstractDto<Long> {
-    private String userId;
-    private PaymentStatus status;
-    private CheckoutDto checkout;
-    private String paymentProviderMessage;
-    private Currency currency;
+public class CheckoutItemDto extends AbstractDto<Long> {
+    private ProductDto product;
+    private int quantity;
 
     @Override
     public String toString() {
-        return "{" +
-                "id=" + id +
-                ", userId='" + userId + '\'' +
-                ", status=" + status +
+        return "CheckoutItemDto{" +
+                ", id=" + id +
+                "product=" + product +
+                ", quantity=" + quantity +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

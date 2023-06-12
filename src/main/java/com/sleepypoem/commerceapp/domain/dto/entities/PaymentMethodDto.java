@@ -1,4 +1,4 @@
-package com.sleepypoem.commerceapp.domain.dto;
+package com.sleepypoem.commerceapp.domain.dto.entities;
 
 import com.sleepypoem.commerceapp.domain.abstracts.AbstractDto;
 import lombok.AllArgsConstructor;
