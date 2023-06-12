@@ -25,6 +25,7 @@ auth-server:
   admin-rest-prefix: http://localhost:8080/auth/admin/realms/
   token-endpoint: ${auth-server.prefix}${auth-server.realm-name}/protocol/openid-connect/token
   client-id: paste-your-client-id
+  client-secret: paste-your-client-secret
   admin-username: paste-your-admin-username
   admin-password: paste-your-admin-password
 server:
