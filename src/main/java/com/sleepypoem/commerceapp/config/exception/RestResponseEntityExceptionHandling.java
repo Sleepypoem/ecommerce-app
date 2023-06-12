@@ -97,6 +97,11 @@ public class RestResponseEntityExceptionHandling extends ResponseEntityException
         return handleExceptionInternal(ex, message(HttpStatus.INTERNAL_SERVER_ERROR, errorDto.toJsonString(), ex), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 
+    @ExceptionHandler(value = {MyForbiddenException.class})
+    public ResponseEntity<Object> handleForbiddenException(MyForbiddenException ex, WebRequest request) {
+        return handleExceptionInternal(ex, message(HttpStatus.FORBIDDEN, ex), new HttpHeaders(), HttpStatus.FORBIDDEN, request);
+    }
+
     @ExceptionHandler(value = {ConstraintViolationException.class})
     public ResponseEntity<Object> handleConstraintException(ConstraintViolationException ex, WebRequest request) {
         Set<ConstraintViolation<?>> constraintViolationsSet = ex.getConstraintViolations();

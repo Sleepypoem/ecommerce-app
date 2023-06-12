@@ -25,6 +25,8 @@ public class RequestCommons {
 
     private static final int CONFLICT = 409;
 
+    private static final int FORBIDDEN = 403;
+
 
     private RequestCommons() {
     }
@@ -71,6 +73,7 @@ public class RequestCommons {
             switch (statusCode) {
                 case UNAUTHORIZED -> throw new MyAuthServerException("Unauthorized, check your credentials.", errorDto);
                 case BAD_REQUEST -> throw new MyBadRequestException("Bad request, check your request body.", errorDto);
+                case FORBIDDEN -> throw new MyForbiddenException("Forbidden, check your permissions, does the user has realm management role?");
                 case NOT_FOUND -> {
                     assert errorDto != null;
                     if (errorDto.getError() != null && errorDto.getError().contains("User not found")) {
