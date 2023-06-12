@@ -3,6 +3,7 @@ package com.sleepypoem.commerceapp.config.web;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.util.Enumeration;
@@ -11,7 +12,7 @@ import java.util.Enumeration;
 public class MyRequestInterceptor implements HandlerInterceptor {
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) {
         Enumeration<String> headerNames = request.getHeaderNames();
         log.info("Request: {} {} {}", request.getMethod(), request.getRequestURI(), request.getProtocol());
         while (headerNames.hasMoreElements()) {
@@ -23,5 +24,5 @@ public class MyRequestInterceptor implements HandlerInterceptor {
         return true;
     }
 
-    // Implementa los métodos restantes de la interfaz HandlerInterceptor...
+
 }
