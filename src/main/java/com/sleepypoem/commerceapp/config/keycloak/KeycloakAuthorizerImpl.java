@@ -1,10 +1,7 @@
 package com.sleepypoem.commerceapp.config.keycloak;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sleepypoem.commerceapp.config.beans.AuthServerPropertyLoader;
 import com.sleepypoem.commerceapp.domain.dto.AuthServerResponseDto;
-import com.sleepypoem.commerceapp.exceptions.MyInternalException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -31,15 +28,12 @@ public class KeycloakAuthorizerImpl implements KeycloakAuthorizer {
 
     private AuthServerResponseDto serverResponse;
 
-    private final ObjectMapper mapper;
-
-    public KeycloakAuthorizerImpl(ObjectMapper mapper, AuthServerPropertyLoader authServerPropertyLoader) {
+    public KeycloakAuthorizerImpl(AuthServerPropertyLoader authServerPropertyLoader) {
         this.clientSecret = authServerPropertyLoader.getClientSecret();
         this.tokenEndpoint = authServerPropertyLoader.getTokenEndpoint();
         this.authServerAdminUserName = authServerPropertyLoader.getAdminUsername();
         this.authServerAdminPassword = authServerPropertyLoader.getAdminPassword();
         this.authServerClientId = authServerPropertyLoader.getClientId();
-        this.mapper = mapper;
     }
 
     @Override
@@ -94,21 +88,10 @@ public class KeycloakAuthorizerImpl implements KeycloakAuthorizer {
 
         HttpEntity<MultiValueMap<String, String>> request = RequestCommons.createHttpEntity(requestBody, headers);
         ResponseEntity<String> response = RequestCommons.makeRequest(tokenEndpoint, HttpMethod.POST, request);
-        AuthServerResponseDto responseDto = mapResponseToDto(response);
+        AuthServerResponseDto responseDto = AuthServerResponseDto.fromJsonString(response.getBody());
 
         responseDto.setIssuedAt(System.currentTimeMillis());
 
-        return responseDto;
-    }
-
-    private AuthServerResponseDto mapResponseToDto(ResponseEntity<String> response) {
-        AuthServerResponseDto responseDto;
-        try {
-            responseDto = mapper.readValue(response.getBody(), AuthServerResponseDto.class);
-        } catch (JsonProcessingException e) {
-            log.error("Error while parsing token response: " + e.getMessage());
-            throw new MyInternalException("Error while parsing token response", e);
-        }
         return responseDto;
     }
 
