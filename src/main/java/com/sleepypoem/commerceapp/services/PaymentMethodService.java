@@ -27,32 +27,20 @@ public class PaymentMethodService extends AbstractService<PaymentMethodEntity, L
 
     private final StripeFacade stripeFacade;
 
-    public PaymentMethodService(PaymentMethodRepository dao, StripeFacadeImpl stripeFacade) {
+    public PaymentMethodService(PaymentMethodRepository dao, StripeFacade stripeFacade) {
         this.dao = dao;
         this.stripeFacade = stripeFacade;
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     public PaymentMethodEntity createCard(String cardToken, String userId) {
-        PaymentMethodEntity entity = new PaymentMethodEntity();
-        PaymentMethod paymentMethod;
-        String customerId;
+        PaymentMethodEntity entity;
         log.info("Creating card for user: {}", userId);
         try {
-            paymentMethod = stripeFacade.createPaymentMethod(cardToken);
-            customerId = stripeFacade.createCustomer(userId);
-            stripeFacade.attachPaymentMethod(customerId, paymentMethod.getId());
+            entity = stripeFacade.createPaymentMethod(userId, cardToken);
         } catch (Exception e) {
             throw new MyStripeException(e.getMessage());
         }
-        entity.setUserId(userId);
-        entity.setStripeUserId(customerId);
-        entity.setPaymentId(paymentMethod.getId());
-        entity.setPaymentType(paymentMethod.getType());
-        entity.setBrand(paymentMethod.getCard().getBrand());
-        entity.setLast4(paymentMethod.getCard().getLast4());
-        entity.setExpMonth(String.valueOf(paymentMethod.getCard().getExpMonth()));
-        entity.setExpYear(String.valueOf(paymentMethod.getCard().getExpYear()));
         log.info("Card created: {}", entity);
 
         return super.create(entity);
@@ -61,17 +49,12 @@ public class PaymentMethodService extends AbstractService<PaymentMethodEntity, L
     @Transactional(propagation = Propagation.REQUIRED)
     public PaymentMethodEntity updateCard(Long id, String cardToken) {
         PaymentMethodEntity entity = getOneById(id);
-        PaymentMethod paymentMethod;
         log.info("Updating card...");
         try {
-            paymentMethod = stripeFacade.updatePaymentMethod(entity.getPaymentId(), cardToken);
+            entity = stripeFacade.updatePaymentMethod(entity, cardToken);
         } catch (Exception e) {
             throw new MyStripeException(e.getMessage());
         }
-        entity.setBrand(paymentMethod.getCard().getBrand());
-        entity.setLast4(paymentMethod.getCard().getLast4());
-        entity.setExpMonth(String.valueOf(paymentMethod.getCard().getExpMonth()));
-        entity.setExpYear(String.valueOf(paymentMethod.getCard().getExpYear()));
         log.info("Card updated!");
 
         return super.update(id, entity);

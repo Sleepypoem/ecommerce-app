@@ -3,6 +3,7 @@ package com.sleepypoem.commerceapp.services;
 import com.sleepypoem.commerceapp.annotations.Validable;
 import com.sleepypoem.commerceapp.config.payment.StripeFacade;
 import com.sleepypoem.commerceapp.config.payment.StripeFacadeImpl;
+import com.sleepypoem.commerceapp.domain.dto.PaymentIntentDto;
 import com.sleepypoem.commerceapp.domain.dto.PaymentRequestDto;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutEntity;
 import com.sleepypoem.commerceapp.domain.entities.PaymentEntity;
@@ -56,9 +57,9 @@ public class PaymentService extends AbstractService<PaymentEntity, Long> impleme
     public PaymentEntity confirmPayment(Long paymentId) {
         PaymentEntity payment = getOneById(paymentId);
         ServicePreconditions.checkExpression(payment.getStatus().equals(PaymentStatus.PROCESSING), "Payment is not processing");
-        PaymentIntent paymentIntent;
+        PaymentIntentDto paymentIntentDto;
         try {
-            paymentIntent = stripeFacade.createAndConfirmPaymentIntent(
+            paymentIntentDto = stripeFacade.createAndConfirmPaymentIntent(
                     payment.getCheckout().getPaymentMethod().getStripeUserId(),
                     payment.getCheckout().getPaymentMethod().getPaymentId(),
                     payment.getCheckout().getTotal().multiply(BigDecimal.valueOf(100)).intValue(),
@@ -72,7 +73,7 @@ public class PaymentService extends AbstractService<PaymentEntity, Long> impleme
         }
         payment.setStatus(PaymentStatus.SUCCESS);
         checkoutService.setStatusToCompleted(payment.getCheckout().getId());
-        payment.setPaymentProviderMessage("Status: " + paymentIntent.getStatus());
+        payment.setPaymentProviderMessage("Status: " + paymentIntentDto.getStatus());
         return super.update(paymentId, payment);
     }
 
