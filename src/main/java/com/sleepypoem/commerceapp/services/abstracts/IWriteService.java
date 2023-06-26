@@ -22,10 +22,18 @@ public interface IWriteService<E extends IEntity, ID> {
     E update(ID id, E entity);
 
     /**
-     * Deletes an entity.
+     * Deletes an entity referenced by the entity id.
      *
      * @param id the id of the entity to delete
      * @return true if the entity was deleted, false otherwise
      */
-    boolean delete(ID id);
+    boolean deleteById(ID id);
+
+    /**
+     * Deletes an entity.
+     *
+     * @param entity the entity to delete
+     * @return true if the entity was deleted, false otherwise
+     */
+    boolean delete(E entity);
 }
