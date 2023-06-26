@@ -2,29 +2,29 @@ package com.sleepypoem.commerceapp.config.payment;
 
 import com.sleepypoem.commerceapp.domain.dto.PaymentIntentDto;
 import com.sleepypoem.commerceapp.domain.entities.PaymentMethodEntity;
-import com.stripe.exception.StripeException;
+import com.sleepypoem.commerceapp.exceptions.MyStripeException;
 import com.stripe.model.Customer;
 import com.stripe.model.PaymentIntent;
 import com.stripe.model.PaymentMethod;
 
-import java.util.List;
-
 public interface StripeFacade {
 
-    String createCustomer(String email) throws StripeException;
+    String createCustomer(String email) throws MyStripeException;
 
-    PaymentMethodEntity createPaymentMethod(String userId, String cardToken) throws StripeException;
+    PaymentMethodEntity createPaymentMethod(String userId, String cardToken) throws MyStripeException;
 
-    PaymentMethodEntity updatePaymentMethod(PaymentMethodEntity paymentMethodEntity, String cardToken) throws StripeException;
+    PaymentMethodEntity updatePaymentMethod(PaymentMethodEntity paymentMethodEntity, String cardToken) throws MyStripeException;
 
-    String attachPaymentMethod(String customerId, String paymentMethodId) throws StripeException;
+    String attachPaymentMethod(String customerId, String paymentMethodId) throws MyStripeException;
 
-    Customer getCustomer(String customerId) throws StripeException;
+    Customer getCustomer(String customerId) throws MyStripeException;
 
-    PaymentMethod getPaymentMethod(String paymentMethodId) throws StripeException;
+    void deletePaymentMethod(String paymentMethodId) throws MyStripeException;
 
-    PaymentIntent getPaymentIntent(String paymentIntentId) throws StripeException;
+    PaymentMethod getPaymentMethod(String paymentMethodId) throws MyStripeException;
 
-    PaymentIntentDto createAndConfirmPaymentIntent(String customerId, String paymentMethodId, int amount, String currency) throws StripeException;
+    PaymentIntent getPaymentIntent(String paymentIntentId) throws MyStripeException;
+
+    PaymentIntentDto createAndConfirmPaymentIntent(String customerId, String paymentMethodId, int amount, String currency) throws MyStripeException;
 
 }
