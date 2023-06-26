@@ -2,6 +2,7 @@ package com.sleepypoem.commerceapp.config.payment;
 
 import com.sleepypoem.commerceapp.domain.dto.PaymentIntentDto;
 import com.sleepypoem.commerceapp.domain.entities.PaymentMethodEntity;
+import com.sleepypoem.commerceapp.exceptions.MyStripeException;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
@@ -13,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Component
@@ -31,20 +31,25 @@ public class StripeFacadeImpl implements StripeFacade {
     }
 
     @Override
-    public String createCustomer(String id) throws StripeException {
+    public String createCustomer(String id) throws MyStripeException {
         Stripe.apiKey = stripePropertyLoader.getSecretKey();
         log.info("Creating customer: email={}", id);
         Map<String, Object> params = new HashMap<>();
         params.put("name", id);
         params.put("description", "Customer for " + id);
         Customer customer;
-        customer = Customer.create(params);
+        try {
+            customer = Customer.create(params);
+        } catch (StripeException e) {
+            handleStripeException(e);
+            return null;
+        }
 
         return customer.getId();
     }
 
     @Override
-    public PaymentMethodEntity createPaymentMethod(String userId, String cardToken) throws StripeException {
+    public PaymentMethodEntity createPaymentMethod(String userId, String cardToken) throws MyStripeException {
         Stripe.apiKey = stripePropertyLoader.getSecretKey();
         PaymentMethodEntity entity = new PaymentMethodEntity();
 
@@ -53,9 +58,15 @@ public class StripeFacadeImpl implements StripeFacade {
                         .setType(PaymentMethodCreateParams.Type.CARD)
                         .setCard(PaymentMethodCreateParams.CardDetails.builder().putExtraParam(TOKEN, cardToken).build())
                         .build();
-        PaymentMethod paymentMethod = PaymentMethod.create(params);
-        String customerId = createCustomer(userId);
-        attachPaymentMethod(customerId, paymentMethod.getId());
+        PaymentMethod paymentMethod = null;
+        String customerId = null;
+        try {
+            paymentMethod = PaymentMethod.create(params);
+            customerId = createCustomer(userId);
+            attachPaymentMethod(customerId, paymentMethod.getId());
+        } catch (StripeException e) {
+            handleStripeException(e);
+        }
 
         entity.setUserId(userId);
         entity.setStripeUserId(customerId);
@@ -69,15 +80,20 @@ public class StripeFacadeImpl implements StripeFacade {
     }
 
     @Override
-    public PaymentMethodEntity updatePaymentMethod(PaymentMethodEntity paymentMethodEntity, String cardToken) throws StripeException {
+    public PaymentMethodEntity updatePaymentMethod(PaymentMethodEntity paymentMethodEntity, String cardToken) throws MyStripeException {
         Stripe.apiKey = stripePropertyLoader.getSecretKey();
 
-        PaymentMethod paymentMethod = getPaymentMethod(paymentMethodEntity.getPaymentId());
-        PaymentMethod updatedPaymentMethod = paymentMethod.update(
-                PaymentMethodUpdateParams.builder()
-                        .setCard(PaymentMethodUpdateParams.Card.builder().putExtraParam(TOKEN, cardToken).build())
-                        .build()
-        );
+        PaymentMethod updatedPaymentMethod = null;
+        try {
+            PaymentMethod paymentMethod = getPaymentMethod(paymentMethodEntity.getPaymentId());
+            updatedPaymentMethod = paymentMethod.update(
+                    PaymentMethodUpdateParams.builder()
+                            .setCard(PaymentMethodUpdateParams.Card.builder().putExtraParam(TOKEN, cardToken).build())
+                            .build()
+            );
+        } catch (StripeException e) {
+            handleStripeException(e);
+        }
         paymentMethodEntity.setBrand(updatedPaymentMethod.getCard().getBrand());
         paymentMethodEntity.setLast4(updatedPaymentMethod.getCard().getLast4());
         paymentMethodEntity.setExpMonth(String.valueOf(updatedPaymentMethod.getCard().getExpMonth()));
@@ -86,48 +102,93 @@ public class StripeFacadeImpl implements StripeFacade {
     }
 
     @Override
-    public String attachPaymentMethod(String customerId, String paymentMethodId) throws StripeException {
+    public String attachPaymentMethod(String customerId, String paymentMethodId) throws MyStripeException {
         Stripe.apiKey = stripePropertyLoader.getSecretKey();
-        PaymentMethod paymentMethod = getPaymentMethod(paymentMethodId);
         Map<String, Object> params = new HashMap<>();
         params.put(CUSTOMER, customerId);
 
-        PaymentMethod updatedPaymentMethod = paymentMethod.attach(params);
+        PaymentMethod updatedPaymentMethod = null;
+        try {
+            PaymentMethod paymentMethod = getPaymentMethod(paymentMethodId);
+            updatedPaymentMethod = paymentMethod.attach(params);
+        } catch (StripeException e) {
+            handleStripeException(e);
+        }
 
         return updatedPaymentMethod.getId();
     }
 
     @Override
-    public Customer getCustomer(String customerId) throws StripeException {
+    public Customer getCustomer(String customerId) throws MyStripeException {
         Stripe.apiKey = stripePropertyLoader.getSecretKey();
-        return Customer.retrieve(customerId);
+        Customer customer = null;
+        try {
+            customer = Customer.retrieve(customerId);
+        } catch (StripeException e) {
+            handleStripeException(e);
+        }
+
+        return customer;
     }
 
     @Override
-    public PaymentMethod getPaymentMethod(String paymentMethodId) throws StripeException {
+    public void deletePaymentMethod(String paymentMethodId) throws MyStripeException {
         Stripe.apiKey = stripePropertyLoader.getSecretKey();
-        return PaymentMethod.retrieve(paymentMethodId);
+        PaymentMethod paymentMethod = null;
+        try {
+            paymentMethod = PaymentMethod.retrieve(paymentMethodId);
+            paymentMethod.detach();
+        } catch (StripeException e) {
+            handleStripeException(e);
+        }
     }
 
     @Override
-    public PaymentIntent getPaymentIntent(String paymentIntentId) throws StripeException {
+    public PaymentMethod getPaymentMethod(String paymentMethodId) throws MyStripeException {
         Stripe.apiKey = stripePropertyLoader.getSecretKey();
-        return PaymentIntent.retrieve(paymentIntentId);
+        try {
+            return PaymentMethod.retrieve(paymentMethodId);
+        } catch (StripeException e) {
+            handleStripeException(e);
+            return null;
+        }
     }
 
     @Override
-    public PaymentIntentDto createAndConfirmPaymentIntent(String customerId, String paymentMethodId, int amount, String currency) throws StripeException {
+    public PaymentIntent getPaymentIntent(String paymentIntentId) throws MyStripeException {
         Stripe.apiKey = stripePropertyLoader.getSecretKey();
-        PaymentIntent paymentIntent = PaymentIntent.create(
-                Map.of(
-                        "amount", amount,
-                        "currency", currency,
-                        CUSTOMER, customerId,
-                        "payment_method", paymentMethodId,
-                        "off_session", true,
-                        "confirm", true
-                )
-        );
+        try {
+            return PaymentIntent.retrieve(paymentIntentId);
+        } catch (StripeException e) {
+            handleStripeException(e);
+            return null;
+        }
+    }
+
+    @Override
+    public PaymentIntentDto createAndConfirmPaymentIntent(String customerId, String paymentMethodId, int amount, String currency) throws MyStripeException {
+        Stripe.apiKey = stripePropertyLoader.getSecretKey();
+        PaymentIntent paymentIntent = null;
+        try {
+            paymentIntent = PaymentIntent.create(
+                    Map.of(
+                            "amount", amount,
+                            "currency", currency,
+                            CUSTOMER, customerId,
+                            "payment_method", paymentMethodId,
+                            "off_session", true,
+                            "confirm", true
+                    )
+            );
+        } catch (StripeException e) {
+            handleStripeException(e);
+            return null;
+        }
+        log.info("Amount: {}", paymentIntent.getAmount());
         return new PaymentIntentDto(paymentIntent.getStatus(), paymentIntent.getId(), paymentIntent.getAmount());
+    }
+
+    private void handleStripeException(StripeException e) throws MyStripeException {
+        throw new MyStripeException( e.getMessage());
     }
 }
