@@ -13,25 +13,20 @@ import static org.springframework.http.HttpStatus.OK;
 
 @Component
 @Slf4j
-public class RequestCommons {
-
-    private static final WebClient webClient = WebClient.create();
+public class RequestHelper {
 
     private static final int UNAUTHORIZED = 401;
-
     private static final int BAD_REQUEST = 400;
-
     private static final int NOT_FOUND = 404;
-
     private static final int CONFLICT = 409;
-
     private static final int FORBIDDEN = 403;
+    private final WebClient webClient;
 
-
-    private RequestCommons() {
+    public RequestHelper(WebClient webClient) {
+        this.webClient = webClient;
     }
 
-    public static HttpHeaders createHeaders(MediaType mediaType, String token) {
+    public HttpHeaders createHeaders(MediaType mediaType, String token) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(mediaType);
         if (token != null) {
@@ -40,8 +35,9 @@ public class RequestCommons {
 
         return headers;
     }
+
     @SuppressWarnings("all")
-    public static ResponseEntity<String> makeRequest(String url, HttpMethod method, HttpEntity<?> entity) {
+    public ResponseEntity<String> makeRequest(String url, HttpMethod method, HttpEntity<?> entity) {
         //suppressed warnings in the following block because i'm new at working with WebClient
         // and i'm not sure how to fix them, when i learn more i'll come back and fix this
         log.info("Making request to: " + url);
@@ -55,25 +51,23 @@ public class RequestCommons {
                 .toEntity(String.class)
                 .block();
         assert response != null;
-        evaluateStatusCode(response);
+        evaluateResponse(response);
         return response;
     }
 
-    private static void evaluateStatusCode(ResponseEntity<String> response) {
+    private void evaluateResponse(ResponseEntity<String> response) {
         log.info("Evaluating request response... Response status code: " + response.getStatusCode());
         int statusCode = response.getStatusCode().value();
         String responseBody = response.getBody();
 
-        if (responseBody == null) {
-            throw new MyInternalException("Response from authorization server is null.");
-        }
         KeycloakErrorDto errorDto = KeycloakErrorDto.fromJsonString(responseBody);
 
         if (statusCode != OK.value() && statusCode != CREATED.value()) {
             switch (statusCode) {
                 case UNAUTHORIZED -> throw new MyAuthServerException("Unauthorized, check your credentials.", errorDto);
                 case BAD_REQUEST -> throw new MyBadRequestException("Bad request, check your request body.", errorDto);
-                case FORBIDDEN -> throw new MyForbiddenException("Forbidden, check your permissions, does the user has realm management role?");
+                case FORBIDDEN ->
+                        throw new MyForbiddenException("Forbidden, check your permissions, does the user has realm management role?");
                 case NOT_FOUND -> {
                     assert errorDto != null;
                     if (errorDto.getError() != null && errorDto.getError().contains("User not found")) {
@@ -83,12 +77,12 @@ public class RequestCommons {
                     }
                 }
                 case CONFLICT -> throw new MyUserNameAlreadyUsedException("Username already used.", errorDto);
-                default -> throw new MyAuthServerException("Error while connecting with auth server", errorDto);
+                default -> throw new MyAuthServerException("Error while connecting with auth server.", errorDto);
             }
         }
     }
 
-    public static <T> HttpEntity<T> createHttpEntity(T body, HttpHeaders headers) {
+    public <T> HttpEntity<T> createHttpEntity(T body, HttpHeaders headers) {
         if (body == null) {
             return new HttpEntity<>(null, headers);
         } else {
@@ -96,7 +90,7 @@ public class RequestCommons {
         }
     }
 
-    public static <T> HttpEntity<T> createEmptyHttpEntity(HttpHeaders headers) {
+    public <T> HttpEntity<T> createEmptyHttpEntity(HttpHeaders headers) {
         return createHttpEntity(null, headers);
     }
 
