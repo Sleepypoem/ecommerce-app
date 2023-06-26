@@ -4,7 +4,6 @@ import com.sleepypoem.commerceapp.config.keycloak.KeyCloakFacade;
 import com.sleepypoem.commerceapp.controllers.utils.Paginator;
 import com.sleepypoem.commerceapp.domain.dto.PaginatedDto;
 import com.sleepypoem.commerceapp.domain.dto.UserDto;
-import com.sleepypoem.commerceapp.domain.dto.UserRepresentationDto;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,13 +18,13 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public UserDto create(UserRepresentationDto userRepresentationDto) {
-        return keyCloakFacade.createUser(userRepresentationDto);
+    public UserDto create(UserDto userDto) {
+        return keyCloakFacade.createUser(userDto);
     }
 
     @Override
-    public UserDto update(String userId, UserRepresentationDto userRepresentationDto) {
-        return keyCloakFacade.updateUser(userId, userRepresentationDto);
+    public UserDto update(String userId, UserDto userDto) {
+        return keyCloakFacade.updateUser(userId, userDto);
     }
 
     @Override
@@ -39,8 +38,8 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void deleteUser(String id) {
-        keyCloakFacade.deleteUser(id);
+    public boolean deleteUser(String id) {
+        return keyCloakFacade.deleteUser(id);
     }
 
     @Override
