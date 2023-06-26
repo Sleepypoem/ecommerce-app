@@ -1,7 +1,6 @@
 package com.sleepypoem.commerceapp.config.keycloak;
 
 import com.sleepypoem.commerceapp.domain.dto.UserDto;
-import com.sleepypoem.commerceapp.domain.dto.UserRepresentationDto;
 
 import java.util.List;
 
@@ -13,11 +12,11 @@ public interface KeyCloakFacade {
 
     UserDto getUserByUserName(String username);
 
-    UserDto createUser(UserRepresentationDto userRepresentationDto);
+    UserDto createUser(UserDto userDto);
 
     UserDto getUserById(String id);
 
-    UserDto updateUser(String userId, UserRepresentationDto userRepresentationDto);
+    UserDto updateUser(String userId, UserDto userDto);
 
-    void deleteUser(String id);
+    boolean deleteUser(String id);
 }
