@@ -108,7 +108,7 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
     @DeleteMapping("/{id}/items")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERUSER') or @checkoutService.getOneById(#id).userId == authentication.principal.id")
     public ResponseEntity<Void> removeAllItemsFromCart(@PathVariable("id") Long id) {
-        service.cleanCart(id);
+        service.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 

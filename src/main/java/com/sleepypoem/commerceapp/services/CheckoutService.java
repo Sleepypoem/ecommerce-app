@@ -54,6 +54,12 @@ public class CheckoutService extends AbstractService<CheckoutEntity, Long> imple
         return super.create(checkout);
     }
 
+    @Override
+    public boolean delete(CheckoutEntity checkout) {
+        checkout.getItems().forEach(item -> productService.increaseStock(item.getProduct().getId(), item.getQuantity()));
+        return super.delete(checkout);
+    }
+
     private void reserveProductsInItemList(List<CheckoutItemEntity> items) {
         items.forEach(item -> productService.decreaseStock(item.getProduct().getId(), item.getQuantity()));
     }
