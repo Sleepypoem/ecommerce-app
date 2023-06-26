@@ -1,11 +1,12 @@
 package com.sleepypoem.commerceapp.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sleepypoem.commerceapp.config.beans.ApplicationContextProvider;
-import com.sleepypoem.commerceapp.exceptions.MyInternalException;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sleepypoem.commerceapp.config.beans.GsonProvider;
 import lombok.*;
+
+import java.util.List;
+import java.util.Objects;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,26 +23,28 @@ public class UserDto {
     private String lastName;
     private String email;
     private boolean enabled;
-    private String createdTimestamp;
+    private boolean emailVerified;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private List<CredentialsDto> credentials;
 
     public String toJsonString() {
-        return "{" +
-                "\"id\":\"" + id + '\"' +
-                ", \"username\":\"" + username + '\"' +
-                ", \"firstName\":\"" + firstName + '\"' +
-                ", \"lastName\":\"" + lastName + '\"' +
-                ", \"email\":\"" + email + '\"' +
-                ", \"enabled\":\"" + enabled + '\"' +
-                ", \"createdTimeStamp\"" + createdTimestamp + '\"' +
-                '}';
+        return GsonProvider.getGson().toJson(this);
     }
 
     public static UserDto fromJsonString(String jsonString) {
-        ObjectMapper mapper = ApplicationContextProvider.applicationContext.getBean(ObjectMapper.class);
-        try {
-            return mapper.readValue(jsonString, UserDto.class);
-        } catch (JsonProcessingException e) {
-            throw new MyInternalException("Error mapping JSON String to UserDto.", e);
-        }
+        return GsonProvider.getGson().fromJson(jsonString, UserDto.class);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserDto userDto = (UserDto) o;
+        return Objects.equals(id, userDto.id) && Objects.equals(username, userDto.username);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, username);
     }
 }
