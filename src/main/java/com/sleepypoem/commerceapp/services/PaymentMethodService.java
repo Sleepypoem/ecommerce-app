@@ -2,14 +2,12 @@ package com.sleepypoem.commerceapp.services;
 
 import com.sleepypoem.commerceapp.annotations.Validable;
 import com.sleepypoem.commerceapp.config.payment.StripeFacade;
-import com.sleepypoem.commerceapp.config.payment.StripeFacadeImpl;
 import com.sleepypoem.commerceapp.domain.entities.PaymentMethodEntity;
 import com.sleepypoem.commerceapp.exceptions.MyStripeException;
 import com.sleepypoem.commerceapp.repositories.PaymentMethodRepository;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
 import com.sleepypoem.commerceapp.services.abstracts.HaveUser;
 import com.sleepypoem.commerceapp.services.validators.impl.ValidatePaymentMethod;
-import com.stripe.model.PaymentMethod;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -58,6 +56,19 @@ public class PaymentMethodService extends AbstractService<PaymentMethodEntity, L
         log.info("Card updated!");
 
         return super.update(id, entity);
+    }
+
+    public boolean deleteCard(Long id) {
+        PaymentMethodEntity entity = getOneById(id);
+        log.info("Deleting card...");
+        try {
+            stripeFacade.deletePaymentMethod(entity.getPaymentId());
+        } catch (Exception e) {
+            return false;
+        }
+        log.info("Card deleted!");
+
+        return super.delete(entity);
     }
 
     @Override
