@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -46,11 +47,16 @@ class DetailedValidatorTest {
     @DisplayName("Test validation when something is wrong")
     void testValidationWhenSomethingIsWrong() {
         //arrange
+        String message = """
+                The following errors were found during validation : {
+                Field: testField || Error: testError,\s
+                Field: testField2 || Error: testError2
+                }""";
         when(iValidator.isValid(testEntity)).thenReturn(Map.of("testField", "testError", "testField2", "testError2"));
         //act
         Exception ex = assertThrows(MyValidationException.class, () -> detailedValidator.validate());
         //assert
-        System.out.println(ex);
+        assertEquals(message, ex.getMessage());
         verify(iValidator).isValid(testEntity);
     }
 
