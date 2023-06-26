@@ -9,6 +9,11 @@ public class MyUserNotFoundException extends RuntimeException {
 
     private final KeycloakErrorDto errorDto;
 
+    public MyUserNotFoundException(String message) {
+        super(message);
+        this.errorDto = null;
+    }
+
     public MyUserNotFoundException(String message, KeycloakErrorDto errorDto) {
         super(message);
         this.errorDto = errorDto;
