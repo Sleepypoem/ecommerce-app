@@ -32,7 +32,7 @@ public class PaymentService extends AbstractService<PaymentEntity, Long> impleme
     private final StripeFacade stripeFacade;
     private final CheckoutService checkoutService;
 
-    public PaymentService(PaymentRepository dao, StripeFacadeImpl stripeFacade, CheckoutService checkoutService) {
+    public PaymentService(PaymentRepository dao, StripeFacade stripeFacade, CheckoutService checkoutService) {
         this.dao = dao;
         this.stripeFacade = stripeFacade;
         this.checkoutService = checkoutService;
@@ -81,8 +81,8 @@ public class PaymentService extends AbstractService<PaymentEntity, Long> impleme
         PaymentEntity payment = getOneById(paymentId);
         ServicePreconditions.checkExpression(payment.getStatus().equals(PaymentStatus.PROCESSING), "Payment is not processing");
         checkoutService.setStatusToCanceled(payment.getCheckout().getId());
-        payment.setStatus(PaymentStatus.CANCELED);
-        payment.setPaymentProviderMessage("Status: canceled");
+        payment.setStatus(PaymentStatus.CANCELLED);
+        payment.setPaymentProviderMessage("Status: cancelled");
         return super.update(paymentId, payment);
     }
 

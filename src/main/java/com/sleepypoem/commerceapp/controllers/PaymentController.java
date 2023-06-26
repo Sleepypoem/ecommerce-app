@@ -57,8 +57,8 @@ public class PaymentController extends AbstractReadOnlyController<PaymentDto, Pa
 
     private String generateMessageBasedOnStatus(PaymentEntity payment) {
         return switch (payment.getStatus()) {
-            case CANCELED ->
-                    "Payment with id " + payment.getId() + " was canceled. Message: " + payment.getPaymentProviderMessage();
+            case CANCELLED ->
+                    "Payment with id " + payment.getId() + " was cancelled. Message: " + payment.getPaymentProviderMessage();
             case SUCCESS ->
                     "Payment with id " + payment.getId() + " was confirmed. Message: " + payment.getPaymentProviderMessage();
             case FAILED ->
