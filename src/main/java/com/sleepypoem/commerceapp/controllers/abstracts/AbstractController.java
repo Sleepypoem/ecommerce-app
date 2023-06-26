@@ -30,7 +30,7 @@ public abstract class AbstractController<D extends IDto<?>, E extends IEntity<?>
     }
 
     public boolean deleteInternal(ID id) {
-        return getService().delete(id);
+        return getService().deleteById(id);
     }
 
 }

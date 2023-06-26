@@ -71,13 +71,19 @@ public abstract class AbstractService<E extends IEntity<?>, ID> implements IServ
 
     @Override
     @Transactional
-    public boolean delete(ID id) {
+    public boolean deleteById(ID id) {
         E entity = getOneById(id);
+        return delete(entity);
+    }
+
+    @Override
+    @Transactional
+    public boolean delete(E entity) {
         try {
             getDao().delete(entity);
             return true;
         } catch (Exception e) {
-            log.error("Error while deleting {} with id {}. Error: {}", getEntityName(), id, e.getMessage());
+            log.error("Error while deleting {}. Error: {}", getEntityName(), e.getMessage());
             return false;
         }
     }
