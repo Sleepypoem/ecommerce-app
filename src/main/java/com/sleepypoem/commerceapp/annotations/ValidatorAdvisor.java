@@ -9,10 +9,9 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+import com.sleepypoem.commerceapp.config.beans.ApplicationContextProvider;
 
 @Aspect
 @Component
@@ -51,13 +50,8 @@ public class ValidatorAdvisor {
         Validable annotation = clazz.getAnnotation(Validable.class);
 
         Class<? extends IValidator<?>> validatorClass = annotation.value();
-        try {
-            Constructor<? extends IValidator<?>> constructor = validatorClass.getDeclaredConstructor();
-            return constructor.newInstance();
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
-                 InvocationTargetException e) {
-            throw new MyValidableAnnotationException("Failed to instantiate validator.", e);
-        }
+        ApplicationContext applicationContext = ApplicationContextProvider.applicationContext;
+        return applicationContext.getBean(validatorClass);
     }
 
     private AbstractEntity<?> extractEntityFromArgs(Object[] args) {

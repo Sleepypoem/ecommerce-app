@@ -13,13 +13,18 @@ import java.util.Map;
 @Slf4j
 @Component
 public class ValidateAddress implements IValidator<AddressEntity> {
+
+    private final UserService userService;
+    public ValidateAddress(UserService userService) {
+        this.userService = userService;
+    }
+
     @Override
     public Map<String, String> isValid(AddressEntity address) {
-        UserService userService = getApplicationContext().getBean(UserService.class);
         Map<String, String> errors = new HashMap<>();
         String userId = address.getUserId();
         try {
-            userService.getUserById(userId);
+            userService.getOneById(userId);
         } catch (MyUserNotFoundException e) {
             errors.put("userId", "User with id: " + userId + " not found.");
         }
