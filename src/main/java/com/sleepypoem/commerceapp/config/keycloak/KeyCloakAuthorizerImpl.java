@@ -2,6 +2,7 @@ package com.sleepypoem.commerceapp.config.keycloak;
 
 import com.sleepypoem.commerceapp.config.beans.AuthServerPropertyLoader;
 import com.sleepypoem.commerceapp.domain.dto.AuthServerResponseDto;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -10,7 +11,8 @@ import org.springframework.util.MultiValueMap;
 
 @Slf4j
 @Component
-public class KeycloakAuthorizerImpl implements KeycloakAuthorizer {
+@Data
+public class KeyCloakAuthorizerImpl implements KeyCloakAuthorizer {
 
     private static final int REFRESH_TOKEN = 0;
 
@@ -27,22 +29,23 @@ public class KeycloakAuthorizerImpl implements KeycloakAuthorizer {
     private final String authServerClientId;
 
     private AuthServerResponseDto serverResponse;
+    
+    private final RequestHelper requestHelper;
 
-    public KeycloakAuthorizerImpl(AuthServerPropertyLoader authServerPropertyLoader) {
+    public KeyCloakAuthorizerImpl(AuthServerPropertyLoader authServerPropertyLoader, RequestHelper requestHelper) {
         this.clientSecret = authServerPropertyLoader.getClientSecret();
         this.tokenEndpoint = authServerPropertyLoader.getTokenEndpoint();
         this.authServerAdminUserName = authServerPropertyLoader.getAdminUsername();
         this.authServerAdminPassword = authServerPropertyLoader.getAdminPassword();
         this.authServerClientId = authServerPropertyLoader.getClientId();
+        this.requestHelper = requestHelper;
     }
 
     @Override
     public String getAccessToken() {
-        if (serverResponse == null || isTokenExpired(Long.valueOf(serverResponse.getRefreshExpiresIn()))) {
-            log.info("Token not found or refresh token expired. Obtaining new token...");
+        if (serverResponse == null) {
             obtainAccessToken();
-        } else if (isTokenExpired(Long.valueOf(serverResponse.getIssuedAt() + serverResponse.getExpiresIn()))) {
-            log.info("Token expired. Refreshing...");
+        } else if (tokenNeedsRefresh()) {
             refreshToken();
         }
         return serverResponse.getAccessToken();
@@ -78,7 +81,7 @@ public class KeycloakAuthorizerImpl implements KeycloakAuthorizer {
 
     public AuthServerResponseDto connectWithAuthServer(int action) {
         log.info("Connecting with auth server...");
-        HttpHeaders headers = RequestCommons.createHeaders(MediaType.APPLICATION_FORM_URLENCODED, null);
+        HttpHeaders headers = requestHelper.createHeaders(MediaType.APPLICATION_FORM_URLENCODED, null);
         MultiValueMap<String, String> requestBody;
         if (action == 0) {
             requestBody = createRequestBodyForRefreshToken();
@@ -86,13 +89,19 @@ public class KeycloakAuthorizerImpl implements KeycloakAuthorizer {
             requestBody = createRequestBodyForAccessToken();
         }
 
-        HttpEntity<MultiValueMap<String, String>> request = RequestCommons.createHttpEntity(requestBody, headers);
-        ResponseEntity<String> response = RequestCommons.makeRequest(tokenEndpoint, HttpMethod.POST, request);
+        HttpEntity<MultiValueMap<String, String>> request = requestHelper.createHttpEntity(requestBody, headers);
+        ResponseEntity<String> response = requestHelper.makeRequest(tokenEndpoint, HttpMethod.POST, request);
         AuthServerResponseDto responseDto = AuthServerResponseDto.fromJsonString(response.getBody());
 
         responseDto.setIssuedAt(System.currentTimeMillis());
 
         return responseDto;
+    }
+
+    private boolean tokenNeedsRefresh() {
+        boolean isRefreshTokenExpired = isTokenExpired(serverResponse.getIssuedAt() + Long.parseLong(serverResponse.getRefreshExpiresIn()));
+        boolean isAccessTokenExpired = isTokenExpired(serverResponse.getIssuedAt() + Long.parseLong(serverResponse.getExpiresIn()));
+        return isRefreshTokenExpired || isAccessTokenExpired;
     }
 
     private boolean isTokenExpired(Long expirationTime) {
