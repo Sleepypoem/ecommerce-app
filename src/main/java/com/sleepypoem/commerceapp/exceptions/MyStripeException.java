@@ -10,10 +10,4 @@ public class MyStripeException extends RuntimeException {
         super(message);
     }
 
-    @Override
-    public String toString() {
-        return "MyStripeException{" +
-                "message='" + getMessage() + '\'' +
-                "}";
-    }
 }

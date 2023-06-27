@@ -8,15 +8,7 @@ import java.util.Map;
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class MyValidationException extends RuntimeException {
 
-    private Map<String, String> errors;
-
-    public MyValidationException(String message) {
-        super(message);
-    }
-
-    public MyValidationException(String message, Throwable cause) {
-        super(message, cause);
-    }
+    private final Map<String, String> errors;
 
     public MyValidationException(Map<String, String> errors) {
         this.errors = errors;
@@ -24,10 +16,6 @@ public class MyValidationException extends RuntimeException {
 
     public Map<String, String> getErrors() {
         return errors;
-    }
-
-    public void setErrors(Map<String, String> errors) {
-        this.errors = errors;
     }
 
     @Override
