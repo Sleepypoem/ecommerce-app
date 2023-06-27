@@ -1,6 +1,7 @@
 package com.sleepypoem.commerceapp.repositories;
 
 import com.sleepypoem.commerceapp.config.keycloak.KeyCloakFacade;
+import com.sleepypoem.commerceapp.controllers.RequestPreconditions;
 import com.sleepypoem.commerceapp.controllers.utils.Paginator;
 import com.sleepypoem.commerceapp.domain.dto.PaginatedDto;
 import com.sleepypoem.commerceapp.domain.dto.UserDto;
@@ -19,11 +20,14 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public UserDto create(UserDto userDto) {
+        RequestPreconditions.checkRequestElementNotNull(userDto, "UserDto passed to create method is null");
         return keyCloakFacade.createUser(userDto);
     }
 
     @Override
     public UserDto update(String userId, UserDto userDto) {
+        RequestPreconditions.checkRequestElementNotNull(userDto, "UserDto passed to update method is null");
+        RequestPreconditions.checkRequestState(userId.equals(userDto.getId()), "User id passed to update method is not equal to user id in UserDto");
         return keyCloakFacade.updateUser(userId, userDto);
     }
 
