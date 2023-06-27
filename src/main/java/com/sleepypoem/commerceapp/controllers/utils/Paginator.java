@@ -37,7 +37,7 @@ public class Paginator<D> {
 
     public PaginatedDto<D> getPaginatedDtoFromList(Integer currentPage, Integer size, Long totalElements, List<D> content) {
         PaginatedDto<D> paginatedDto = new PaginatedDto<>();
-        String nextPage = Objects.equals(Long.valueOf(currentPage), totalElements) ? API_PATH + resourceName + "&" + PAGE + (currentPage + 1) + "&" + SIZE + size : null;
+        String nextPage = Objects.equals(Long.valueOf(currentPage), totalElements) ? null : API_PATH + resourceName + "&" + PAGE + (currentPage + 1) + "&" + SIZE + size;
         String previousPage = currentPage == 0 ? null : API_PATH + resourceName + "&" + PAGE + (currentPage - 1) + "&" + SIZE + size;
         paginatedDto.setContent(content);
         paginatedDto.setTotalElements(totalElements);
