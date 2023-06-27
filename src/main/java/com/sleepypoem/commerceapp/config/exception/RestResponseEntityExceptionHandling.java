@@ -72,7 +72,6 @@ public class RestResponseEntityExceptionHandling extends ResponseEntityException
 
     @ExceptionHandler(value = {
             MyEntityNotFoundException.class,
-            MyResourceNotFoundException.class,
             MyUserNotFoundException.class,
     })
     public ResponseEntity<Object> handleNotFound(Exception ex, WebRequest request) {
