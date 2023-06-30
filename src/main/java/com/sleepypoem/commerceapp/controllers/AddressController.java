@@ -63,16 +63,21 @@ public class AddressController extends AbstractController<AddressDto, AddressEnt
                                                                 @RequestParam(value = "size", defaultValue = "10") int size,
                                                                 @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
                                                                 @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
-        Paginator<AddressDto> paginator = new Paginator<>("addresses");
+        Paginator<AddressDto> paginator = new Paginator<>("addresses?userId=" + userId + "&");
         return ResponseEntity.ok().body(paginator.getPaginatedDtoFromPage(service.findByUserId(userId, page, size, sortBy, sortOrder), mapper));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERUSER') or @addressService.getOneById(#id).userId == principal.id")
     public ResponseEntity<ResourceStatusResponseDto> delete(@PathVariable Long id) {
-        deleteInternal(id);
-        String message = "Address deleted with id " + id;
-        return ResponseEntity.ok().body(new ResourceStatusResponseDto(String.valueOf(id), message, null));
+        boolean deleted = deleteInternal(id);
+        if(deleted) {
+            String message = "Address deleted with id " + id;
+            return ResponseEntity.ok().body(new ResourceStatusResponseDto(String.valueOf(id), message, null));
+        }else {
+            String message = "Error deleting address with id " + id;
+            return ResponseEntity.internalServerError().body(new ResourceStatusResponseDto(String.valueOf(id), message, null));
+        }
     }
 
     @GetMapping(produces = "application/json")
@@ -81,7 +86,7 @@ public class AddressController extends AbstractController<AddressDto, AddressEnt
                                                                              @RequestParam(value = "size", defaultValue = "10") int size,
                                                                              @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
                                                                              @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
-        return ResponseEntity.ok().body(getAllPaginatedAndSortedInternal(page, size, sortBy, sortOrder, "products"));
+        return ResponseEntity.ok().body(getAllPaginatedAndSortedInternal(page, size, sortBy, sortOrder, "addresses?"));
     }
 
     @Override
