@@ -14,6 +14,7 @@ import com.sleepypoem.commerceapp.domain.entities.CheckoutItemEntity;
 import com.sleepypoem.commerceapp.domain.entities.PaymentMethodEntity;
 import com.sleepypoem.commerceapp.domain.mappers.BaseMapper;
 import com.sleepypoem.commerceapp.domain.mappers.CheckoutItemMapper;
+import com.sleepypoem.commerceapp.exceptions.MyBadRequestException;
 import com.sleepypoem.commerceapp.services.CheckoutService;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
 import lombok.extern.slf4j.Slf4j;
@@ -58,16 +59,21 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERUSER') or @checkoutService.findOneById(#id).userId == authentication.principal.id")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERUSER') or @checkoutService.getOneById(#id).userId == authentication.principal.id")
     public ResponseEntity<ResourceStatusResponseDto> delete(@PathVariable Long id) {
-        deleteInternal(id);
-        String message = "Address deleted with id " + id;
-        return ResponseEntity.ok().body(new ResourceStatusResponseDto(String.valueOf(id), message, null));
+        boolean deleted = service.deleteById(id);
+        if(deleted) {
+            String message = "Checkout with id " + id + " deleted successfully";
+            return ResponseEntity.ok().body(new ResourceStatusResponseDto(String.valueOf(id), message, null));
+        }else {
+            String message = "Error deleting checkout with id " + id;
+            return ResponseEntity.internalServerError().body(new ResourceStatusResponseDto(String.valueOf(id), message, null));
+        }
     }
 
     @GetMapping("/{id}")
     @PostAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERUSER') or returnObject.body.userId == authentication.principal.id")
-    public ResponseEntity<CheckoutDto> findOneById(@PathVariable Long id) {
+    public ResponseEntity<CheckoutDto> getOneById(@PathVariable Long id) {
         return ResponseEntity.ok().body(getOneByIdInternal(id));
     }
 
@@ -78,7 +84,7 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
                                                                  @RequestParam(value = "size", defaultValue = "10") int size,
                                                                  @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
                                                                  @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
-        Paginator<CheckoutDto> paginator = new Paginator<>("checkouts");
+        Paginator<CheckoutDto> paginator = new Paginator<>("checkouts?userId=" + userId + "&");
         return ResponseEntity.ok().body(paginator.getPaginatedDtoFromPage(service.getAllPaginatedAndSortedByUserId(userId, page, size, sortBy, sortOrder), mapper));
     }
 
@@ -88,12 +94,15 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
                                                                               @RequestParam(value = "size", defaultValue = "10") int size,
                                                                               @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
                                                                               @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
-        return ResponseEntity.ok().body(getAllPaginatedAndSortedInternal(page, size, sortBy, sortOrder, "checkouts"));
+        return ResponseEntity.ok().body(getAllPaginatedAndSortedInternal(page, size, sortBy, sortOrder, "checkouts?"));
     }
 
     @PostMapping("/{id}/items")
     @PostAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERUSER') or returnObject.body.userId == authentication.principal.id")
-    public ResponseEntity<CheckoutDto> addItemToCart(@PathVariable Long id, @RequestBody List<CheckoutItemEntity> items) {
+    public ResponseEntity<CheckoutDto> addItemsToCart(@PathVariable Long id, @RequestBody List<CheckoutItemEntity> items) {
+        if(items == null || items.isEmpty()) {
+            throw new MyBadRequestException("Items list cannot be empty");
+        }
         return ResponseEntity.ok().body(mapper.convertToDto(service.addItems(id, items)));
     }
 
@@ -102,13 +111,6 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
     public ResponseEntity<Void> removeItemFromCart(@PathVariable("id") Long id,
                                                    @PathVariable("item-id") Long itemId) {
         service.removeItem(id, itemId);
-        return ResponseEntity.noContent().build();
-    }
-
-    @DeleteMapping("/{id}/items")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERUSER') or @checkoutService.getOneById(#id).userId == authentication.principal.id")
-    public ResponseEntity<Void> removeAllItemsFromCart(@PathVariable("id") Long id) {
-        service.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -123,12 +125,12 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
 
     @GetMapping("/{id}/items")
     @PostAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERUSER') or @checkoutService.getOneById(#id).userId == authentication.principal.id")
-    public ResponseEntity<PaginatedDto<CheckoutItemDto>> getItems(@PathVariable Long id,
-                                                                  @RequestParam(value = "page", defaultValue = "0") int page,
-                                                                  @RequestParam(value = "size", defaultValue = "10") int size,
-                                                                  @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
-                                                                  @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
-        Paginator<CheckoutItemDto> paginator = new Paginator<>("checkouts/" + id + "items");
+    public ResponseEntity<PaginatedDto<CheckoutItemDto>> getItemsPaginatedAndSorted(@PathVariable Long id,
+                                                                                    @RequestParam(value = "page", defaultValue = "0") int page,
+                                                                                    @RequestParam(value = "size", defaultValue = "10") int size,
+                                                                                    @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
+                                                                                    @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
+        Paginator<CheckoutItemDto> paginator = new Paginator<>("checkouts/" + id + "/items?");
         Page<CheckoutItemEntity> pagedItems = service.getAllItemsPaginatedAndSorted(id, page, size, sortBy, sortOrder);
         return ResponseEntity.ok().body(paginator.getPaginatedDtoFromPage(pagedItems, new CheckoutItemMapper()));
     }
