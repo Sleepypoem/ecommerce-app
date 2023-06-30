@@ -10,6 +10,7 @@ import com.sleepypoem.commerceapp.domain.dto.entities.PaymentDto;
 import com.sleepypoem.commerceapp.domain.entities.PaymentEntity;
 import com.sleepypoem.commerceapp.domain.mappers.PaymentMapper;
 import com.sleepypoem.commerceapp.exceptions.MyBadRequestException;
+import com.sleepypoem.commerceapp.exceptions.MyInternalException;
 import com.sleepypoem.commerceapp.services.PaymentService;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
 import org.springframework.data.domain.Page;
@@ -63,7 +64,7 @@ public class PaymentController extends AbstractReadOnlyController<PaymentDto, Pa
                     "Payment with id " + payment.getId() + " was confirmed. Message: " + payment.getPaymentProviderMessage();
             case FAILED ->
                     "Payment with id " + payment.getId() + " failed, check card details and try again. Message: " + payment.getPaymentProviderMessage();
-            default -> throw new IllegalStateException("Unexpected value: " + payment.getStatus());
+            default -> throw new MyInternalException("Unexpected value: " + payment.getStatus());
         };
     }
 
@@ -73,6 +74,15 @@ public class PaymentController extends AbstractReadOnlyController<PaymentDto, Pa
         return ResponseEntity.ok().body(getAllInternal());
     }
 
+    @GetMapping(params = {"page", "size", "sortBy", "sortDirection"})
+    @IsAdminOrSuperUser
+    public ResponseEntity<PaginatedDto<PaymentDto>> findAllPaginatedAndSorted(@RequestParam(defaultValue = "0") int page,
+                                                                          @RequestParam(defaultValue = "10") int size,
+                                                                          @RequestParam(defaultValue = "id") String sortBy,
+                                                                          @RequestParam(defaultValue = "ASC") String sortDirection) {
+        return ResponseEntity.ok().body(getAllPaginatedAndSortedInternal(page, size, sortBy, sortDirection, "payments?"));
+    }
+
     @GetMapping(params = {"user-id"})
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERUSER') or #userId == authentication.principal.id")
     public ResponseEntity<PaginatedDto<PaymentDto>> findAllByUserIdPaginatedAndSorted(@RequestParam(value = "user-id") String userId,
@@ -80,7 +90,7 @@ public class PaymentController extends AbstractReadOnlyController<PaymentDto, Pa
                                                                                       @RequestParam(defaultValue = "10") int size,
                                                                                       @RequestParam(defaultValue = "id") String sortBy,
                                                                                       @RequestParam(defaultValue = "ASC") String sortDirection) {
-        Paginator<PaymentDto> paginator = new Paginator<>("payments");
+        Paginator<PaymentDto> paginator = new Paginator<>("payments?user-id=" + userId + "&");
         Page<PaymentEntity> pagedResult = service.getAllPaginatedAndSortedByUserId(userId, page, size, sortBy, sortDirection);
         return ResponseEntity.ok().body(paginator.getPaginatedDtoFromPage(pagedResult, mapper));
     }
