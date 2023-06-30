@@ -142,7 +142,7 @@ class AddressControllerTest {
         //arrange
         List<AddressEntity> addressEntities = new AddressFactory().createList(50);
         List<AddressDto> addressDtos = mapper.convertToDtoList(addressEntities);
-        String nextPageUrl = "/api/addresses?userId=1&page=1&size=10&sortBy=id&sortOrder=ASC";
+        String nextPageUrl = "/api/addresses?user-id=1&page=1&size=10&sortBy=id&sortOrder=ASC";
 
         Page<AddressEntity> page = new PageImpl<>(addressEntities, DEFAULT_PAGEABLE_AT_FIRST_PAGE, DEFAULT_TOTAL_ELEMENTS);
         when(service.findByUserId(anyString(), anyInt(), anyInt(), anyString(), anyString())).thenReturn(page);
@@ -166,7 +166,7 @@ class AddressControllerTest {
         //arrange
         List<AddressEntity> addressEntities = new AddressFactory().createList(50);
         List<AddressDto> addressDtos = mapper.convertToDtoList(addressEntities);
-        String previousPageUrl = "/api/addresses?userId=1&page=3&size=10&sortBy=id&sortOrder=ASC";
+        String previousPageUrl = "/api/addresses?user-id=1&page=3&size=10&sortBy=id&sortOrder=ASC";
 
         Page<AddressEntity> page = new PageImpl<>(addressEntities, DEFAULT_PAGEABLE_AT_LAST_PAGE, DEFAULT_TOTAL_ELEMENTS);
         when(service.findByUserId(anyString(), anyInt(), anyInt(), anyString(), anyString())).thenReturn(page);

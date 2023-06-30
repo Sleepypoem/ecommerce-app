@@ -138,7 +138,7 @@ class CheckoutControllerTest {
     void testGetCheckoutByUserIdAtFirstPageWhenOk() {
         List<CheckoutEntity> checkoutEntities = new CheckoutFactory().createList(50);
         List<CheckoutDto> checkoutDtos = mapper.convertToDtoList(checkoutEntities);
-        String nextPageUrl = "/api/checkouts?userId=1&page=1&size=10&sortBy=id&sortOrder=ASC";
+        String nextPageUrl = "/api/checkouts?user-id=1&page=1&size=10&sortBy=id&sortOrder=ASC";
 
         Page<CheckoutEntity> page = new PageImpl<>(checkoutEntities, DEFAULT_PAGEABLE_AT_FIRST_PAGE, DEFAULT_TOTAL_ELEMENTS);
         when(service.getAllPaginatedAndSortedByUserId(anyString(), anyInt(), anyInt(), anyString(), anyString())).thenReturn(page);
@@ -157,7 +157,7 @@ class CheckoutControllerTest {
     void testGetCheckoutByUserIdAtLastPageWhenOk() {
         List<CheckoutEntity> checkoutEntities = new CheckoutFactory().createList(50);
         List<CheckoutDto> checkoutDtos = mapper.convertToDtoList(checkoutEntities);
-        String previousPageUrl = "/api/checkouts?userId=1&page=3&size=10&sortBy=id&sortOrder=ASC";
+        String previousPageUrl = "/api/checkouts?user-id=1&page=3&size=10&sortBy=id&sortOrder=ASC";
 
         Page<CheckoutEntity> page = new PageImpl<>(checkoutEntities, DEFAULT_PAGEABLE_AT_LAST_PAGE, DEFAULT_TOTAL_ELEMENTS);
         when(service.getAllPaginatedAndSortedByUserId(anyString(), anyInt(), anyInt(), anyString(), anyString())).thenReturn(page);
