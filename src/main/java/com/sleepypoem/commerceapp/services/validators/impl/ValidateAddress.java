@@ -15,6 +15,7 @@ import java.util.Map;
 public class ValidateAddress implements IValidator<AddressEntity> {
 
     private final UserService userService;
+
     public ValidateAddress(UserService userService) {
         this.userService = userService;
     }

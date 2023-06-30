@@ -20,7 +20,7 @@ import java.util.Objects;
 @Slf4j
 public class KeyCloakFacadeImpl implements KeyCloakFacade {
 
-private static final String USERS_ENDPOINT = "/users/";
+    private static final String USERS_ENDPOINT = "/users/";
 
     private final ObjectMapper mapper;
 
@@ -99,7 +99,7 @@ private static final String USERS_ENDPOINT = "/users/";
     }
 
     private List<UserDto> mapToUserDtoList(String response) {
-        if(response == null || response.equals("[]")) {
+        if (response == null || response.equals("[]")) {
             return Collections.emptyList();
         }
 

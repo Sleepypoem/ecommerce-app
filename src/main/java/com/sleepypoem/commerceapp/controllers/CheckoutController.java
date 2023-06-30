@@ -62,10 +62,10 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERUSER') or @checkoutService.getOneById(#id).userId == authentication.principal.id")
     public ResponseEntity<ResourceStatusResponseDto> delete(@PathVariable Long id) {
         boolean deleted = service.deleteById(id);
-        if(deleted) {
+        if (deleted) {
             String message = "Checkout with id " + id + " deleted successfully";
             return ResponseEntity.ok().body(new ResourceStatusResponseDto(String.valueOf(id), message, null));
-        }else {
+        } else {
             String message = "Error deleting checkout with id " + id;
             return ResponseEntity.internalServerError().body(new ResourceStatusResponseDto(String.valueOf(id), message, null));
         }
@@ -100,7 +100,7 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
     @PostMapping("/{id}/items")
     @PostAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERUSER') or returnObject.body.userId == authentication.principal.id")
     public ResponseEntity<CheckoutDto> addItemsToCart(@PathVariable Long id, @RequestBody List<CheckoutItemEntity> items) {
-        if(items == null || items.isEmpty()) {
+        if (items == null || items.isEmpty()) {
             throw new MyBadRequestException("Items list cannot be empty");
         }
         return ResponseEntity.ok().body(mapper.convertToDto(service.addItems(id, items)));

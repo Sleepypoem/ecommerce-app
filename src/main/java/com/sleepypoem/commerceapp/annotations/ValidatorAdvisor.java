@@ -1,5 +1,6 @@
 package com.sleepypoem.commerceapp.annotations;
 
+import com.sleepypoem.commerceapp.config.beans.ApplicationContextProvider;
 import com.sleepypoem.commerceapp.domain.abstracts.AbstractEntity;
 import com.sleepypoem.commerceapp.exceptions.MyValidableAnnotationException;
 import com.sleepypoem.commerceapp.services.validators.DetailedValidator;
@@ -11,7 +12,6 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import com.sleepypoem.commerceapp.config.beans.ApplicationContextProvider;
 
 @Aspect
 @Component

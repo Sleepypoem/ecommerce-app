@@ -43,20 +43,19 @@ public class Paginator<D> {
         int pageSize = nextPageable.getPageSize();
         Sort.Order sortOrder = nextPageable.getSort().getOrderFor("id");
 
-        StringBuilder urlBuilder = new StringBuilder();
-        urlBuilder.append(API_PATH)
-                .append(resourceName)
-                .append(PAGE)
-                .append(pageNumber)
-                .append("&")
-                .append(SIZE)
-                .append(pageSize)
-                .append("&sortBy=")
-                .append(sortOrder.getProperty())
-                .append("&sortOrder=")
-                .append(sortOrder.getDirection());
+        String urlBuilder = API_PATH +
+                resourceName +
+                PAGE +
+                pageNumber +
+                "&" +
+                SIZE +
+                pageSize +
+                "&sortBy=" +
+                sortOrder.getProperty() +
+                "&sortOrder=" +
+                sortOrder.getDirection();
 
-        return urlBuilder.toString();
+        return urlBuilder;
     }
 
     public String createPreviousPageUrl(Page<?> page) {
@@ -65,20 +64,19 @@ public class Paginator<D> {
         int pageSize = previousPageable.getPageSize();
         Sort.Order sortOrder = previousPageable.getSort().getOrderFor("id");
 
-        StringBuilder urlBuilder = new StringBuilder();
-        urlBuilder.append(API_PATH)
-                .append(resourceName)
-                .append(PAGE)
-                .append(pageNumber)
-                .append("&")
-                .append(SIZE)
-                .append(pageSize)
-                .append("&sortBy=")
-                .append(sortOrder.getProperty())
-                .append("&sortOrder=")
-                .append(sortOrder.getDirection());
+        String urlBuilder = API_PATH +
+                resourceName +
+                PAGE +
+                pageNumber +
+                "&" +
+                SIZE +
+                pageSize +
+                "&sortBy=" +
+                sortOrder.getProperty() +
+                "&sortOrder=" +
+                sortOrder.getDirection();
 
-        return urlBuilder.toString();
+        return urlBuilder;
     }
 
 

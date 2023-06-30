@@ -29,7 +29,7 @@ public class KeyCloakAuthorizerImpl implements KeyCloakAuthorizer {
     private final String authServerClientId;
 
     private AuthServerResponseDto serverResponse;
-    
+
     private final RequestHelper requestHelper;
 
     public KeyCloakAuthorizerImpl(AuthServerPropertyLoader authServerPropertyLoader, RequestHelper requestHelper) {

@@ -17,6 +17,7 @@ public class ValidatePayment implements IValidator<PaymentEntity> {
     public ValidatePayment(UserService userService) {
         this.userService = userService;
     }
+
     @Override
     public Map<String, String> isValid(PaymentEntity payment) {
 

@@ -2,7 +2,6 @@ package com.sleepypoem.commerceapp.services;
 
 import com.sleepypoem.commerceapp.annotations.Validable;
 import com.sleepypoem.commerceapp.config.payment.StripeFacade;
-import com.sleepypoem.commerceapp.config.payment.StripeFacadeImpl;
 import com.sleepypoem.commerceapp.domain.dto.PaymentIntentDto;
 import com.sleepypoem.commerceapp.domain.dto.PaymentRequestDto;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutEntity;
@@ -14,7 +13,6 @@ import com.sleepypoem.commerceapp.repositories.PaymentRepository;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
 import com.sleepypoem.commerceapp.services.abstracts.HaveUser;
 import com.sleepypoem.commerceapp.services.validators.impl.ValidatePayment;
-import com.stripe.model.PaymentIntent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

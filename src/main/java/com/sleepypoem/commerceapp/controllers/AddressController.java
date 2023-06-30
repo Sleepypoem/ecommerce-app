@@ -71,10 +71,10 @@ public class AddressController extends AbstractController<AddressDto, AddressEnt
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERUSER') or @addressService.getOneById(#id).userId == principal.id")
     public ResponseEntity<ResourceStatusResponseDto> delete(@PathVariable Long id) {
         boolean deleted = deleteInternal(id);
-        if(deleted) {
+        if (deleted) {
             String message = "Address deleted with id " + id;
             return ResponseEntity.ok().body(new ResourceStatusResponseDto(String.valueOf(id), message, null));
-        }else {
+        } else {
             String message = "Error deleting address with id " + id;
             return ResponseEntity.internalServerError().body(new ResourceStatusResponseDto(String.valueOf(id), message, null));
         }

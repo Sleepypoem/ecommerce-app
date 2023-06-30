@@ -37,14 +37,14 @@ public class ValidateCheckout implements IValidator<CheckoutEntity> {
             errors.put("userId", "User with id: " + userId + " not found.");
         }
 
-        if(checkout.getId() == null && (Objects.equals(checkout.getStatus(), CheckoutStatus.CANCELLED) || Objects.equals(checkout.getStatus(), CheckoutStatus.COMPLETED))) {
-                errors.put("status", "Must provide a pending checkout. Provided status: " + checkout.getStatus() + ".");
+        if (checkout.getId() == null && (Objects.equals(checkout.getStatus(), CheckoutStatus.CANCELLED) || Objects.equals(checkout.getStatus(), CheckoutStatus.COMPLETED))) {
+            errors.put("status", "Must provide a pending checkout. Provided status: " + checkout.getStatus() + ".");
 
         }
 
         for (CheckoutItemEntity item : checkout.getItems()) {
 
-            ProductEntity product= null;
+            ProductEntity product = null;
             try {
                 product = productService.getOneById(item.getProduct().getId());
             } catch (MyEntityNotFoundException e) {

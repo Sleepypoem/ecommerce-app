@@ -18,6 +18,7 @@ public class AuthServerResponseDto {
     public String toJsonString() {
         return GsonProvider.getGson().toJson(this);
     }
+
     public static AuthServerResponseDto fromJsonString(String jsonString) {
         return GsonProvider.getGson().fromJson(jsonString, AuthServerResponseDto.class);
     }

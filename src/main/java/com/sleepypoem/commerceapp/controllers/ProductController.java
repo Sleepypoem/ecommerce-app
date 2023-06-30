@@ -68,10 +68,10 @@ public class ProductController extends AbstractController<ProductDto, ProductEnt
     @IsAdminOrSuperUser
     public ResponseEntity<ResourceStatusResponseDto> delete(@PathVariable Long id) {
         boolean deleted = deleteInternal(id);
-        if(deleted) {
+        if (deleted) {
             String message = "Product with id " + id + " deleted";
             return ResponseEntity.ok().body(new ResourceStatusResponseDto(String.valueOf(id), message, null));
-        }else {
+        } else {
             String message = "Error deleting product with id " + id;
             return ResponseEntity.internalServerError().body(new ResourceStatusResponseDto(String.valueOf(id), message, null));
         }

@@ -189,6 +189,6 @@ public class StripeFacadeImpl implements StripeFacade {
     }
 
     private void handleStripeException(StripeException e) throws MyStripeException {
-        throw new MyStripeException( e.getMessage());
+        throw new MyStripeException(e.getMessage());
     }
 }

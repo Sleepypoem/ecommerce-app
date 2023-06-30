@@ -68,9 +68,9 @@ public class PaymentMethodController extends AbstractController<PaymentMethodDto
     @GetMapping(produces = "application/json")
     @IsAdminOrSuperUser
     public ResponseEntity<PaginatedDto<PaymentMethodDto>> getAllPaginatedAndSorted(@RequestParam(value = "page", defaultValue = "0") int page,
-                                                                 @RequestParam(value = "size", defaultValue = "10") int size,
-                                                                 @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
-                                                                 @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
+                                                                                   @RequestParam(value = "size", defaultValue = "10") int size,
+                                                                                   @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
+                                                                                   @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
         return ResponseEntity.ok().body(getAllPaginatedAndSortedInternal(page, size, sortBy, sortOrder, "payment-methods?"));
     }
 
@@ -85,10 +85,10 @@ public class PaymentMethodController extends AbstractController<PaymentMethodDto
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERUSER') or @paymentMethodService.getOneById(#id).userId == authentication.principal.id")
     public ResponseEntity<ResourceStatusResponseDto> delete(@PathVariable Long id) {
         boolean deleted = deleteInternal(id);
-        if(deleted) {
+        if (deleted) {
             String message = "Payment method with id " + id + " deleted";
             return ResponseEntity.ok().body(new ResourceStatusResponseDto(String.valueOf(id), message, null));
-        }else{
+        } else {
             String message = "Error deleting payment method with id " + id;
             return ResponseEntity.internalServerError().body(new ResourceStatusResponseDto(String.valueOf(id), message, null));
         }
