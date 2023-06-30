@@ -2,7 +2,6 @@ package com.sleepypoem.commerceapp.controllers;
 
 import com.sleepypoem.commerceapp.domain.dto.ResourceStatusResponseDto;
 import com.sleepypoem.commerceapp.domain.dto.UserDto;
-import com.sleepypoem.commerceapp.domain.dto.UserRepresentationDto;
 import com.sleepypoem.commerceapp.exceptions.MyUserNotFoundException;
 import com.sleepypoem.commerceapp.services.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +23,8 @@ public class UserController {
     }
 
     @PostMapping(produces = {"application/json"})
-    public ResponseEntity<ResourceStatusResponseDto> createUser(@RequestBody UserRepresentationDto user) {
-        String userId = service.addUser(user);
+    public ResponseEntity<ResourceStatusResponseDto> create(@RequestBody UserDto user) {
+        String userId = service.create(user);
         String message = "User created with id " + userId;
         String url = "GET : /api/users/" + userId;
         return ResponseEntity
@@ -34,24 +33,24 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable String id) throws MyUserNotFoundException {
-        return ResponseEntity.ok().body(service.getUserById(id));
+    public ResponseEntity<UserDto> getOneById(@PathVariable String id) throws MyUserNotFoundException {
+        return ResponseEntity.ok().body(service.getOneById(id));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResourceStatusResponseDto> deleteUserById(@PathVariable String id) throws MyUserNotFoundException {
-        service.deleteUser(id);
+    public ResponseEntity<ResourceStatusResponseDto> delete(@PathVariable String id) throws MyUserNotFoundException {
+        service.delete(id);
         String message = "User deleted with id " + id;
         return ResponseEntity.ok().body(new ResourceStatusResponseDto(id, message, null));
     }
 
     @GetMapping
-    public ResponseEntity<UserDto> getUserByUserName(@RequestParam(value = "username") String username) {
-        return ResponseEntity.ok().body(service.getUserByUserName(username));
+    public ResponseEntity<UserDto> getOneByUserName(@RequestParam(value = "username") String username) {
+        return ResponseEntity.ok().body(service.getOneByUserName(username));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable String id, @RequestBody UserRepresentationDto user) throws MyUserNotFoundException {
-        return ResponseEntity.ok().body(service.updateUser(id, user));
+    public ResponseEntity<UserDto> update(@PathVariable String id, @RequestBody UserDto user) throws MyUserNotFoundException {
+        return ResponseEntity.ok().body(service.update(id, user));
     }
 }

@@ -9,4 +9,5 @@ public class MyStripeException extends RuntimeException {
     public MyStripeException(String message) {
         super(message);
     }
+
 }

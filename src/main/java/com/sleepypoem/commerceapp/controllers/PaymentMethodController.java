@@ -1,5 +1,6 @@
 package com.sleepypoem.commerceapp.controllers;
 
+import com.sleepypoem.commerceapp.annotations.security.IsAdminOrSuperUser;
 import com.sleepypoem.commerceapp.controllers.abstracts.AbstractController;
 import com.sleepypoem.commerceapp.controllers.utils.Paginator;
 import com.sleepypoem.commerceapp.domain.dto.CardDto;
@@ -49,19 +50,28 @@ public class PaymentMethodController extends AbstractController<PaymentMethodDto
 
     @GetMapping("/{id}")
     @PostAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERUSER') or returnObject.body.userId == authentication.principal.id")
-    public ResponseEntity<PaymentMethodDto> findOneById(@PathVariable Long id) {
+    public ResponseEntity<PaymentMethodDto> getOneById(@PathVariable Long id) {
         return ResponseEntity.ok().body(getOneByIdInternal(id));
     }
 
     @GetMapping(params = {"user-id"}, produces = "application/json")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERUSER') or #userId == authentication.principal.id")
-    public ResponseEntity<PaginatedDto<PaymentMethodDto>> getByUserId(@RequestParam(value = "user-id") String userId,
-                                                                      @RequestParam(value = "page", defaultValue = "0") int page,
-                                                                      @RequestParam(value = "size", defaultValue = "10") int size,
-                                                                      @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
-                                                                      @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
-        Paginator<PaymentMethodDto> paginator = new Paginator<>("payment-methods");
+    public ResponseEntity<PaginatedDto<PaymentMethodDto>> getByUserIdPaginatedAndSorted(@RequestParam(value = "user-id") String userId,
+                                                                                        @RequestParam(value = "page", defaultValue = "0") int page,
+                                                                                        @RequestParam(value = "size", defaultValue = "10") int size,
+                                                                                        @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
+                                                                                        @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
+        Paginator<PaymentMethodDto> paginator = new Paginator<>("payment-methods?user-id=" + userId + "&");
         return ResponseEntity.ok().body(paginator.getPaginatedDtoFromPage(service.getAllPaginatedAndSortedByUserId(userId, page, size, sortBy, sortOrder), mapper));
+    }
+
+    @GetMapping(produces = "application/json")
+    @IsAdminOrSuperUser
+    public ResponseEntity<PaginatedDto<PaymentMethodDto>> getAllPaginatedAndSorted(@RequestParam(value = "page", defaultValue = "0") int page,
+                                                                                   @RequestParam(value = "size", defaultValue = "10") int size,
+                                                                                   @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
+                                                                                   @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
+        return ResponseEntity.ok().body(getAllPaginatedAndSortedInternal(page, size, sortBy, sortOrder, "payment-methods?"));
     }
 
     @PutMapping("/{id}")
@@ -74,9 +84,13 @@ public class PaymentMethodController extends AbstractController<PaymentMethodDto
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERUSER') or @paymentMethodService.getOneById(#id).userId == authentication.principal.id")
     public ResponseEntity<ResourceStatusResponseDto> delete(@PathVariable Long id) {
-        deleteInternal(id);
-        String message = "Payment method with id " + id + " deleted";
-        String url = "GET : /api/payment-methods/" + id;
-        return ResponseEntity.ok().body(new ResourceStatusResponseDto(String.valueOf(id), message, url));
+        boolean deleted = deleteInternal(id);
+        if (deleted) {
+            String message = "Payment method with id " + id + " deleted";
+            return ResponseEntity.ok().body(new ResourceStatusResponseDto(String.valueOf(id), message, null));
+        } else {
+            String message = "Error deleting payment method with id " + id;
+            return ResponseEntity.internalServerError().body(new ResourceStatusResponseDto(String.valueOf(id), message, null));
+        }
     }
 }

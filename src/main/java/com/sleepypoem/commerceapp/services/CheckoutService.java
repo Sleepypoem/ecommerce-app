@@ -2,7 +2,10 @@ package com.sleepypoem.commerceapp.services;
 
 import com.sleepypoem.commerceapp.annotations.Validable;
 import com.sleepypoem.commerceapp.annotations.ValidableMethod;
-import com.sleepypoem.commerceapp.domain.entities.*;
+import com.sleepypoem.commerceapp.domain.entities.AddressEntity;
+import com.sleepypoem.commerceapp.domain.entities.CheckoutEntity;
+import com.sleepypoem.commerceapp.domain.entities.CheckoutItemEntity;
+import com.sleepypoem.commerceapp.domain.entities.PaymentMethodEntity;
 import com.sleepypoem.commerceapp.domain.enums.CheckoutStatus;
 import com.sleepypoem.commerceapp.repositories.CheckoutRepository;
 import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
@@ -44,7 +47,6 @@ public class CheckoutService extends AbstractService<CheckoutEntity, Long> imple
     @ValidableMethod
     public CheckoutEntity create(CheckoutEntity checkout) {
         reserveProductsInItemList(checkout.getItems());
-        checkout.setStatus(CheckoutStatus.PENDING);
         List<CheckoutItemEntity> items = checkout.getItems().stream()
                 .map(item -> {
                     item.setCheckout(checkout);
@@ -55,31 +57,20 @@ public class CheckoutService extends AbstractService<CheckoutEntity, Long> imple
         return super.create(checkout);
     }
 
+    @Override
+    public boolean delete(CheckoutEntity checkout) {
+        checkout.getItems().forEach(item -> productService.increaseStock(item.getProduct().getId(), item.getQuantity()));
+        return super.delete(checkout);
+    }
+
     private void reserveProductsInItemList(List<CheckoutItemEntity> items) {
-        items.forEach(item -> {
-            ProductEntity product = productService.getOneById(item.getProduct().getId());
-            decreaseStock(product.getId(), item.getQuantity());
-        });
-    }
-
-    private void returnProductStock(CheckoutItemEntity item) {
-        increaseStock(item.getProduct().getId(), item.getQuantity());
-    }
-
-    private void increaseStock(Long productId, int quantity) {
-        ProductEntity product = productService.getOneById(productId);
-        productService.modifyStock(product.getId(), product.getStock() + quantity);
-    }
-
-    private void decreaseStock(Long productId, int quantity) {
-        ProductEntity product = productService.getOneById(productId);
-        productService.modifyStock(product.getId(), product.getStock() - quantity);
+        items.forEach(item -> productService.decreaseStock(item.getProduct().getId(), item.getQuantity()));
     }
 
     public void addItem(Long id, CheckoutItemEntity checkoutItem) {
         CheckoutEntity checkout = getOneById(id);
         checkoutItem.setCheckout(checkout);
-        decreaseStock(checkoutItem.getProduct().getId(), checkoutItem.getQuantity());
+        productService.decreaseStock(checkoutItem.getProduct().getId(), checkoutItem.getQuantity());
         checkoutItemService.create(checkoutItem);
     }
 
@@ -93,17 +84,14 @@ public class CheckoutService extends AbstractService<CheckoutEntity, Long> imple
         CheckoutEntity checkout = getOneById(checkoutId);
         CheckoutItemEntity checkoutItem = checkoutItemService.getOneById(checkoutItemId);
         ServicePreconditions.checkExpression(checkout.getItems().contains(checkoutItem), "Item not found in this checkout");
-        checkoutItemService.delete(checkoutItemId);
-        returnProductStock(checkoutItem);
-        if (checkout.getItems().size() == 1) {
+        checkoutItemService.deleteById(checkoutItemId);
+        productService.increaseStock(checkoutItem.getProduct().getId(), checkoutItem.getQuantity());
+        checkout.getItems().remove(checkoutItem);
+        log.info("Item removed from checkout. Cart size: {}", checkout.getItems().size());
+        if (checkout.getItems().isEmpty()) {
+            log.info("Last item in checkout, deleting checkout");
             dao.delete(checkout);
         }
-    }
-
-    @Transactional(propagation = Propagation.NESTED)
-    public void cleanCart(Long checkoutId) {
-        CheckoutEntity checkout = getOneById(checkoutId);
-        checkout.getItems().forEach(item -> removeItem(checkoutId, item.getId()));
     }
 
     /**
@@ -116,9 +104,9 @@ public class CheckoutService extends AbstractService<CheckoutEntity, Long> imple
     private void manageStock(int currentQuantity, int newQuantity, Long productId) {
         int difference = currentQuantity - newQuantity;
         if (difference > 0) {
-            increaseStock(productId, difference);
+            productService.increaseStock(productId, difference);
         } else {
-            decreaseStock(productId, Math.abs(difference));
+            productService.decreaseStock(productId, Math.abs(difference));
         }
     }
 
@@ -128,7 +116,7 @@ public class CheckoutService extends AbstractService<CheckoutEntity, Long> imple
         int currentQuantity = item.getQuantity();
 
         ServicePreconditions.checkExpression(checkout.getItems().contains(item), "Item not found in this checkout");
-        item.setQuantity(quantity);
+        checkoutItemService.modifyQuantity(itemId, quantity);
         manageStock(currentQuantity, quantity, item.getProduct().getId());
     }
 
@@ -146,9 +134,9 @@ public class CheckoutService extends AbstractService<CheckoutEntity, Long> imple
 
     public void setStatusToCanceled(Long id) {
         CheckoutEntity checkout = getOneById(id);
-        checkout.setStatus(CheckoutStatus.CANCELED);
+        checkout.setStatus(CheckoutStatus.CANCELLED);
         for (CheckoutItemEntity checkoutItemEntity : checkout.getItems()) {
-            returnProductStock(checkoutItemEntity);
+            productService.increaseStock(checkoutItemEntity.getProduct().getId(), checkoutItemEntity.getQuantity());
         }
         update(id, checkout);
     }

@@ -42,6 +42,13 @@ services:
       interval: 60s
       retries: 5
       timeout: 10s
+  stripe-mock:
+    container_name: stripe-mock
+    image: stripe/stripe-mock:latest
+    ports:
+      - "12111:12111"
+    networks:
+      - springmysql-net
   db:
     image: mysql/mysql-server:8.0
     container_name: spring-mysql

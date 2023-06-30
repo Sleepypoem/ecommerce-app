@@ -7,7 +7,6 @@ import com.sleepypoem.commerceapp.services.abstracts.AbstractService;
 import com.sleepypoem.commerceapp.services.validators.impl.ValidateProduct;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Validable(ValidateProduct.class)
@@ -24,10 +23,15 @@ public class ProductService extends AbstractService<ProductEntity, Long> {
         this.dao = dao;
     }
 
-    @Transactional
-    public ProductEntity modifyStock(Long id, int stock) {
+    public ProductEntity increaseStock(Long id, int stock) {
         ProductEntity product = getOneById(id);
-        product.setStock(stock);
+        product.setStock(stock + product.getStock());
+        return update(id, product);
+    }
+
+    public ProductEntity decreaseStock(Long id, int stock) {
+        ProductEntity product = getOneById(id);
+        product.setStock(product.getStock() - stock);
         return update(id, product);
     }
 }

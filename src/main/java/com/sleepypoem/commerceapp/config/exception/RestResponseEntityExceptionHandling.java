@@ -18,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -72,7 +71,6 @@ public class RestResponseEntityExceptionHandling extends ResponseEntityException
 
     @ExceptionHandler(value = {
             MyEntityNotFoundException.class,
-            MyResourceNotFoundException.class,
             MyUserNotFoundException.class,
     })
     public ResponseEntity<Object> handleNotFound(Exception ex, WebRequest request) {

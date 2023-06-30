@@ -9,9 +9,6 @@ public class MyValidableAnnotationException extends RuntimeException {
         super(message);
     }
 
-    public MyValidableAnnotationException() {
-    }
-
     public MyValidableAnnotationException(String message, Throwable cause) {
         super(message, cause);
     }

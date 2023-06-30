@@ -11,14 +11,20 @@ import java.util.Map;
 
 @Component
 public class ValidatePayment implements IValidator<PaymentEntity> {
+
+    private final UserService userService;
+
+    public ValidatePayment(UserService userService) {
+        this.userService = userService;
+    }
+
     @Override
     public Map<String, String> isValid(PaymentEntity payment) {
-        UserService userService = getApplicationContext().getBean(UserService.class);
 
         Map<String, String> errors = new HashMap<>();
         String userId = payment.getUserId();
         try {
-            userService.getUserById(userId);
+            userService.getOneById(userId);
         } catch (MyUserNotFoundException e) {
             errors.put("userId", "User with id: " + userId + " not found.");
         }

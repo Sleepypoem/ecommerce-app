@@ -18,11 +18,6 @@ public final class MyBadRequestException extends RuntimeException {
         super(message);
     }
 
-    public MyBadRequestException(final Throwable cause, KeycloakErrorDto errorDto) {
-        super(cause);
-        this.errorDto = errorDto;
-    }
-
     public KeycloakErrorDto getErrorDto() {
         return errorDto;
     }

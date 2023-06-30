@@ -63,10 +63,15 @@ public class PaymentMethodEntity extends AbstractEntity<Long> {
     @Override
     public String toString() {
         return "PaymentMethodEntity{" +
-                "id=" + id +
-                ", paymentId='" + paymentId + '\'' +
+                "paymentId='" + paymentId + '\'' +
                 ", userId='" + userId + '\'' +
                 ", paymentType='" + paymentType + '\'' +
+                ", stripeUserId='" + stripeUserId + '\'' +
+                ", last4='" + last4 + '\'' +
+                ", brand='" + brand + '\'' +
+                ", expMonth='" + expMonth + '\'' +
+                ", expYear='" + expYear + '\'' +
+                ", id=" + id +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

@@ -3,6 +3,7 @@ package com.sleepypoem.commerceapp.services;
 import com.sleepypoem.commerceapp.domain.entities.CheckoutItemEntity;
 import com.sleepypoem.commerceapp.exceptions.MyEntityNotFoundException;
 import com.sleepypoem.commerceapp.repositories.CheckoutItemRepository;
+import com.sleepypoem.commerceapp.utils.factories.impl.CheckoutItemFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,15 +12,18 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static com.sleepypoem.commerceapp.utils.TestConstants.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CheckoutItemServiceTest {
@@ -29,155 +33,208 @@ class CheckoutItemServiceTest {
     @Mock
     CheckoutItemRepository repository;
 
-    CheckoutItemEntity entity;
+    CheckoutItemFactory factory;
 
     @BeforeEach
     void setUp() {
         service = new CheckoutItemService(repository);
-        entity = new CheckoutItemEntity();
+        factory = new CheckoutItemFactory();
     }
 
     @Test
     @DisplayName("Test creating a checkout item")
-    void testCreateProduct() {
+    void testCreateCheckoutItemWhenOk() {
         //arrange
-        entity.setId(1L);
-        entity.setQuantity(10);
-        when(repository.save(entity)).thenReturn(entity);
+        CheckoutItemEntity itemEntity = factory.create();
+        when(repository.save(any(CheckoutItemEntity.class))).thenReturn(itemEntity);
         //act
-        CheckoutItemEntity createdProduct = service.create(entity);
+        CheckoutItemEntity checkoutItem = service.create(itemEntity);
         //assert
-        assertEquals(entity, createdProduct);
-        verify(repository).save(entity);
+        assertThat(checkoutItem, equalTo(itemEntity));
+        verify(repository).save(itemEntity);
     }
 
     @Test
     @DisplayName("Test creating a list of checkout items")
-    void testCreateListOfProducts() {
+    void testCreateListOfCheckoutItemsWhenOk() {
         //arrange
-        entity.setId(1L);
-        entity.setQuantity(10);
+        CheckoutItemEntity entity = factory.create();
+        List<CheckoutItemEntity> entityList = List.of(entity);
         when(repository.save(entity)).thenReturn(entity);
         //act
-        List<CheckoutItemEntity> createdProducts = service.create(List.of(entity));
+        List<CheckoutItemEntity> createdCheckouItems = service.create(entityList);
         //assert
-        assertEquals(List.of(entity), createdProducts);
+        assertThat(createdCheckouItems, is(entityList));
         verify(repository).save(entity);
     }
 
     @Test
     @DisplayName("Test getting checkout items by checkout id")
-    void testGetProductsByCheckoutId() {
+    void testGetCheckoutItemsByCheckoutIdWhenOk() {
         //arrange
-        entity.setId(1L);
-        entity.setQuantity(10);
-        when(repository.findByCheckoutId(eq(1L), any())).thenReturn(new PageImpl<>(List.of(entity)));
+        List<CheckoutItemEntity> itemEntities = factory.createList(Math.toIntExact(DEFAULT_TOTAL_ELEMENTS));
+        when(repository.findByCheckoutId(eq(1L), any())).thenReturn(new PageImpl<>(itemEntities, DEFAULT_PAGEABLE_AT_FIRST_PAGE, DEFAULT_TOTAL_ELEMENTS));
         //act
-        Page<CheckoutItemEntity> foundProducts = service.getByCheckoutIdPaginatedAndSorted(1L, 1, 10, "id", "asc");
+        Page<CheckoutItemEntity> result = service.getByCheckoutIdPaginatedAndSorted(1L, DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
         //assert
-        assertEquals(List.of(entity), foundProducts.getContent());
-        verify(repository).findByCheckoutId(1L, any());
+        assertAll(
+                () -> assertEquals(itemEntities, result.getContent()),
+                () -> assertEquals(DEFAULT_FIRST_PAGE, result.getPageable().getPageNumber()),
+                () -> assertEquals(DEFAULT_SIZE, result.getPageable().getPageSize()),
+                () -> assertEquals(DEFAULT_SORT_BY, result.getPageable().getSort().getOrderFor("id").getProperty()),
+                () -> assertEquals(DEFAULT_SORT_ORDER, result.getPageable().getSort().getOrderFor("id").getDirection().name()),
+                () -> assertEquals(DEFAULT_TOTAL_ELEMENTS, result.getTotalElements())
+        );
+        verify(repository).findByCheckoutId(1L, DEFAULT_PAGEABLE_AT_FIRST_PAGE);
+    }
+
+    @Test
+    @DisplayName("Test getting checkout items by checkout id when checkout items not found")
+    void testGetCheckoutItemsByCheckoutIdWhenNotFound() {
+        //arrange
+        when(repository.findByCheckoutId(eq(1L), any())).thenReturn(new PageImpl<>(List.of(), DEFAULT_PAGEABLE_AT_FIRST_PAGE, ZERO_TOTAL_ELEMENTS));
+        //act
+        Page<CheckoutItemEntity> result = service.getByCheckoutIdPaginatedAndSorted(1L, DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        //assert
+        assertAll(
+                () -> assertTrue(result.isEmpty()),
+                () -> assertEquals(DEFAULT_FIRST_PAGE, result.getPageable().getPageNumber()),
+                () -> assertEquals(DEFAULT_SIZE, result.getPageable().getPageSize()),
+                () -> assertEquals(DEFAULT_SORT_BY, result.getPageable().getSort().getOrderFor("id").getProperty()),
+                () -> assertEquals(DEFAULT_SORT_ORDER, result.getPageable().getSort().getOrderFor("id").getDirection().name()),
+                () -> assertEquals(ZERO_TOTAL_ELEMENTS, result.getTotalElements())
+        );
+        verify(repository).findByCheckoutId(1L, DEFAULT_PAGEABLE_AT_FIRST_PAGE);
     }
 
     @Test
     @DisplayName("Test updating a checkout item")
-    void testUpdateProduct() {
+    void testUpdateCheckoutItemWhenOk() {
         //arrange
-        entity.setId(1L);
-        entity.setQuantity(10);
-        when(repository.save(entity)).thenReturn(entity);
+        CheckoutItemEntity checkoutItem = factory.create();
+        long id = checkoutItem.getId();
+        when(repository.save(checkoutItem)).thenReturn(checkoutItem);
         //act
-        CheckoutItemEntity updatedProduct = service.update(1L, entity);
+        CheckoutItemEntity result = service.update(id, checkoutItem);
         //assert
-        assertEquals(entity, updatedProduct);
+        assertThat(result, is(checkoutItem));
+        verify(repository).save(checkoutItem);
     }
 
     @Test
     @DisplayName("Test finding a checkout item by id")
-    void testFindProductById() {
+    void testFindCheckoutItemByIdWhenOk() {
         //arrange
-        entity.setId(1L);
-        entity.setQuantity(10);
-        when(repository.findById(1L)).thenReturn(java.util.Optional.of(entity));
+        CheckoutItemEntity entity = factory.create();
+        when(repository.findById(anyLong())).thenReturn(Optional.of(entity));
         //act
-        CheckoutItemEntity foundProduct = service.getOneById(1L);
+        CheckoutItemEntity foundCheckoutItem = service.getOneById(1L);
         //assert
-        assertEquals(entity, foundProduct);
+        assertThat(foundCheckoutItem, is(equalTo(entity)));
         verify(repository).findById(1L);
     }
 
     @Test
-    @DisplayName("Test finding a checkout item by id when checkout item not found")
-    void testFindProductByIdWhenProductNotFound() {
-        //arrange
-        when(repository.findById(1L)).thenReturn(java.util.Optional.empty());
-        //act
-        //assert
-        assertThrows(MyEntityNotFoundException.class, () -> service.getOneById(1L));
-    }
-
-    @Test
     @DisplayName("Test deleting a checkout item by id")
-    void testDeleteProduct() {
+    void testDeleteCheckoutItemWhenOk() {
         //arrange
-        entity.setId(1L);
-        entity.setQuantity(10);
-        when(repository.findById(1L)).thenReturn(java.util.Optional.of(entity));
+        CheckoutItemEntity entity = factory.create();
+        when(repository.findById(anyLong())).thenReturn(Optional.of(entity));
         //act
-        service.delete(1L);
+        boolean result = service.deleteById(1L);
         //assert
+        assertThat(result, is(true));
+        verify(repository).findById(1L);
         verify(repository).delete(entity);
     }
 
     @Test
     @DisplayName("Test deleting a checkout item by id when checkout item not found")
-    void testDeleteProductWhenProductNotFound() {
+    void testDeleteCheckoutItemWhenNotFound() {
         //arrange
-        when(repository.findById(1L)).thenReturn(java.util.Optional.empty());
+        when(repository.findById(1L)).thenReturn(Optional.empty());
         //act
         //assert
-        assertThrows(MyEntityNotFoundException.class, () -> service.delete(1L));
+        var ex = assertThrows(MyEntityNotFoundException.class, () -> service.deleteById(1L));
+        assertThat(ex.getMessage(), is("CheckoutItem with id 1 not found"));
         verify(repository).findById(1L);
     }
 
     @Test
-    @DisplayName("Test finding all checkout items")
-    void testFindAllProducts() {
+    @DisplayName("Test deleting an checkout item when delete throws an exception")
+    void testDeleteCheckoutItemWhenDeleteThrowsException() {
         //arrange
-        entity.setId(1L);
-        entity.setQuantity(10);
-        when(repository.findAll()).thenReturn(java.util.List.of(entity));
+        var address = factory.create();
+        when(repository.findById(anyLong())).thenReturn(Optional.of(address));
+        doThrow(new RuntimeException("")).when(repository).delete(address);
         //act
-        List<CheckoutItemEntity> foundProducts = service.getAll();
+        boolean result = service.deleteById(1L);
         //assert
-        assertEquals(java.util.List.of(entity), foundProducts);
+        assertThat(result, is(false));
+        verify(repository).findById(1L);
+        verify(repository).delete(address);
+    }
+
+    @Test
+    @DisplayName("Test finding all checkout items")
+    void testFindAllCheckoutItemsWhenOk() {
+        //arrange
+        List<CheckoutItemEntity> entities = factory.createList(50);
+        when(repository.findAll()).thenReturn(entities);
+        //act
+        List<CheckoutItemEntity> foundCheckoutItems = service.getAll();
+        //assert
+        assertThat(foundCheckoutItems, equalTo(entities));
         verify(repository).findAll();
     }
 
     @Test
-    @DisplayName("Test finding all checkout items when no checkout items found")
-    void testEmptyListWhenNoProductsFound() {
+    @DisplayName("Test getting a list of Checkout items paginated and sorted")
+    void testGetAddressesPaginatedAndSortedWhenOk() {
         //arrange
-        when(repository.findAll()).thenReturn(java.util.List.of());
+        var addresses = factory.createList(50);
+        when(repository.findAll(any(Pageable.class))).thenReturn(
+                new PageImpl<>(addresses, DEFAULT_PAGEABLE_AT_FIRST_PAGE, DEFAULT_TOTAL_ELEMENTS)
+        );
         //act
-        List<CheckoutItemEntity> foundProducts = service.getAll();
+        var result = service.getAllPaginatedAndSorted(DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
         //assert
-        assertEquals(java.util.List.of(), foundProducts);
+        assertAll(
+                () -> assertEquals(addresses, result.getContent()),
+                () -> assertEquals(DEFAULT_FIRST_PAGE, result.getPageable().getPageNumber()),
+                () -> assertEquals(DEFAULT_SIZE, result.getPageable().getPageSize()),
+                () -> assertEquals(DEFAULT_TOTAL_ELEMENTS, result.getTotalElements()),
+                () -> assertEquals(DEFAULT_SORT_BY, result.getSort().getOrderFor("id").getProperty()),
+                () -> assertEquals(DEFAULT_SORT_ORDER, result.getSort().getOrderFor("id").getDirection().name())
+        );
+        verify(repository).findAll(DEFAULT_PAGEABLE_AT_FIRST_PAGE);
+    }
+
+    @Test
+    @DisplayName("Test finding all checkout items when no checkout items found")
+    void testEmptyListWhenNoCheckoutItemFound() {
+        //arrange
+        when(repository.findAll()).thenReturn(List.of());
+        //act
+        List<CheckoutItemEntity> foundCheckoutItems = service.getAll();
+        //assert
+        assertThat(foundCheckoutItems, is(empty()));
+        assertEquals(java.util.List.of(), foundCheckoutItems);
     }
 
     @Test
     @DisplayName("Test modify the quantity of an item in the checkout")
     void testModifyQuantity() {
         //arrange
-        entity.setId(1L);
-        entity.setQuantity(10);
-        when(repository.findById(1L)).thenReturn(java.util.Optional.of(entity));
-        when(repository.save(entity)).thenReturn(entity);
+        CheckoutItemEntity entity = factory.create();
+        long id = entity.getId();
+        when(repository.findById(anyLong())).thenReturn(Optional.of(entity));
+        when(repository.save(any(CheckoutItemEntity.class))).thenReturn(entity);
         //act
-        CheckoutItemEntity modifiedItem = service.modifyQuantity(1L, 5);
+        CheckoutItemEntity modifiedItem = service.modifyQuantity(id, 5);
         //assert
-        assertEquals(5, modifiedItem.getQuantity());
-        verify(repository).findById(1L);
+        assertThat(modifiedItem.getQuantity(), is(5));
+        verify(repository).findById(id);
         verify(repository).save(entity);
     }
 
@@ -185,7 +242,7 @@ class CheckoutItemServiceTest {
     @DisplayName("Test modify the quantity of an item in the checkout when item not found")
     void testModifyQuantityWhenItemNotFound() {
         //arrange
-        when(repository.findById(1L)).thenReturn(java.util.Optional.empty());
+        when(repository.findById(anyLong())).thenReturn(Optional.empty());
         //act
         //assert
         assertThrows(MyEntityNotFoundException.class, () -> service.modifyQuantity(1L, 5));

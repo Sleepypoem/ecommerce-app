@@ -12,13 +12,18 @@ import java.util.Map;
 @Component
 public class ValidatePaymentMethod implements IValidator<PaymentMethodEntity> {
 
+    private final UserService userService;
+
+    public ValidatePaymentMethod(UserService userService) {
+        this.userService = userService;
+    }
+
     @Override
     public Map<String, String> isValid(PaymentMethodEntity paymentMethod) {
-        UserService userService = getApplicationContext().getBean(UserService.class);
         Map<String, String> errors = new HashMap<>();
         String userId = paymentMethod.getUserId();
         try {
-            userService.getUserById(userId);
+            userService.getOneById(userId);
         } catch (MyUserNotFoundException e) {
             errors.put("userId", "User with id: " + userId + " not found.");
         }

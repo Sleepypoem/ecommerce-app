@@ -13,6 +13,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,7 +32,7 @@ public class CheckoutEntity extends AbstractEntity<Long> {
 
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "checkout")
     @JsonManagedReference
-    private List<CheckoutItemEntity> items;
+    private List<CheckoutItemEntity> items = new ArrayList<>();
 
     @OneToOne
     private AddressEntity address;
@@ -43,7 +44,7 @@ public class CheckoutEntity extends AbstractEntity<Long> {
     private CheckoutStatus status;
 
     @Transient
-    private BigDecimal total;
+    private BigDecimal total = BigDecimal.ZERO;
 
     public BigDecimal getTotal() {
         return items.stream()

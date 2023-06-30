@@ -10,6 +10,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -20,7 +21,7 @@ import java.util.Objects;
 @SuperBuilder
 public class CheckoutDto extends AbstractDto<Long> {
     private String userId;
-    private List<CheckoutItemDto> items;
+    private List<CheckoutItemDto> items = new ArrayList<>();
     private AddressDto address;
     private PaymentMethodDto paymentMethod;
     private BigDecimal total;
