@@ -180,20 +180,20 @@ class AddressServiceTest {
         //arrange
         List<AddressEntity> addresses = factory.createList(50);
         when(repository.findByUserId(eq("testUser"), any(Pageable.class))).thenReturn(
-                new PageImpl<>(addresses, DEFAULT_PAGEABLE, DEFAULT_TOTAL_ELEMENTS)
+                new PageImpl<>(addresses, DEFAULT_PAGEABLE_AT_FIRST_PAGE, DEFAULT_TOTAL_ELEMENTS)
         );
         //act
-        Page<AddressEntity> result = service.findByUserId("testUser", DEFAULT_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        Page<AddressEntity> result = service.findByUserId("testUser", DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
         //assert
         assertAll(
                 () -> assertEquals(addresses, result.getContent()),
-                () -> assertEquals(DEFAULT_PAGE, result.getPageable().getPageNumber()),
+                () -> assertEquals(DEFAULT_FIRST_PAGE, result.getPageable().getPageNumber()),
                 () -> assertEquals(DEFAULT_SIZE, result.getPageable().getPageSize()),
                 () -> assertEquals(DEFAULT_TOTAL_ELEMENTS, result.getTotalElements()),
                 () -> assertEquals(DEFAULT_SORT_BY, result.getSort().getOrderFor("id").getProperty()),
                 () -> assertEquals(DEFAULT_SORT_ORDER, result.getSort().getOrderFor("id").getDirection().name())
         );
-        verify(repository).findByUserId("testUser", DEFAULT_PAGEABLE);
+        verify(repository).findByUserId("testUser", DEFAULT_PAGEABLE_AT_FIRST_PAGE);
     }
 
     @Test
@@ -202,20 +202,20 @@ class AddressServiceTest {
         //arrange
         var addresses = factory.createList(50);
         when(repository.findAll(any(Pageable.class))).thenReturn(
-                new PageImpl<>(addresses, DEFAULT_PAGEABLE, DEFAULT_TOTAL_ELEMENTS)
+                new PageImpl<>(addresses, DEFAULT_PAGEABLE_AT_FIRST_PAGE, DEFAULT_TOTAL_ELEMENTS)
         );
         //act
-        var result = service.getAllPaginatedAndSorted(DEFAULT_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        var result = service.getAllPaginatedAndSorted(DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
         //assert
         assertAll(
                 () -> assertEquals(addresses, result.getContent()),
-                () -> assertEquals(DEFAULT_PAGE, result.getPageable().getPageNumber()),
+                () -> assertEquals(DEFAULT_FIRST_PAGE, result.getPageable().getPageNumber()),
                 () -> assertEquals(DEFAULT_SIZE, result.getPageable().getPageSize()),
                 () -> assertEquals(DEFAULT_TOTAL_ELEMENTS, result.getTotalElements()),
                 () -> assertEquals(DEFAULT_SORT_BY, result.getSort().getOrderFor("id").getProperty()),
                 () -> assertEquals(DEFAULT_SORT_ORDER, result.getSort().getOrderFor("id").getDirection().name())
         );
-        verify(repository).findAll(DEFAULT_PAGEABLE);
+        verify(repository).findAll(DEFAULT_PAGEABLE_AT_FIRST_PAGE);
     }
 
     @Test
@@ -223,19 +223,19 @@ class AddressServiceTest {
     void testGetAddressesByUserIdWhenUserNotFoundOrHasNoAddresses() {
         //arrange
         when(repository.findByUserId(anyString(), any(Pageable.class))).thenReturn(
-                new PageImpl<>(List.of(), DEFAULT_PAGEABLE, ZERO_TOTAL_ELEMENTS)
+                new PageImpl<>(List.of(), DEFAULT_PAGEABLE_AT_FIRST_PAGE, ZERO_TOTAL_ELEMENTS)
         );
         //act
-        Page<AddressEntity> result = service.getAllPaginatedAndSortedByUserId("userId", DEFAULT_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        Page<AddressEntity> result = service.getAllPaginatedAndSortedByUserId("userId", DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
         //assert
         assertAll(
                 () -> assertEquals(ZERO_TOTAL_ELEMENTS, result.getTotalElements()),
                 () -> assertEquals(0, result.getTotalPages()),
                 () -> assertEquals(DEFAULT_SIZE, result.getSize()),
-                () -> assertEquals(DEFAULT_PAGE, result.getNumber()),
+                () -> assertEquals(DEFAULT_FIRST_PAGE, result.getNumber()),
                 () -> assertEquals(DEFAULT_SORT_BY, result.getSort().getOrderFor("id").getProperty()),
                 () -> assertEquals(DEFAULT_SORT_ORDER, result.getSort().getOrderFor("id").getDirection().name()),
                 () -> assertEquals(List.of(), result.getContent()));
-        verify(repository).findByUserId("userId", DEFAULT_PAGEABLE);
+        verify(repository).findByUserId("userId", DEFAULT_PAGEABLE_AT_FIRST_PAGE);
     }
 }

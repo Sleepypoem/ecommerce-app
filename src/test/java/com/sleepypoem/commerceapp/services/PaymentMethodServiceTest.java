@@ -174,15 +174,15 @@ class PaymentMethodServiceTest {
     @DisplayName("Test deleting a payment method when delete throws an exception")
     void testDeletePaymentMethodWhenDeleteThrowsException() {
         //arrange
-        var address = factory.create();
-        when(repository.findById(anyLong())).thenReturn(Optional.of(address));
-        doThrow(new RuntimeException("")).when(repository).delete(address);
+        var paymentMethod = factory.create();
+        when(repository.findById(anyLong())).thenReturn(Optional.of(paymentMethod));
+        doThrow(new RuntimeException("")).when(repository).delete(paymentMethod);
         //act
         boolean result = service.deleteById(1L);
         //assert
         assertThat(result, is(false));
         verify(repository).findById(1L);
-        verify(repository).delete(address);
+        verify(repository).delete(paymentMethod);
     }
 
     @Test
@@ -217,20 +217,20 @@ class PaymentMethodServiceTest {
         //arrange
         List<PaymentMethodEntity> paymentMethodEntities = factory.createList(Math.toIntExact(DEFAULT_TOTAL_ELEMENTS));
         when(repository.findByUserId(anyString(), any(Pageable.class))).thenReturn(
-                new PageImpl<>(paymentMethodEntities, DEFAULT_PAGEABLE, DEFAULT_TOTAL_ELEMENTS)
+                new PageImpl<>(paymentMethodEntities, DEFAULT_PAGEABLE_AT_FIRST_PAGE, DEFAULT_TOTAL_ELEMENTS)
         );
         //act
-        Page<PaymentMethodEntity> result = service.getAllPaginatedAndSortedByUserId("userId", DEFAULT_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        Page<PaymentMethodEntity> result = service.getAllPaginatedAndSortedByUserId("userId", DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
         //assert
         assertAll(
                 () -> assertEquals(DEFAULT_TOTAL_ELEMENTS, result.getTotalElements()),
                 () -> assertEquals(5, result.getTotalPages()),
                 () -> assertEquals(DEFAULT_SIZE, result.getSize()),
-                () -> assertEquals(DEFAULT_PAGE, result.getNumber()),
+                () -> assertEquals(DEFAULT_FIRST_PAGE, result.getNumber()),
                 () -> assertEquals(DEFAULT_SORT_BY, result.getPageable().getSort().getOrderFor(DEFAULT_SORT_BY).getProperty()),
                 () -> assertEquals(DEFAULT_SORT_ORDER, result.getPageable().getSort().getOrderFor(DEFAULT_SORT_BY).getDirection().name()),
                 () -> assertEquals(paymentMethodEntities, result.getContent()));
-        verify(repository).findByUserId("userId", DEFAULT_PAGEABLE);
+        verify(repository).findByUserId("userId", DEFAULT_PAGEABLE_AT_FIRST_PAGE);
     }
 
     @Test
@@ -239,7 +239,7 @@ class PaymentMethodServiceTest {
         //arrange
         when(repository.findByUserId(anyString(), any(Pageable.class))).thenReturn(Page.empty());
         //act
-        Page<PaymentMethodEntity> result = service.getAllPaginatedAndSortedByUserId("userId", DEFAULT_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        Page<PaymentMethodEntity> result = service.getAllPaginatedAndSortedByUserId("userId", DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
         //assert
         assertThat(result.getContent(), is(empty()));
     }
@@ -261,22 +261,22 @@ class PaymentMethodServiceTest {
     @DisplayName("Test getting a list of payment methods paginated and sorted")
     void testGetAllCardsPaginatedAndSortedWhenOk() {
         //arrange
-        var addresses = factory.createList(50);
+        var paymentMethods = factory.createList(50);
         when(repository.findAll(any(Pageable.class))).thenReturn(
-                new PageImpl<>(addresses, DEFAULT_PAGEABLE, DEFAULT_TOTAL_ELEMENTS)
+                new PageImpl<>(paymentMethods, DEFAULT_PAGEABLE_AT_FIRST_PAGE, DEFAULT_TOTAL_ELEMENTS)
         );
         //act
-        var result = service.getAllPaginatedAndSorted(DEFAULT_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        var result = service.getAllPaginatedAndSorted(DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
         //assert
         assertAll(
-                () -> assertEquals(addresses, result.getContent()),
-                () -> assertEquals(DEFAULT_PAGE, result.getPageable().getPageNumber()),
+                () -> assertEquals(paymentMethods, result.getContent()),
+                () -> assertEquals(DEFAULT_FIRST_PAGE, result.getPageable().getPageNumber()),
                 () -> assertEquals(DEFAULT_SIZE, result.getPageable().getPageSize()),
                 () -> assertEquals(DEFAULT_TOTAL_ELEMENTS, result.getTotalElements()),
                 () -> assertEquals(DEFAULT_SORT_BY, result.getSort().getOrderFor("id").getProperty()),
                 () -> assertEquals(DEFAULT_SORT_ORDER, result.getSort().getOrderFor("id").getDirection().name())
         );
-        verify(repository).findAll(DEFAULT_PAGEABLE);
+        verify(repository).findAll(DEFAULT_PAGEABLE_AT_FIRST_PAGE);
     }
 
     @Test

@@ -114,15 +114,15 @@ class ProductServiceTest {
     @DisplayName("Test deleting a product when delete throws an exception")
     void testDeleteProductWhenDeleteThrowsException() {
         //arrange
-        var address = factory.create();
-        when(repository.findById(anyLong())).thenReturn(Optional.of(address));
-        doThrow(new RuntimeException("")).when(repository).delete(address);
+        var product = factory.create();
+        when(repository.findById(anyLong())).thenReturn(Optional.of(product));
+        doThrow(new RuntimeException("")).when(repository).delete(product);
         //act
         boolean result = service.deleteById(1L);
         //assert
         assertThat(result, is(false));
         verify(repository).findById(1L);
-        verify(repository).delete(address);
+        verify(repository).delete(product);
     }
 
     @Test
@@ -151,25 +151,25 @@ class ProductServiceTest {
     }
 
     @Test
-    @DisplayName("Test getting a list of Addresses paginated and sorted")
-    void testGetAddressesPaginatedAndSortedWhenOk() {
+    @DisplayName("Test getting a list of Products paginated and sorted")
+    void testGetProductsPaginatedAndSortedWhenOk() {
         //arrange
-        var addresses = factory.createList(50);
+        var products = factory.createList(50);
         when(repository.findAll(any(Pageable.class))).thenReturn(
-                new PageImpl<>(addresses, DEFAULT_PAGEABLE, DEFAULT_TOTAL_ELEMENTS)
+                new PageImpl<>(products, DEFAULT_PAGEABLE_AT_FIRST_PAGE, DEFAULT_TOTAL_ELEMENTS)
         );
         //act
-        var result = service.getAllPaginatedAndSorted(DEFAULT_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        var result = service.getAllPaginatedAndSorted(DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
         //assert
         assertAll(
-                () -> assertEquals(addresses, result.getContent()),
-                () -> assertEquals(DEFAULT_PAGE, result.getPageable().getPageNumber()),
+                () -> assertEquals(products, result.getContent()),
+                () -> assertEquals(DEFAULT_FIRST_PAGE, result.getPageable().getPageNumber()),
                 () -> assertEquals(DEFAULT_SIZE, result.getPageable().getPageSize()),
                 () -> assertEquals(DEFAULT_TOTAL_ELEMENTS, result.getTotalElements()),
                 () -> assertEquals(DEFAULT_SORT_BY, result.getSort().getOrderFor("id").getProperty()),
                 () -> assertEquals(DEFAULT_SORT_ORDER, result.getSort().getOrderFor("id").getDirection().name())
         );
-        verify(repository).findAll(DEFAULT_PAGEABLE);
+        verify(repository).findAll(DEFAULT_PAGEABLE_AT_FIRST_PAGE);
     }
 
     @Test

@@ -342,22 +342,22 @@ class PaymentServiceTest {
     @DisplayName("Test getting a list of Payments paginated and sorted")
     void testGetPaymentsPaginatedAndSortedWhenOk() {
         //arrange
-        var addresses = factory.createList(50);
+        var payments = factory.createList(50);
         when(repository.findAll(any(Pageable.class))).thenReturn(
-                new PageImpl<>(addresses, DEFAULT_PAGEABLE, DEFAULT_TOTAL_ELEMENTS)
+                new PageImpl<>(payments, DEFAULT_PAGEABLE_AT_FIRST_PAGE, DEFAULT_TOTAL_ELEMENTS)
         );
         //act
-        var result = service.getAllPaginatedAndSorted(DEFAULT_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        var result = service.getAllPaginatedAndSorted(DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
         //assert
         assertAll(
-                () -> assertEquals(addresses, result.getContent()),
-                () -> assertEquals(DEFAULT_PAGE, result.getPageable().getPageNumber()),
+                () -> assertEquals(payments, result.getContent()),
+                () -> assertEquals(DEFAULT_FIRST_PAGE, result.getPageable().getPageNumber()),
                 () -> assertEquals(DEFAULT_SIZE, result.getPageable().getPageSize()),
                 () -> assertEquals(DEFAULT_TOTAL_ELEMENTS, result.getTotalElements()),
                 () -> assertEquals(DEFAULT_SORT_BY, result.getSort().getOrderFor("id").getProperty()),
                 () -> assertEquals(DEFAULT_SORT_ORDER, result.getSort().getOrderFor("id").getDirection().name())
         );
-        verify(repository).findAll(DEFAULT_PAGEABLE);
+        verify(repository).findAll(DEFAULT_PAGEABLE_AT_FIRST_PAGE);
     }
 
     @Test
@@ -378,14 +378,14 @@ class PaymentServiceTest {
         //arrange
         List<PaymentEntity> paymentEntities = factory.createList(50);
         when(repository.findByUserId(anyString(), any(Pageable.class))).thenReturn(
-                new PageImpl<>(paymentEntities, DEFAULT_PAGEABLE, DEFAULT_TOTAL_ELEMENTS));
+                new PageImpl<>(paymentEntities, DEFAULT_PAGEABLE_AT_FIRST_PAGE, DEFAULT_TOTAL_ELEMENTS));
         //act
-        Page<PaymentEntity> result = service.getAllPaginatedAndSortedByUserId("userId", DEFAULT_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        Page<PaymentEntity> result = service.getAllPaginatedAndSortedByUserId("userId", DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
         //assert
         assertAll(
                 () -> assertNotNull(result),
                 () -> assertEquals(paymentEntities, result.getContent()),
-                () -> assertEquals(DEFAULT_PAGE, result.getPageable().getPageNumber()),
+                () -> assertEquals(DEFAULT_FIRST_PAGE, result.getPageable().getPageNumber()),
                 () -> assertEquals(DEFAULT_SIZE, result.getPageable().getPageSize()),
                 () -> assertEquals(DEFAULT_SORT_BY, result.getPageable().getSort().getOrderFor(DEFAULT_SORT_BY).getProperty()),
                 () -> assertEquals(DEFAULT_SORT_ORDER, result.getPageable().getSort().getOrderFor(DEFAULT_SORT_BY).getDirection().name()),
@@ -399,14 +399,14 @@ class PaymentServiceTest {
         //arrange
         List<PaymentEntity> paymentEntities = new ArrayList<>();
         when(repository.findByUserId(anyString(), any(Pageable.class))).thenReturn(
-                new PageImpl<>(paymentEntities, DEFAULT_PAGEABLE, ZERO_TOTAL_ELEMENTS));
+                new PageImpl<>(paymentEntities, DEFAULT_PAGEABLE_AT_FIRST_PAGE, ZERO_TOTAL_ELEMENTS));
         //act
-        Page<PaymentEntity> result = service.getAllPaginatedAndSortedByUserId("userId", DEFAULT_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        Page<PaymentEntity> result = service.getAllPaginatedAndSortedByUserId("userId", DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
         //assert
         assertAll(
                 () -> assertNotNull(result),
                 () -> assertEquals(paymentEntities, result.getContent()),
-                () -> assertEquals(DEFAULT_PAGE, result.getPageable().getPageNumber()),
+                () -> assertEquals(DEFAULT_FIRST_PAGE, result.getPageable().getPageNumber()),
                 () -> assertEquals(DEFAULT_SIZE, result.getPageable().getPageSize()),
                 () -> assertEquals(DEFAULT_SORT_BY, result.getPageable().getSort().getOrderFor(DEFAULT_SORT_BY).getProperty()),
                 () -> assertEquals(DEFAULT_SORT_ORDER, result.getPageable().getSort().getOrderFor(DEFAULT_SORT_BY).getDirection().name()),
@@ -433,15 +433,15 @@ class PaymentServiceTest {
     @DisplayName("Test deleting a payment when delete throws an exception")
     void testDeletePaymentWhenDeleteThrowsException() {
         //arrange
-        var address = factory.create();
-        when(repository.findById(anyLong())).thenReturn(Optional.of(address));
-        doThrow(new RuntimeException("")).when(repository).delete(address);
+        var payment = factory.create();
+        when(repository.findById(anyLong())).thenReturn(Optional.of(payment));
+        doThrow(new RuntimeException("")).when(repository).delete(payment);
         //act
         boolean result = service.deleteById(1L);
         //assert
         assertThat(result, is(false));
         verify(repository).findById(1L);
-        verify(repository).delete(address);
+        verify(repository).delete(payment);
     }
 
     @Test

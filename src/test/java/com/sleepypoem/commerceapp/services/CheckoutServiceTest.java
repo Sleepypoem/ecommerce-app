@@ -113,7 +113,6 @@ class CheckoutServiceTest {
     void testCompletedCheckoutHaveStatusCompleted() {
         //arrange
         CheckoutEntity entity = factory.create();
-        CheckoutItemEntity item = entity.getItems().get(0);
         when(repository.findById(anyLong())).thenReturn(Optional.of(entity));
         when(repository.save(any(CheckoutEntity.class))).thenReturn(entity);
         //act
@@ -202,24 +201,24 @@ class CheckoutServiceTest {
 
     @Test
     @DisplayName("Test getting a list of Checkouts paginated and sorted")
-    void testGetAddressesPaginatedAndSortedWhenOk() {
+    void testGetCheckoutsPaginatedAndSortedWhenOk() {
         //arrange
-        var addresses = factory.createList(50);
+        var Checkoutses = factory.createList(50);
         when(repository.findAll(any(Pageable.class))).thenReturn(
-                new PageImpl<>(addresses, DEFAULT_PAGEABLE, DEFAULT_TOTAL_ELEMENTS)
+                new PageImpl<>(Checkoutses, DEFAULT_PAGEABLE_AT_FIRST_PAGE, DEFAULT_TOTAL_ELEMENTS)
         );
         //act
-        var result = service.getAllPaginatedAndSorted(DEFAULT_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        var result = service.getAllPaginatedAndSorted(DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
         //assert
         assertAll(
-                () -> assertEquals(addresses, result.getContent()),
-                () -> assertEquals(DEFAULT_PAGE, result.getPageable().getPageNumber()),
+                () -> assertEquals(Checkoutses, result.getContent()),
+                () -> assertEquals(DEFAULT_FIRST_PAGE, result.getPageable().getPageNumber()),
                 () -> assertEquals(DEFAULT_SIZE, result.getPageable().getPageSize()),
                 () -> assertEquals(DEFAULT_TOTAL_ELEMENTS, result.getTotalElements()),
                 () -> assertEquals(DEFAULT_SORT_BY, result.getSort().getOrderFor("id").getProperty()),
                 () -> assertEquals(DEFAULT_SORT_ORDER, result.getSort().getOrderFor("id").getDirection().name())
         );
-        verify(repository).findAll(DEFAULT_PAGEABLE);
+        verify(repository).findAll(DEFAULT_PAGEABLE_AT_FIRST_PAGE);
     }
 
     @Test
@@ -255,15 +254,15 @@ class CheckoutServiceTest {
     @DisplayName("Test deleting a checkout when delete throws an exception")
     void testDeleteCheckoutWhenDeleteThrowsException() {
         //arrange
-        var address = factory.create();
-        when(repository.findById(anyLong())).thenReturn(Optional.of(address));
-        doThrow(new RuntimeException("")).when(repository).delete(address);
+        var Checkouts = factory.create();
+        when(repository.findById(anyLong())).thenReturn(Optional.of(Checkouts));
+        doThrow(new RuntimeException("")).when(repository).delete(Checkouts);
         //act
         boolean result = service.deleteById(1L);
         //assert
         assertThat(result, is(false));
         verify(repository).findById(1L);
-        verify(repository).delete(address);
+        verify(repository).delete(Checkouts);
     }
 
     @Test
@@ -360,19 +359,19 @@ class CheckoutServiceTest {
     void testFindAllCheckoutsByUserIdWhenOk() {
         //arrange
         List<CheckoutEntity> checkoutEntities = factory.createList(50);
-        when(repository.findAllByUserId(eq("test"), any())).thenReturn(new PageImpl<>(checkoutEntities, DEFAULT_PAGEABLE, DEFAULT_TOTAL_ELEMENTS));
+        when(repository.findAllByUserId(eq("test"), any())).thenReturn(new PageImpl<>(checkoutEntities, DEFAULT_PAGEABLE_AT_FIRST_PAGE, DEFAULT_TOTAL_ELEMENTS));
         //act
-        Page<CheckoutEntity> foundCheckouts = service.getAllPaginatedAndSortedByUserId("test", DEFAULT_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        Page<CheckoutEntity> foundCheckouts = service.getAllPaginatedAndSortedByUserId("test", DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
         //assert
         assertAll(
                 () -> assertEquals(checkoutEntities, foundCheckouts.getContent()),
-                () -> assertEquals(DEFAULT_PAGE, foundCheckouts.getPageable().getPageNumber()),
+                () -> assertEquals(DEFAULT_FIRST_PAGE, foundCheckouts.getPageable().getPageNumber()),
                 () -> assertEquals(DEFAULT_SIZE, foundCheckouts.getPageable().getPageSize()),
                 () -> assertEquals(DEFAULT_TOTAL_ELEMENTS, foundCheckouts.getTotalElements()),
                 () -> assertEquals(DEFAULT_SORT_BY, foundCheckouts.getPageable().getSort().getOrderFor("id").getProperty()),
                 () -> assertEquals(DEFAULT_SORT_ORDER, foundCheckouts.getPageable().getSort().getOrderFor("id").getDirection().name())
         );
-        verify(repository).findAllByUserId("test", DEFAULT_PAGEABLE);
+        verify(repository).findAllByUserId("test", DEFAULT_PAGEABLE_AT_FIRST_PAGE);
     }
 
     @Test
@@ -381,20 +380,20 @@ class CheckoutServiceTest {
         //arrange
         CheckoutEntity entity = factory.create();
         when(checkoutItemService.getByCheckoutIdPaginatedAndSorted(anyLong(), anyInt(), anyInt(), anyString(), anyString())).thenReturn(
-                new PageImpl<>(entity.getItems(), DEFAULT_PAGEABLE, DEFAULT_TOTAL_ELEMENTS)
+                new PageImpl<>(entity.getItems(), DEFAULT_PAGEABLE_AT_FIRST_PAGE, DEFAULT_TOTAL_ELEMENTS)
         );
         //act
-        Page<CheckoutItemEntity> foundItems = service.getAllItemsPaginatedAndSorted(entity.getId(), DEFAULT_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        Page<CheckoutItemEntity> foundItems = service.getAllItemsPaginatedAndSorted(entity.getId(), DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
         //assert
         assertAll(
                 () -> assertEquals(entity.getItems(), foundItems.getContent()),
-                () -> assertEquals(DEFAULT_PAGE, foundItems.getPageable().getPageNumber()),
+                () -> assertEquals(DEFAULT_FIRST_PAGE, foundItems.getPageable().getPageNumber()),
                 () -> assertEquals(DEFAULT_SIZE, foundItems.getPageable().getPageSize()),
                 () -> assertEquals(DEFAULT_TOTAL_ELEMENTS, foundItems.getTotalElements()),
                 () -> assertEquals(DEFAULT_SORT_BY, foundItems.getPageable().getSort().getOrderFor("id").getProperty()),
                 () -> assertEquals(DEFAULT_SORT_ORDER, foundItems.getPageable().getSort().getOrderFor("id").getDirection().name())
         );
-        verify(checkoutItemService).getByCheckoutIdPaginatedAndSorted(entity.getId(), DEFAULT_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        verify(checkoutItemService).getByCheckoutIdPaginatedAndSorted(entity.getId(), DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
     }
 
     @Test
@@ -402,14 +401,14 @@ class CheckoutServiceTest {
     void testEmptyListWhenNoCheckoutsFoundByUserId() {
         //arrange
         when(repository.findAllByUserId(anyString(), any(Pageable.class))).thenReturn(
-                new PageImpl<>(List.of(), DEFAULT_PAGEABLE, ZERO_TOTAL_ELEMENTS)
+                new PageImpl<>(List.of(), DEFAULT_PAGEABLE_AT_FIRST_PAGE, ZERO_TOTAL_ELEMENTS)
         );
         //act
-        Page<CheckoutEntity> foundCheckouts = service.getAllPaginatedAndSortedByUserId("test", DEFAULT_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        Page<CheckoutEntity> foundCheckouts = service.getAllPaginatedAndSortedByUserId("test", DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
         //assert
         assertAll(
                 () -> assertEquals(List.of(), foundCheckouts.getContent()),
-                () -> assertEquals(DEFAULT_PAGE, foundCheckouts.getPageable().getPageNumber()),
+                () -> assertEquals(DEFAULT_FIRST_PAGE, foundCheckouts.getPageable().getPageNumber()),
                 () -> assertEquals(DEFAULT_SIZE, foundCheckouts.getPageable().getPageSize()),
                 () -> assertEquals(ZERO_TOTAL_ELEMENTS, foundCheckouts.getTotalElements()),
                 () -> assertEquals(DEFAULT_SORT_BY, foundCheckouts.getPageable().getSort().getOrderFor(DEFAULT_SORT_BY).getProperty()),

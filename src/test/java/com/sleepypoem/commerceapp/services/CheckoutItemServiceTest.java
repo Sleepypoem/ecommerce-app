@@ -62,49 +62,49 @@ class CheckoutItemServiceTest {
         List<CheckoutItemEntity> entityList = List.of(entity);
         when(repository.save(entity)).thenReturn(entity);
         //act
-        List<CheckoutItemEntity> createdProducts = service.create(entityList);
+        List<CheckoutItemEntity> createdCheckouItems = service.create(entityList);
         //assert
-        assertThat(createdProducts, is(entityList));
+        assertThat(createdCheckouItems, is(entityList));
         verify(repository).save(entity);
     }
 
     @Test
     @DisplayName("Test getting checkout items by checkout id")
-    void testGetProductsByCheckoutIdWhenOk() {
+    void testGetCheckoutItemsByCheckoutIdWhenOk() {
         //arrange
         List<CheckoutItemEntity> itemEntities = factory.createList(Math.toIntExact(DEFAULT_TOTAL_ELEMENTS));
-        when(repository.findByCheckoutId(eq(1L), any())).thenReturn(new PageImpl<>(itemEntities, DEFAULT_PAGEABLE, DEFAULT_TOTAL_ELEMENTS));
+        when(repository.findByCheckoutId(eq(1L), any())).thenReturn(new PageImpl<>(itemEntities, DEFAULT_PAGEABLE_AT_FIRST_PAGE, DEFAULT_TOTAL_ELEMENTS));
         //act
-        Page<CheckoutItemEntity> result = service.getByCheckoutIdPaginatedAndSorted(1L, DEFAULT_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        Page<CheckoutItemEntity> result = service.getByCheckoutIdPaginatedAndSorted(1L, DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
         //assert
         assertAll(
                 () -> assertEquals(itemEntities, result.getContent()),
-                () -> assertEquals(DEFAULT_PAGE, result.getPageable().getPageNumber()),
+                () -> assertEquals(DEFAULT_FIRST_PAGE, result.getPageable().getPageNumber()),
                 () -> assertEquals(DEFAULT_SIZE, result.getPageable().getPageSize()),
                 () -> assertEquals(DEFAULT_SORT_BY, result.getPageable().getSort().getOrderFor("id").getProperty()),
                 () -> assertEquals(DEFAULT_SORT_ORDER, result.getPageable().getSort().getOrderFor("id").getDirection().name()),
                 () -> assertEquals(DEFAULT_TOTAL_ELEMENTS, result.getTotalElements())
         );
-        verify(repository).findByCheckoutId(1L, DEFAULT_PAGEABLE);
+        verify(repository).findByCheckoutId(1L, DEFAULT_PAGEABLE_AT_FIRST_PAGE);
     }
 
     @Test
     @DisplayName("Test getting checkout items by checkout id when checkout items not found")
-    void testGetProductsByCheckoutIdWhenNotFound() {
+    void testGetCheckoutItemsByCheckoutIdWhenNotFound() {
         //arrange
-        when(repository.findByCheckoutId(eq(1L), any())).thenReturn(new PageImpl<>(List.of(), DEFAULT_PAGEABLE, ZERO_TOTAL_ELEMENTS));
+        when(repository.findByCheckoutId(eq(1L), any())).thenReturn(new PageImpl<>(List.of(), DEFAULT_PAGEABLE_AT_FIRST_PAGE, ZERO_TOTAL_ELEMENTS));
         //act
-        Page<CheckoutItemEntity> result = service.getByCheckoutIdPaginatedAndSorted(1L, DEFAULT_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        Page<CheckoutItemEntity> result = service.getByCheckoutIdPaginatedAndSorted(1L, DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
         //assert
         assertAll(
                 () -> assertTrue(result.isEmpty()),
-                () -> assertEquals(DEFAULT_PAGE, result.getPageable().getPageNumber()),
+                () -> assertEquals(DEFAULT_FIRST_PAGE, result.getPageable().getPageNumber()),
                 () -> assertEquals(DEFAULT_SIZE, result.getPageable().getPageSize()),
                 () -> assertEquals(DEFAULT_SORT_BY, result.getPageable().getSort().getOrderFor("id").getProperty()),
                 () -> assertEquals(DEFAULT_SORT_ORDER, result.getPageable().getSort().getOrderFor("id").getDirection().name()),
                 () -> assertEquals(ZERO_TOTAL_ELEMENTS, result.getTotalElements())
         );
-        verify(repository).findByCheckoutId(1L, DEFAULT_PAGEABLE);
+        verify(repository).findByCheckoutId(1L, DEFAULT_PAGEABLE_AT_FIRST_PAGE);
     }
 
     @Test
@@ -128,9 +128,9 @@ class CheckoutItemServiceTest {
         CheckoutItemEntity entity = factory.create();
         when(repository.findById(anyLong())).thenReturn(Optional.of(entity));
         //act
-        CheckoutItemEntity foundProduct = service.getOneById(1L);
+        CheckoutItemEntity foundCheckoutItem = service.getOneById(1L);
         //assert
-        assertThat(foundProduct, is(equalTo(entity)));
+        assertThat(foundCheckoutItem, is(equalTo(entity)));
         verify(repository).findById(1L);
     }
 
@@ -182,9 +182,9 @@ class CheckoutItemServiceTest {
         List<CheckoutItemEntity> entities = factory.createList(50);
         when(repository.findAll()).thenReturn(entities);
         //act
-        List<CheckoutItemEntity> foundProducts = service.getAll();
+        List<CheckoutItemEntity> foundCheckoutItems = service.getAll();
         //assert
-        assertThat(foundProducts, equalTo(entities));
+        assertThat(foundCheckoutItems, equalTo(entities));
         verify(repository).findAll();
     }
 
@@ -194,20 +194,20 @@ class CheckoutItemServiceTest {
         //arrange
         var addresses = factory.createList(50);
         when(repository.findAll(any(Pageable.class))).thenReturn(
-                new PageImpl<>(addresses, DEFAULT_PAGEABLE, DEFAULT_TOTAL_ELEMENTS)
+                new PageImpl<>(addresses, DEFAULT_PAGEABLE_AT_FIRST_PAGE, DEFAULT_TOTAL_ELEMENTS)
         );
         //act
-        var result = service.getAllPaginatedAndSorted(DEFAULT_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        var result = service.getAllPaginatedAndSorted(DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
         //assert
         assertAll(
                 () -> assertEquals(addresses, result.getContent()),
-                () -> assertEquals(DEFAULT_PAGE, result.getPageable().getPageNumber()),
+                () -> assertEquals(DEFAULT_FIRST_PAGE, result.getPageable().getPageNumber()),
                 () -> assertEquals(DEFAULT_SIZE, result.getPageable().getPageSize()),
                 () -> assertEquals(DEFAULT_TOTAL_ELEMENTS, result.getTotalElements()),
                 () -> assertEquals(DEFAULT_SORT_BY, result.getSort().getOrderFor("id").getProperty()),
                 () -> assertEquals(DEFAULT_SORT_ORDER, result.getSort().getOrderFor("id").getDirection().name())
         );
-        verify(repository).findAll(DEFAULT_PAGEABLE);
+        verify(repository).findAll(DEFAULT_PAGEABLE_AT_FIRST_PAGE);
     }
 
     @Test
@@ -216,10 +216,10 @@ class CheckoutItemServiceTest {
         //arrange
         when(repository.findAll()).thenReturn(List.of());
         //act
-        List<CheckoutItemEntity> foundProducts = service.getAll();
+        List<CheckoutItemEntity> foundCheckoutItems = service.getAll();
         //assert
-        assertThat(foundProducts, is(empty()));
-        assertEquals(java.util.List.of(), foundProducts);
+        assertThat(foundCheckoutItems, is(empty()));
+        assertEquals(java.util.List.of(), foundCheckoutItems);
     }
 
     @Test
@@ -242,7 +242,7 @@ class CheckoutItemServiceTest {
     @DisplayName("Test modify the quantity of an item in the checkout when item not found")
     void testModifyQuantityWhenItemNotFound() {
         //arrange
-        when(repository.findById(anyLong())).thenReturn(java.util.Optional.empty());
+        when(repository.findById(anyLong())).thenReturn(Optional.empty());
         //act
         //assert
         assertThrows(MyEntityNotFoundException.class, () -> service.modifyQuantity(1L, 5));
