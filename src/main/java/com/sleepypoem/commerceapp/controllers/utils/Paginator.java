@@ -3,6 +3,8 @@ package com.sleepypoem.commerceapp.controllers.utils;
 import com.sleepypoem.commerceapp.domain.dto.PaginatedDto;
 import com.sleepypoem.commerceapp.domain.mappers.BaseMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Objects;
@@ -27,13 +29,58 @@ public class Paginator<D> {
         paginatedDto.setTotalElements(pagedEntity.getTotalElements());
         paginatedDto.setContent(mapper.convertToDtoList(pagedEntity.getContent()));
         if (pagedEntity.hasPrevious()) {
-            paginatedDto.setPreviousPage(API_PATH + resourceName + "?" + PAGE + pagedEntity.previousPageable().getPageNumber() + "&" + SIZE + pagedEntity.previousPageable().getPageSize());
+            paginatedDto.setPreviousPage(createPreviousPageUrl(pagedEntity));
         }
         if (pagedEntity.hasNext()) {
-            paginatedDto.setNextPage(API_PATH + resourceName + "?" + PAGE + pagedEntity.nextPageable().getPageNumber() + "&" + SIZE + pagedEntity.nextPageable().getPageSize());
+            paginatedDto.setNextPage(createNextPageUrl(pagedEntity));
         }
         return paginatedDto;
     }
+
+    public <E> String createNextPageUrl(Page<E> page) {
+        Pageable nextPageable = page.nextPageable();
+        int pageNumber = nextPageable.getPageNumber();
+        int pageSize = nextPageable.getPageSize();
+        Sort.Order sortOrder = nextPageable.getSort().getOrderFor("id");
+
+        StringBuilder urlBuilder = new StringBuilder();
+        urlBuilder.append(API_PATH)
+                .append(resourceName)
+                .append(PAGE)
+                .append(pageNumber)
+                .append("&")
+                .append(SIZE)
+                .append(pageSize)
+                .append("&sortBy=")
+                .append(sortOrder.getProperty())
+                .append("&sortOrder=")
+                .append(sortOrder.getDirection());
+
+        return urlBuilder.toString();
+    }
+
+    public String createPreviousPageUrl(Page<?> page) {
+        Pageable previousPageable = page.previousPageable();
+        int pageNumber = previousPageable.getPageNumber();
+        int pageSize = previousPageable.getPageSize();
+        Sort.Order sortOrder = previousPageable.getSort().getOrderFor("id");
+
+        StringBuilder urlBuilder = new StringBuilder();
+        urlBuilder.append(API_PATH)
+                .append(resourceName)
+                .append(PAGE)
+                .append(pageNumber)
+                .append("&")
+                .append(SIZE)
+                .append(pageSize)
+                .append("&sortBy=")
+                .append(sortOrder.getProperty())
+                .append("&sortOrder=")
+                .append(sortOrder.getDirection());
+
+        return urlBuilder.toString();
+    }
+
 
     public PaginatedDto<D> getPaginatedDtoFromList(Integer currentPage, Integer size, Long totalElements, List<D> content) {
         PaginatedDto<D> paginatedDto = new PaginatedDto<>();
