@@ -84,7 +84,7 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
                                                                                    @RequestParam(value = "size", defaultValue = "10") int size,
                                                                                    @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
                                                                                    @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
-        Paginator<CheckoutDto> paginator = new Paginator<>("checkouts?userId=" + userId + "&");
+        Paginator<CheckoutDto> paginator = new Paginator<>("checkouts?user-id=" + userId + "&");
         return ResponseEntity.ok().body(paginator.getPaginatedDtoFromPage(service.getAllPaginatedAndSortedByUserId(userId, page, size, sortBy, sortOrder), mapper));
     }
 

@@ -63,7 +63,7 @@ public class AddressController extends AbstractController<AddressDto, AddressEnt
                                                                                   @RequestParam(value = "size", defaultValue = "10") int size,
                                                                                   @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
                                                                                   @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
-        Paginator<AddressDto> paginator = new Paginator<>("addresses?userId=" + userId + "&");
+        Paginator<AddressDto> paginator = new Paginator<>("addresses?user-id=" + userId + "&");
         return ResponseEntity.ok().body(paginator.getPaginatedDtoFromPage(service.findByUserId(userId, page, size, sortBy, sortOrder), mapper));
     }
 
