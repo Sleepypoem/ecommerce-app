@@ -182,22 +182,22 @@ class UserRepositoryImplTest {
         //arrange
         String criteriaName = "username";
         String criteriaValue = "test";
-        String nextPage = "/api/users?criteriaName=" + criteriaName + "&criteriaValue=" + criteriaValue + "&page=" + (DEFAULT_PAGE + 1) + "&size=" + DEFAULT_SIZE;
+        String nextPage = "/api/users?criteriaName=" + criteriaName + "&criteriaValue=" + criteriaValue + "&page=" + (DEFAULT_FIRST_PAGE + 1) + "&size=" + DEFAULT_SIZE;
 
         List<UserDto> userDtoList = factory.createList(Math.toIntExact(DEFAULT_TOTAL_ELEMENTS));
         when(keyCloakFacade.countUsersByCriteria(anyString(), anyString())).thenReturn(DEFAULT_TOTAL_ELEMENTS);
         when(keyCloakFacade.getAllUsersByCriteria(anyString(), anyString(), anyInt(), anyInt(), anyBoolean())).thenReturn(userDtoList);
         // act
-        PaginatedDto<UserDto> result = userRepositoryImpl.getAllUsersByCriteriaPaginatedAndSorted(criteriaName, criteriaValue, DEFAULT_PAGE, DEFAULT_SIZE, true);
+        PaginatedDto<UserDto> result = userRepositoryImpl.getAllUsersByCriteriaPaginatedAndSorted(criteriaName, criteriaValue, DEFAULT_FIRST_PAGE, DEFAULT_SIZE, true);
         // assert
         assertAll(
                 () -> assertThat(result.getTotalElements(), is(DEFAULT_TOTAL_ELEMENTS)),
-                () -> assertThat(result.getCurrentPage(), is(DEFAULT_PAGE)),
+                () -> assertThat(result.getCurrentPage(), is(DEFAULT_FIRST_PAGE)),
                 () -> assertThat(result.getContent(), is(equalTo(userDtoList))),
                 () -> assertThat(result.getNextPage(), is(equalTo(nextPage))),
                 () -> assertThat(result.getPreviousPage(), is(nullValue()))
         );
-        verify(keyCloakFacade).getAllUsersByCriteria(criteriaName, criteriaValue, DEFAULT_PAGE, DEFAULT_SIZE, true);
+        verify(keyCloakFacade).getAllUsersByCriteria(criteriaName, criteriaValue, DEFAULT_FIRST_PAGE, DEFAULT_SIZE, true);
     }
 
     @Test
@@ -210,15 +210,15 @@ class UserRepositoryImplTest {
         when(keyCloakFacade.countUsersByCriteria(anyString(), anyString())).thenReturn(0L);
         when(keyCloakFacade.getAllUsersByCriteria(anyString(), anyString(), anyInt(), anyInt(), anyBoolean())).thenReturn(List.of());
         // act
-        PaginatedDto<UserDto> result = userRepositoryImpl.getAllUsersByCriteriaPaginatedAndSorted(criteriaName, criteriaValue, DEFAULT_PAGE, DEFAULT_SIZE, true);
+        PaginatedDto<UserDto> result = userRepositoryImpl.getAllUsersByCriteriaPaginatedAndSorted(criteriaName, criteriaValue, DEFAULT_FIRST_PAGE, DEFAULT_SIZE, true);
         // assert
         assertAll(
                 () -> assertThat(result.getTotalElements(), is(ZERO_TOTAL_ELEMENTS)),
-                () -> assertThat(result.getCurrentPage(), is(DEFAULT_PAGE)),
+                () -> assertThat(result.getCurrentPage(), is(DEFAULT_FIRST_PAGE)),
                 () -> assertThat(result.getContent(), is(empty())),
                 () -> assertThat(result.getNextPage(), is(nullValue())),
                 () -> assertThat(result.getPreviousPage(), is(nullValue()))
         );
-        verify(keyCloakFacade).getAllUsersByCriteria(criteriaName, criteriaValue, DEFAULT_PAGE, DEFAULT_SIZE, true);
+        verify(keyCloakFacade).getAllUsersByCriteria(criteriaName, criteriaValue, DEFAULT_FIRST_PAGE, DEFAULT_SIZE, true);
     }
 }
