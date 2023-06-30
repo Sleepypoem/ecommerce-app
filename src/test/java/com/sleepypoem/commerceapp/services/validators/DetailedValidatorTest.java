@@ -49,10 +49,9 @@ class DetailedValidatorTest {
         //arrange
         String message = """
                 The following errors were found during validation : {
-                Field: testField || Error: testError,\s
-                Field: testField2 || Error: testError2
+                Field: testField || Error: testError\s
                 }""";
-        when(iValidator.isValid(testEntity)).thenReturn(Map.of("testField", "testError", "testField2", "testError2"));
+        when(iValidator.isValid(testEntity)).thenReturn(Map.of("testField", "testError"));
         //act
         Exception ex = assertThrows(MyValidationException.class, () -> detailedValidator.validate());
         //assert
