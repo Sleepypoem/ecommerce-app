@@ -79,11 +79,11 @@ public class CheckoutController extends AbstractController<CheckoutDto, Checkout
 
     @GetMapping(params = {"user-id"}, produces = "application/json")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERUSER') or #userId == authentication.principal.id")
-    public ResponseEntity<PaginatedDto<CheckoutDto>> getByUserId(@RequestParam(value = "user-id") String userId,
-                                                                 @RequestParam(value = "page", defaultValue = "0") int page,
-                                                                 @RequestParam(value = "size", defaultValue = "10") int size,
-                                                                 @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
-                                                                 @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
+    public ResponseEntity<PaginatedDto<CheckoutDto>> getByUserIdPaginatedAndSorted(@RequestParam(value = "user-id") String userId,
+                                                                                   @RequestParam(value = "page", defaultValue = "0") int page,
+                                                                                   @RequestParam(value = "size", defaultValue = "10") int size,
+                                                                                   @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
+                                                                                   @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
         Paginator<CheckoutDto> paginator = new Paginator<>("checkouts?userId=" + userId + "&");
         return ResponseEntity.ok().body(paginator.getPaginatedDtoFromPage(service.getAllPaginatedAndSortedByUserId(userId, page, size, sortBy, sortOrder), mapper));
     }

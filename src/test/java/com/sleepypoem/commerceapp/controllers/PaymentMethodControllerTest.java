@@ -143,7 +143,7 @@ class PaymentMethodControllerTest {
 
 
         //act
-        ResponseEntity<PaginatedDto<PaymentMethodDto>> responseEntity = controller.getByUserId("1", DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        ResponseEntity<PaginatedDto<PaymentMethodDto>> responseEntity = controller.getByUserIdPaginatedAndSorted("1", DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
 
         //assert
         assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
@@ -167,7 +167,7 @@ class PaymentMethodControllerTest {
         when(service.getAllPaginatedAndSortedByUserId(anyString(), anyInt(), anyInt(), anyString(), anyString())).thenReturn(page);
 
         //act
-        ResponseEntity<PaginatedDto<PaymentMethodDto>> responseEntity = controller.getByUserId("1", DEFAULT_LAST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        ResponseEntity<PaginatedDto<PaymentMethodDto>> responseEntity = controller.getByUserIdPaginatedAndSorted("1", DEFAULT_LAST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
 
         //assert
         assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
@@ -238,7 +238,7 @@ class PaymentMethodControllerTest {
         when(service.getOneById(anyLong())).thenReturn(paymentMethodEntity);
 
         //act
-        ResponseEntity<PaymentMethodDto> responseEntity = controller.findOneById(1L);
+        ResponseEntity<PaymentMethodDto> responseEntity = controller.getOneById(1L);
 
         //assert
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -253,7 +253,7 @@ class PaymentMethodControllerTest {
         when(service.getOneById(anyLong())).thenThrow(new MyEntityNotFoundException("PaymentMethod not found"));
         //act
         //assert
-        var ex = assertThrows(MyEntityNotFoundException.class, () -> controller.findOneById(1L));
+        var ex = assertThrows(MyEntityNotFoundException.class, () -> controller.getOneById(1L));
 
         assertEquals("PaymentMethod not found", ex.getMessage());
         verify(service).getOneById(1L);

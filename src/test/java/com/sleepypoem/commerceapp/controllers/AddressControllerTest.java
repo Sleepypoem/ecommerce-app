@@ -1,7 +1,5 @@
 package com.sleepypoem.commerceapp.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.sleepypoem.commerceapp.controllers.utils.SecurityUtils;
 import com.sleepypoem.commerceapp.domain.dto.PaginatedDto;
 import com.sleepypoem.commerceapp.domain.dto.ResourceStatusResponseDto;
@@ -22,8 +20,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import static com.sleepypoem.commerceapp.utils.TestConstants.*;
@@ -153,7 +149,7 @@ class AddressControllerTest {
 
 
         //act
-        ResponseEntity<PaginatedDto<AddressDto>> responseEntity = controller.getByUserId("1", DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        ResponseEntity<PaginatedDto<AddressDto>> responseEntity = controller.getByUserIdPaginatedAndSorted("1", DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
 
         //assert
         assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
@@ -176,7 +172,7 @@ class AddressControllerTest {
         when(service.findByUserId(anyString(), anyInt(), anyInt(), anyString(), anyString())).thenReturn(page);
 
         //act
-        ResponseEntity<PaginatedDto<AddressDto>> responseEntity = controller.getByUserId("1", DEFAULT_LAST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        ResponseEntity<PaginatedDto<AddressDto>> responseEntity = controller.getByUserIdPaginatedAndSorted("1", DEFAULT_LAST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
 
         //assert
         assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));

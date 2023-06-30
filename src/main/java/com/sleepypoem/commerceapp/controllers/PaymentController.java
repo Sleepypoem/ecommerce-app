@@ -76,20 +76,20 @@ public class PaymentController extends AbstractReadOnlyController<PaymentDto, Pa
 
     @GetMapping(params = {"page", "size", "sortBy", "sortDirection"})
     @IsAdminOrSuperUser
-    public ResponseEntity<PaginatedDto<PaymentDto>> findAllPaginatedAndSorted(@RequestParam(defaultValue = "0") int page,
-                                                                          @RequestParam(defaultValue = "10") int size,
-                                                                          @RequestParam(defaultValue = "id") String sortBy,
-                                                                          @RequestParam(defaultValue = "ASC") String sortDirection) {
+    public ResponseEntity<PaginatedDto<PaymentDto>> getAllPaginatedAndSorted(@RequestParam(defaultValue = "0") int page,
+                                                                             @RequestParam(defaultValue = "10") int size,
+                                                                             @RequestParam(defaultValue = "id") String sortBy,
+                                                                             @RequestParam(defaultValue = "ASC") String sortDirection) {
         return ResponseEntity.ok().body(getAllPaginatedAndSortedInternal(page, size, sortBy, sortDirection, "payments?"));
     }
 
     @GetMapping(params = {"user-id"})
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERUSER') or #userId == authentication.principal.id")
-    public ResponseEntity<PaginatedDto<PaymentDto>> findAllByUserIdPaginatedAndSorted(@RequestParam(value = "user-id") String userId,
-                                                                                      @RequestParam(defaultValue = "0") int page,
-                                                                                      @RequestParam(defaultValue = "10") int size,
-                                                                                      @RequestParam(defaultValue = "id") String sortBy,
-                                                                                      @RequestParam(defaultValue = "ASC") String sortDirection) {
+    public ResponseEntity<PaginatedDto<PaymentDto>> getByUserIdPaginatedAndSorted(@RequestParam(value = "user-id") String userId,
+                                                                                  @RequestParam(defaultValue = "0") int page,
+                                                                                  @RequestParam(defaultValue = "10") int size,
+                                                                                  @RequestParam(defaultValue = "id") String sortBy,
+                                                                                  @RequestParam(defaultValue = "ASC") String sortDirection) {
         Paginator<PaymentDto> paginator = new Paginator<>("payments?user-id=" + userId + "&");
         Page<PaymentEntity> pagedResult = service.getAllPaginatedAndSortedByUserId(userId, page, size, sortBy, sortDirection);
         return ResponseEntity.ok().body(paginator.getPaginatedDtoFromPage(pagedResult, mapper));

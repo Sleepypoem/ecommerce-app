@@ -16,7 +16,6 @@ import com.sleepypoem.commerceapp.domain.mappers.CheckoutMapper;
 import com.sleepypoem.commerceapp.exceptions.MyBadRequestException;
 import com.sleepypoem.commerceapp.exceptions.MyEntityNotFoundException;
 import com.sleepypoem.commerceapp.services.CheckoutService;
-import com.sleepypoem.commerceapp.utils.factories.impl.AddressFactory;
 import com.sleepypoem.commerceapp.utils.factories.impl.CheckoutFactory;
 import com.sleepypoem.commerceapp.utils.factories.impl.CheckoutItemFactory;
 import org.junit.jupiter.api.AfterEach;
@@ -144,7 +143,7 @@ class CheckoutControllerTest {
         Page<CheckoutEntity> page = new PageImpl<>(checkoutEntities, DEFAULT_PAGEABLE_AT_FIRST_PAGE, DEFAULT_TOTAL_ELEMENTS);
         when(service.getAllPaginatedAndSortedByUserId(anyString(), anyInt(), anyInt(), anyString(), anyString())).thenReturn(page);
 
-        ResponseEntity<PaginatedDto<CheckoutDto>> responseEntity = controller.getByUserId("1", DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        ResponseEntity<PaginatedDto<CheckoutDto>> responseEntity = controller.getByUserIdPaginatedAndSorted("1", DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
         assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
         assertThat(responseEntity.getBody().getCurrentPage(), is(DEFAULT_FIRST_PAGE));
         assertThat(responseEntity.getBody().getTotalElements(), is(DEFAULT_TOTAL_ELEMENTS));
@@ -163,7 +162,7 @@ class CheckoutControllerTest {
         Page<CheckoutEntity> page = new PageImpl<>(checkoutEntities, DEFAULT_PAGEABLE_AT_LAST_PAGE, DEFAULT_TOTAL_ELEMENTS);
         when(service.getAllPaginatedAndSortedByUserId(anyString(), anyInt(), anyInt(), anyString(), anyString())).thenReturn(page);
 
-        ResponseEntity<PaginatedDto<CheckoutDto>> responseEntity = controller.getByUserId("1", DEFAULT_LAST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        ResponseEntity<PaginatedDto<CheckoutDto>> responseEntity = controller.getByUserIdPaginatedAndSorted("1", DEFAULT_LAST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
         assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
         assertThat(responseEntity.getBody().getCurrentPage(), is(DEFAULT_LAST_PAGE));
         assertThat(responseEntity.getBody().getTotalElements(), is(DEFAULT_TOTAL_ELEMENTS));

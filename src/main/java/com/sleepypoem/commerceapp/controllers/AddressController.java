@@ -58,11 +58,11 @@ public class AddressController extends AbstractController<AddressDto, AddressEnt
 
     @GetMapping(params = {"user-id"}, produces = "application/json")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERUSER') or #userId == principal.id")
-    public ResponseEntity<PaginatedDto<AddressDto>> getByUserId(@RequestParam(value = "user-id") String userId,
-                                                                @RequestParam(value = "page", defaultValue = "0") int page,
-                                                                @RequestParam(value = "size", defaultValue = "10") int size,
-                                                                @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
-                                                                @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
+    public ResponseEntity<PaginatedDto<AddressDto>> getByUserIdPaginatedAndSorted(@RequestParam(value = "user-id") String userId,
+                                                                                  @RequestParam(value = "page", defaultValue = "0") int page,
+                                                                                  @RequestParam(value = "size", defaultValue = "10") int size,
+                                                                                  @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
+                                                                                  @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
         Paginator<AddressDto> paginator = new Paginator<>("addresses?userId=" + userId + "&");
         return ResponseEntity.ok().body(paginator.getPaginatedDtoFromPage(service.findByUserId(userId, page, size, sortBy, sortOrder), mapper));
     }

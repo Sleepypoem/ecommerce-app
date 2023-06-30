@@ -179,7 +179,7 @@ class PaymentControllerTest {
         Page<PaymentEntity> page = new PageImpl<>(paymentEntities, DEFAULT_PAGEABLE_AT_FIRST_PAGE, DEFAULT_TOTAL_ELEMENTS);
         when(service.getAllPaginatedAndSortedByUserId(anyString(), anyInt(), anyInt(), anyString(), anyString())).thenReturn(page);
 
-        ResponseEntity<PaginatedDto<PaymentDto>> responseEntity = controller.findAllByUserIdPaginatedAndSorted("1", DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        ResponseEntity<PaginatedDto<PaymentDto>> responseEntity = controller.getByUserIdPaginatedAndSorted("1", DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
         assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
         assertThat(responseEntity.getBody().getCurrentPage(), is(DEFAULT_FIRST_PAGE));
         assertThat(responseEntity.getBody().getTotalElements(), is(DEFAULT_TOTAL_ELEMENTS));
@@ -198,7 +198,7 @@ class PaymentControllerTest {
         Page<PaymentEntity> page = new PageImpl<>(paymentEntities, DEFAULT_PAGEABLE_AT_LAST_PAGE, DEFAULT_TOTAL_ELEMENTS);
         when(service.getAllPaginatedAndSortedByUserId(anyString(), anyInt(), anyInt(), anyString(), anyString())).thenReturn(page);
 
-        ResponseEntity<PaginatedDto<PaymentDto>> responseEntity = controller.findAllByUserIdPaginatedAndSorted("1", DEFAULT_LAST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        ResponseEntity<PaginatedDto<PaymentDto>> responseEntity = controller.getByUserIdPaginatedAndSorted("1", DEFAULT_LAST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
         assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
         assertThat(responseEntity.getBody().getCurrentPage(), is(DEFAULT_LAST_PAGE));
         assertThat(responseEntity.getBody().getTotalElements(), is(DEFAULT_TOTAL_ELEMENTS));
@@ -232,7 +232,7 @@ class PaymentControllerTest {
         Page<PaymentEntity> page = new PageImpl<>(paymentEntities, DEFAULT_PAGEABLE_AT_FIRST_PAGE, DEFAULT_TOTAL_ELEMENTS);
         when(service.getAllPaginatedAndSorted(anyInt(), anyInt(), anyString(), anyString())).thenReturn(page);
         //act
-        ResponseEntity<PaginatedDto<PaymentDto>> response = controller.findAllPaginatedAndSorted(DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        ResponseEntity<PaginatedDto<PaymentDto>> response = controller.getAllPaginatedAndSorted(DEFAULT_FIRST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
         //assert
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertThat(response.getBody().getCurrentPage(), is(DEFAULT_FIRST_PAGE));
@@ -253,7 +253,7 @@ class PaymentControllerTest {
         Page<PaymentEntity> page = new PageImpl<>(paymentEntities, DEFAULT_PAGEABLE_AT_LAST_PAGE, DEFAULT_TOTAL_ELEMENTS);
         when(service.getAllPaginatedAndSorted(anyInt(), anyInt(), anyString(), anyString())).thenReturn(page);
         //act
-        ResponseEntity<PaginatedDto<PaymentDto>> response = controller.findAllPaginatedAndSorted(DEFAULT_LAST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
+        ResponseEntity<PaginatedDto<PaymentDto>> response = controller.getAllPaginatedAndSorted(DEFAULT_LAST_PAGE, DEFAULT_SIZE, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER);
         //assert
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertThat(response.getBody().getCurrentPage(), is(DEFAULT_LAST_PAGE));

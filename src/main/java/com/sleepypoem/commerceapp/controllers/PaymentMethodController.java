@@ -50,17 +50,17 @@ public class PaymentMethodController extends AbstractController<PaymentMethodDto
 
     @GetMapping("/{id}")
     @PostAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERUSER') or returnObject.body.userId == authentication.principal.id")
-    public ResponseEntity<PaymentMethodDto> findOneById(@PathVariable Long id) {
+    public ResponseEntity<PaymentMethodDto> getOneById(@PathVariable Long id) {
         return ResponseEntity.ok().body(getOneByIdInternal(id));
     }
 
     @GetMapping(params = {"user-id"}, produces = "application/json")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERUSER') or #userId == authentication.principal.id")
-    public ResponseEntity<PaginatedDto<PaymentMethodDto>> getByUserId(@RequestParam(value = "user-id") String userId,
-                                                                      @RequestParam(value = "page", defaultValue = "0") int page,
-                                                                      @RequestParam(value = "size", defaultValue = "10") int size,
-                                                                      @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
-                                                                      @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
+    public ResponseEntity<PaginatedDto<PaymentMethodDto>> getByUserIdPaginatedAndSorted(@RequestParam(value = "user-id") String userId,
+                                                                                        @RequestParam(value = "page", defaultValue = "0") int page,
+                                                                                        @RequestParam(value = "size", defaultValue = "10") int size,
+                                                                                        @RequestParam(value = "sort-by", defaultValue = "id") String sortBy,
+                                                                                        @RequestParam(value = "sort-order", defaultValue = "asc") String sortOrder) {
         Paginator<PaymentMethodDto> paginator = new Paginator<>("payment-methods?user-id=" + userId + "&");
         return ResponseEntity.ok().body(paginator.getPaginatedDtoFromPage(service.getAllPaginatedAndSortedByUserId(userId, page, size, sortBy, sortOrder), mapper));
     }
