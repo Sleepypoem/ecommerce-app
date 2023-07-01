@@ -49,7 +49,7 @@ class DetailedValidatorTest {
         //arrange
         String message = """
                 The following errors were found during validation : {
-                Field: testField || Error: testError\s
+                Field: testField || Error: testError
                 }""";
         when(iValidator.isValid(testEntity)).thenReturn(Map.of("testField", "testError"));
         //act
