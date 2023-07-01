@@ -66,9 +66,12 @@ services:
     volumes:
       - C:\Users\oskri\OneDrive\Documentos\sql\spring:/var/lib/mysql
   app:
-    image: sleepypoem:ecommerce-0.4
+    image: sleepypoem:${PACKAGE_NAME}-${PACKAGE_VERSION}
     build:
       context: .
+      args:
+      -  PACKAGE_NAME=${PACKAGE_NAME}
+      -  PACKAGE_VERSION=${PACKAGE_VERSION}
     container_name: spring-app
     depends_on:
       - db

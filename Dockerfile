@@ -1,3 +1,5 @@
 FROM openjdk:19
-ADD /target/commerceapp-0.0.1-SNAPSHOT.jar app.jar
+ARG PACKAGE_NAME
+ARG PACKAGE_VERSION
+ADD /target/${PACKAGE_NAME}-${PACKAGE_VERSION}.jar app.jar
 ENTRYPOINT ["java","-jar","/app.jar"]
